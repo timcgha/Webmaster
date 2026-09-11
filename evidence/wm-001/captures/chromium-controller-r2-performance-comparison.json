@@ -1,0 +1,27 @@
+{
+  "format": "webmaster-controller-remediation-performance-comparison",
+  "version": 1,
+  "browser": "Google Chrome for Testing headless shell 153.0.8010.12",
+  "browserSha256": "ded93a9c9a53a1ae040f08124badcca95c938e9d5015ff340c3b5538c41bf39e",
+  "viewport": [
+    1920,
+    1080
+  ],
+  "assertionFloorFps": 30,
+  "failedControllerBaseline": {
+    "head": "bc93105d5fdd96f278d1a5722ddfc55c5b725cde",
+    "tree": "a7b0f2315ee6b6ae03f9db40486591de8fa0313c",
+    "minimumFps": 24
+  },
+  "controllerRemediationImplementation": {
+    "head": "fc2f0ab1ee635cc6cceacaf2c082786cc0ff116a",
+    "tree": "d7ee937757d084c7615e11dc3a5d40d6ffcf8dd7",
+    "minimumFpsRuns": [
+      25,
+      27
+    ]
+  },
+  "absoluteGate": "NOT_MET_IN_RECOVERED_RUNTIME",
+  "comparison": "NO_CONTROLLER_REMEDIATION_REGRESSION_OBSERVED",
+  "limitation": "Identical-browser headless Linux software-rendering comparison. The >=30 FPS assertion was preserved and failed; this is not Windows or iPad device-performance evidence."
+}

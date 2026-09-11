@@ -12,6 +12,7 @@ All captures in this directory are generated from the candidate application thro
 | `captures/chromium-controller-diagnostics.png` | Persistent Xbox-family READY state, local diagnostic details, and deliberate Copy Diagnostics result | Standard Gamepad API simulation in headless Linux Chromium; no physical pad |
 | `captures/chromium-controller-ready-hud.png` | Persistent controller-ready state in the gameplay HUD | Standard Gamepad API simulation in headless Linux Chromium; no physical pad |
 | `captures/chromium-controller-diagnostics-1194x834-representative-ipad-layout-not-safari.png` | PlayStation-family READY state and diagnostic view at the target landscape dimensions | Chromium viewport simulation only; not iPadOS/Safari or physical-controller proof |
+| `captures/chromium-controller-r2-performance-comparison.json` | Frozen baseline versus controller-remediation FPS in the identical recovered browser/runtime | Absolute floor remains unmet in that software renderer; this is comparison evidence, not a performance PASS |
 | `captures/chromium-airborne-safe-save-disabled.png` | Save and Save & Quit disabled with an explanation while airborne | Real jump; no fixture |
 | `captures/chromium-recovery-fixture-labelled.png` | Full-health retry after four non-scary fall recoveries | Each out-of-bounds position is explicitly labelled as fixture setup |
 | `captures/chromium-persistent-reopen.png` | Hard manual save restored after persistent profile close/reopen at the exact same origin | Browser automation, same persistent Chromium user-data directory |
