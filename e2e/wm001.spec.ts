@@ -3,8 +3,21 @@ import { writeFile } from "node:fs/promises";
 
 declare global {
   interface Window {
-    __setTestGamepad?: (patch: { id?: string; connected?: boolean; axes?: number[]; pressed?: number[] }) => void;
+    __setTestGamepad?: (patch: Partial<TestGamepadConfig>) => void;
+    __patchTestGamepad?: (index: number, patch: Partial<TestGamepadConfig>) => void;
+    __setTestGamepads?: (pads: TestGamepadConfig[]) => void;
   }
+}
+
+interface TestGamepadConfig {
+  id: string;
+  index: number;
+  connected: boolean;
+  mapping: string;
+  axes: number[];
+  pressed: number[];
+  values?: Record<number, number>;
+  buttonCount?: number;
 }
 
 async function ready(page: Page): Promise<void> {
@@ -63,49 +76,89 @@ async function expectInViewport(page: Page, selector: string): Promise<void> {
   expect(box!.y + box!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
 }
 
-async function installGamepad(page: Page, id = "Xbox Wireless Controller (STANDARD GAMEPAD Vendor: 045e Product: 02fd)"): Promise<void> {
-  await page.addInitScript((initialId) => {
-    let config = { id: initialId, connected: true, axes: [0, 0, 0, 0], pressed: [] as number[] };
+async function installGamepads(page: Page, initialPads: Partial<TestGamepadConfig>[]): Promise<void> {
+  await page.addInitScript((seedPads) => {
+    const normalize = (input: Partial<TestGamepadConfig>, fallbackIndex: number): TestGamepadConfig => ({
+      id: input.id ?? "Xbox Wireless Controller (STANDARD GAMEPAD Vendor: 045e Product: 02fd)",
+      index: input.index ?? fallbackIndex,
+      connected: input.connected ?? true,
+      mapping: input.mapping ?? "standard",
+      axes: input.axes ?? [0, 0, 0, 0],
+      pressed: input.pressed ?? [],
+      values: input.values ?? {},
+      buttonCount: input.buttonCount ?? 17,
+    });
+    let configs = seedPads.map(normalize);
     window.__setTestGamepad = (patch) => {
-      config = { ...config, ...patch };
+      configs[0] = normalize({ ...configs[0], ...patch }, configs[0]?.index ?? 0);
+    };
+    window.__patchTestGamepad = (index, patch) => {
+      const position = configs.findIndex((config) => config.index === index);
+      if (position >= 0) configs[position] = normalize({ ...configs[position], ...patch, index }, index);
+      else configs.push(normalize({ ...patch, index }, index));
+    };
+    window.__setTestGamepads = (pads) => {
+      configs = pads.map(normalize);
     };
     Object.defineProperty(navigator, "getGamepads", {
       configurable: true,
       value: () => {
-        if (!config.connected) return [null, null, null, null];
-        return [
-          {
+        const result: Array<Gamepad | null> = Array.from({ length: Math.max(4, ...configs.map((config) => config.index + 1)) }, () => null);
+        configs.forEach((config) => {
+          if (!config.connected) return;
+          result[config.index] = {
             id: config.id,
-            index: 0,
-            connected: true,
-            mapping: "standard",
+            index: config.index,
+            connected: config.connected,
+            mapping: config.mapping,
             timestamp: performance.now(),
             axes: config.axes,
-            buttons: Array.from({ length: 17 }, (_, index) => ({
+            buttons: Array.from({ length: config.buttonCount ?? 17 }, (_, index) => ({
               pressed: config.pressed.includes(index),
               touched: config.pressed.includes(index),
-              value: config.pressed.includes(index) ? 1 : 0,
+              value: config.pressed.includes(index) ? 1 : config.values?.[index] ?? 0,
             })),
             vibrationActuator: null,
             hapticActuators: [],
-          },
-          null,
-          null,
-          null,
-        ];
+          } as unknown as Gamepad;
+        });
+        return result;
       },
     });
-  }, id);
+  }, initialPads);
 }
 
-async function setPad(page: Page, patch: { id?: string; connected?: boolean; axes?: number[]; pressed?: number[] }): Promise<void> {
+async function installGamepad(page: Page, id = "Xbox Wireless Controller (STANDARD GAMEPAD Vendor: 045e Product: 02fd)"): Promise<void> {
+  await installGamepads(page, [{ id, index: 0, connected: true, mapping: "standard", axes: [0, 0, 0, 0], pressed: [] }]);
+}
+
+async function setPad(page: Page, patch: Partial<TestGamepadConfig>): Promise<void> {
   await page.evaluate((value) => window.__setTestGamepad!(value), patch);
-  await page.waitForTimeout(120);
+  await page.waitForTimeout(140);
+}
+
+async function patchPad(page: Page, index: number, patch: Partial<TestGamepadConfig>): Promise<void> {
+  await page.evaluate(({ selectedIndex, value }) => window.__patchTestGamepad!(selectedIndex, value), { selectedIndex: index, value: patch });
+  await page.waitForTimeout(140);
 }
 
 async function tapPad(page: Page, button: number): Promise<void> {
   await setPad(page, { pressed: [button] });
   await setPad(page, { pressed: [] });
+  await expect.poll(async () => (await page.evaluate(() => window.__WM_DEBUG__!.getControllerStatus())).lifecycle).toBe("CONTROLLER_READY");
+}
+
+async function tapPadAt(page: Page, index: number, button: number): Promise<void> {
+  await patchPad(page, index, { pressed: [button] });
+  await patchPad(page, index, { pressed: [] });
+  await expect.poll(async () => (await page.evaluate(() => window.__WM_DEBUG__!.getControllerStatus())).lifecycle).toBe("CONTROLLER_READY");
+}
+
+async function activatePad(page: Page, index = 0): Promise<void> {
+  await patchPad(page, index, { pressed: [0] });
+  await expect.poll(async () => (await page.evaluate(() => window.__WM_DEBUG__!.getControllerStatus())).lifecycle).toBe("CONTROLLER_DETECTED_RELEASE_CONTROLS");
+  await patchPad(page, index, { pressed: [] });
+  await expect.poll(async () => (await page.evaluate(() => window.__WM_DEBUG__!.getControllerStatus())).lifecycle).toBe("CONTROLLER_READY");
 }
 
 test.describe("WM-001 rendered keyboard and mouse journey", () => {
@@ -249,7 +302,7 @@ test.describe("WM-001 rendered simulated Gamepad journey", () => {
 
   test("uses gamepad alone for new game, movement, camera, pause, save, save-and-quit, Continue, and Load", async ({ page, browserName }) => {
     await ready(page);
-    await setPad(page, { pressed: [] });
+    await activatePad(page);
     await tapPad(page, 0);
     await expect(page.getByRole("heading", { name: "Choose a save slot" })).toBeVisible();
     await tapPad(page, 0);
@@ -264,6 +317,14 @@ test.describe("WM-001 rendered simulated Gamepad journey", () => {
     await page.waitForTimeout(750);
     await setPad(page, { axes: [0, 0, 0, 0] });
     expect((await state(page)).position.z).toBeGreaterThan(beforeMove.position.z + 2);
+    await setPad(page, { pressed: [0] });
+    expect((await state(page)).position.y).toBeGreaterThan(0.1);
+    await setPad(page, { pressed: [] });
+    await page.waitForTimeout(850);
+    expect((await state(page)).grounded).toBe(true);
+    await setPad(page, { axes: [0, -1, 0, 0], pressed: [7] });
+    await page.waitForTimeout(300);
+    await setPad(page, { axes: [0, 0, 0, 0], pressed: [] });
     const cameraBefore = (await state(page)).cameraAlpha;
     await setPad(page, { axes: [0, 0, 0.8, -0.5] });
     await page.waitForTimeout(900);
@@ -300,7 +361,7 @@ test.describe("WM-001 rendered simulated Gamepad journey", () => {
 
   test("disconnect releases motion and reconnect requires neutral then fresh input", async ({ page }) => {
     await ready(page);
-    await setPad(page, { pressed: [] });
+    await activatePad(page);
     await tapPad(page, 0);
     await tapPad(page, 0);
     await tapPad(page, 0);
@@ -323,15 +384,14 @@ test.describe("WM-001 rendered simulated Gamepad journey", () => {
   test("shows PlayStation-style prompts without changing standard semantic actions", async ({ page }) => {
     await ready(page);
     await setPad(page, { id: "DualSense Wireless Controller", axes: [0, 0, 0, 0], pressed: [] });
-    await setPad(page, { axes: [0, 0, 0, 0], pressed: [] });
-    await page.waitForTimeout(200);
+    await activatePad(page);
     await tapPad(page, 0);
     await expect(page.getByText(/Options Pause/)).toBeVisible();
   });
 
   test("operates persisted main and pause settings without mouse or typing", async ({ page }) => {
     await ready(page);
-    await setPad(page, { pressed: [] });
+    await activatePad(page);
     await tapPad(page, 13);
     await tapPad(page, 13);
     await tapPad(page, 0);
@@ -341,6 +401,7 @@ test.describe("WM-001 rendered simulated Gamepad journey", () => {
     await tapPad(page, 0);
     await tapPad(page, 13);
     await tapPad(page, 0);
+    await tapPad(page, 13);
     await tapPad(page, 13);
     await tapPad(page, 0);
     await expect(page.getByRole("heading", { name: "WEBMASTER" })).toBeVisible();
@@ -355,11 +416,182 @@ test.describe("WM-001 rendered simulated Gamepad journey", () => {
     await tapPad(page, 0);
     await expect(page.locator("#input-overlay")).toBeVisible();
     await tapPad(page, 9);
+    await expect.poll(async () => (await page.evaluate(() => window.__WM_DEBUG__!.getControllerStatus())).lifecycle).toBe("CONTROLLER_READY");
     for (let step = 0; step < 4; step += 1) await tapPad(page, 13);
     await tapPad(page, 0);
     await expect(page.getByRole("heading", { name: "Settings" })).toBeVisible();
     await tapPad(page, 1);
     await expect(page.getByRole("heading", { name: "Paused" })).toBeVisible();
+  });
+});
+
+test.describe("WM-001 controller remediation lifecycle (simulated Gamepad API)", () => {
+  test("makes exposure, release, ready, HUD status, and local copy diagnostics persistent", async ({ page, context, browserName }) => {
+    await installGamepad(page);
+    await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: "http://127.0.0.1:4173" });
+    await ready(page);
+    await expect(page.locator(".controller-status-card")).toContainText("press any button or move a stick");
+
+    await setPad(page, { pressed: [0] });
+    await expect(page.getByRole("heading", { name: "WEBMASTER" })).toBeVisible();
+    await expect(page.locator(".controller-status-card")).toContainText("release sticks and buttons");
+    await setPad(page, { pressed: [] });
+    await expect(page.locator(".controller-status-card")).toContainText("Controller ready: Xbox controller");
+
+    const storageBefore = await page.evaluate(() => Object.fromEntries(Object.entries(localStorage)));
+    await page.getByRole("button", { name: /Controller Details/ }).click();
+    await expect(page.getByRole("heading", { name: "Controller Details" })).toBeVisible();
+    await expect(page.locator("[data-controller-diagnostics]")).toContainText('"gamepadApiAvailable": true');
+    await expect(page.locator("[data-controller-diagnostics]")).toContainText('"lifecycle": "CONTROLLER_READY"');
+    await page.getByRole("button", { name: /Copy Diagnostics/ }).click();
+    await expect(page.locator("#toast-layer")).toContainText("diagnostics copied");
+    expect(JSON.parse(await page.evaluate(() => navigator.clipboard.readText()))).toMatchObject({
+      format: "webmaster-controller-diagnostics",
+      lifecycle: "CONTROLLER_READY",
+      selectedDevice: { index: 0 },
+    });
+    expect(await page.evaluate(() => Object.fromEntries(Object.entries(localStorage)))).toEqual(storageBefore);
+    await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-controller-diagnostics.png` });
+
+    await page.getByRole("button", { name: /^Back/ }).click();
+    await expect(page.getByRole("heading", { name: "WEBMASTER" })).toBeVisible();
+    await newGameWithMouse(page);
+    await expect(page.locator("#input-overlay")).toBeVisible();
+    await expect(page.locator(".controller-hud-card")).toContainText("Controller ready: Xbox controller");
+    await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-controller-ready-hud.png` });
+  });
+
+  test("keeps keyboard available when the Gamepad API is unavailable", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "getGamepads", { configurable: true, value: undefined });
+    });
+    await ready(page);
+    await expect(page.locator(".controller-status-card")).toContainText("browser cannot use gamepads");
+    expect(await page.evaluate(() => window.__WM_DEBUG__!.getControllerStatus())).toMatchObject({
+      apiAvailable: false,
+      lifecycle: "GAMEPAD_API_UNAVAILABLE",
+    });
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("heading", { name: "Choose a save slot" })).toBeVisible();
+  });
+
+  test("rejects an unsupported mapping visibly while keyboard remains available", async ({ page }) => {
+    await installGamepads(page, [{ id: "Legacy DirectInput Controller", index: 0, mapping: "", connected: true, axes: [0, 0, 0, 0], pressed: [0] }]);
+    await ready(page);
+    await expect(page.locator(".controller-status-card")).toContainText("mapping is unsupported");
+    expect(await page.evaluate(() => window.__WM_DEBUG__!.getControllerStatus())).toMatchObject({
+      lifecycle: "CONTROLLER_UNSUPPORTED",
+      selectedIndex: 0,
+    });
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("heading", { name: "Choose a save slot" })).toBeVisible();
+  });
+
+  test("selects active index 1 over idle index 0 and ignores noisy extra axes", async ({ page }) => {
+    await installGamepads(page, [
+      { id: "Idle virtual Xbox pad", index: 0, mapping: "standard", connected: true, axes: [0, 0, 0, 0], pressed: [] },
+      { id: "DualSense Wireless Controller", index: 1, mapping: "standard", connected: true, axes: [0, 0, 0, 0, -1], pressed: [0], buttonCount: 20 },
+    ]);
+    await ready(page);
+    await expect(page.locator(".controller-status-card")).toContainText("release sticks and buttons");
+    await patchPad(page, 1, { axes: [0, 0, 0, 0, -1], pressed: [] });
+    await expect(page.locator(".controller-status-card")).toContainText("Controller ready: PlayStation controller");
+    expect(await page.evaluate(() => window.__WM_DEBUG__!.getControllerStatus())).toMatchObject({ selectedIndex: 1, lifecycle: "CONTROLLER_READY" });
+
+    await patchPad(page, 0, { pressed: [0] });
+    await expect(page.getByRole("heading", { name: "WEBMASTER" })).toBeVisible();
+    expect((await page.evaluate(() => window.__WM_DEBUG__!.getControllerStatus())).selectedIndex).toBe(1);
+    await patchPad(page, 0, { pressed: [] });
+
+    await tapPadAt(page, 1, 13);
+    await expect(page.getByRole("button", { name: /^Load/ })).toHaveClass(/selected/);
+    await tapPadAt(page, 1, 0);
+    await expect(page.getByRole("heading", { name: "Load a run" })).toBeVisible();
+    const diagnostics = JSON.parse(await page.evaluate(() => window.__WM_DEBUG__!.getControllerDiagnostics()));
+    expect(diagnostics.devices[1]).toMatchObject({ index: 1, axisCount: 5, buttonCount: 20, relevantAxes: [0, 0, 0, 0], selected: true });
+  });
+
+  test("supports connection after load, disconnect cleanup, keyboard fallback, and deliberate replacement", async ({ page }) => {
+    await installGamepads(page, [{ id: "Xbox Controller", index: 0, connected: false, mapping: "standard", axes: [0, 0, 0, 0], pressed: [] }]);
+    await ready(page);
+    await expect(page.locator(".controller-status-card")).toContainText("press any button or move a stick");
+    await patchPad(page, 0, { connected: true, pressed: [0] });
+    await expect(page.locator(".controller-status-card")).toContainText("release sticks and buttons");
+    await patchPad(page, 0, { pressed: [] });
+    await expect(page.locator(".controller-status-card")).toContainText("Controller ready: Xbox controller");
+
+    await tapPad(page, 0);
+    await tapPad(page, 0);
+    await tapPad(page, 0);
+    await expect(page.locator("#input-overlay")).toBeVisible();
+    await setPad(page, { axes: [0, -1, 0, 0] });
+    await page.waitForTimeout(250);
+    await setPad(page, { connected: false });
+    const disconnectedAt = (await state(page)).position;
+    await page.waitForTimeout(350);
+    expect((await state(page)).position).toEqual(disconnectedAt);
+    await expect(page.locator(".controller-hud-card")).toContainText("Controller disconnected");
+
+    await hold(page, ["w"], 250);
+    const keyboardAt = (await state(page)).position;
+    expect(keyboardAt.z).toBeGreaterThan(disconnectedAt.z);
+
+    await patchPad(page, 1, { id: "DualSense Wireless Controller", connected: true, mapping: "standard", axes: [0, -1, 0, 0], pressed: [] });
+    await expect(page.locator(".controller-hud-card")).toContainText("release sticks and buttons");
+    const waitingAt = (await state(page)).position;
+    await page.waitForTimeout(250);
+    expect((await state(page)).position).toEqual(waitingAt);
+    await patchPad(page, 1, { axes: [0, 0, 0, 0] });
+    await expect(page.locator(".controller-hud-card")).toContainText("Controller ready: PlayStation controller");
+    await patchPad(page, 1, { axes: [0, -1, 0, 0] });
+    await page.waitForTimeout(300);
+    expect((await state(page)).position.z).toBeGreaterThan(waitingAt.z);
+  });
+
+  test("cleans up held movement on blur/focus and requires neutral then fresh input", async ({ page }) => {
+    await installGamepad(page);
+    await ready(page);
+    await activatePad(page);
+    await tapPad(page, 0);
+    await tapPad(page, 0);
+    await tapPad(page, 0);
+    await setPad(page, { axes: [0, -1, 0, 0] });
+    await page.waitForTimeout(250);
+    await page.evaluate(() => {
+      window.dispatchEvent(new Event("blur"));
+      window.dispatchEvent(new Event("focus"));
+    });
+    await expect(page.locator(".controller-hud-card")).toContainText("release sticks and buttons");
+    await page.waitForTimeout(250);
+    const gatedAt = (await state(page)).position;
+    await page.waitForTimeout(350);
+    expect((await state(page)).position).toEqual(gatedAt);
+    await setPad(page, { axes: [0, 0, 0, 0] });
+    await expect(page.locator(".controller-hud-card")).toContainText("Controller ready");
+    await page.waitForTimeout(200);
+    expect((await state(page)).position).toEqual(gatedAt);
+    await setPad(page, { axes: [0, -1, 0, 0] });
+    await page.waitForTimeout(300);
+    expect((await state(page)).position.z).toBeGreaterThan(gatedAt.z);
+  });
+
+  test("keeps controller status and local diagnostics usable at a representative iPad landscape viewport", async ({ page, browserName }) => {
+    await page.setViewportSize({ width: 1194, height: 834 });
+    await installGamepads(page, [
+      { id: "DualSense Wireless Controller", index: 0, mapping: "standard", connected: true, axes: [0, 0, 0, 0], pressed: [0] },
+    ]);
+    await ready(page);
+    await expectInViewport(page, ".menu-panel");
+    await expectInViewport(page, ".controller-status-card");
+    await setPad(page, { pressed: [] });
+    await expect(page.locator(".controller-status-card")).toContainText("Controller ready: PlayStation controller");
+    await page.getByRole("button", { name: /Controller Details/ }).click();
+    await expectInViewport(page, ".menu-panel");
+    await expect(page.locator("[data-controller-diagnostics]")).toContainText('"mapping": "standard"');
+    await page.screenshot({
+      path: `evidence/wm-001/captures/${browserName}-controller-diagnostics-1194x834-representative-ipad-layout-not-safari.png`,
+      fullPage: true,
+    });
   });
 });
 

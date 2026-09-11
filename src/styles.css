@@ -89,6 +89,30 @@ button, input { font: inherit; }
   line-height: 1.45;
 }
 
+.controller-status-card {
+  display: grid;
+  gap: 3px;
+  margin: 0 0 14px;
+  padding: 9px 12px;
+  border: 1px solid rgba(127, 211, 255, .38);
+  border-radius: 12px;
+  color: #e2edff;
+  background: rgba(9, 22, 66, .66);
+}
+
+.controller-status-card span {
+  color: #83cfff;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .16em;
+}
+
+.controller-status-card strong { font-size: 12px; line-height: 1.35; }
+.controller-status-card.controller-ready { border-color: rgba(61, 255, 224, .65); }
+.controller-status-card.controller-ready span { color: #3dffe0; }
+.controller-status-card.controller-warning { border-color: rgba(255, 211, 82, .65); }
+.controller-status-card.controller-warning span { color: #ffdb52; }
+
 .menu-list { display: grid; gap: 9px; }
 
 .menu-list button {
@@ -123,6 +147,31 @@ button, input { font: inherit; }
   line-height: 1.4;
 }
 
+.controller-diagnostics {
+  width: 100%;
+  max-height: 220px;
+  margin: 14px 0 0;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid rgba(139, 253, 235, .28);
+  border-radius: 12px;
+  color: #d9e5ff;
+  background: rgba(2, 9, 35, .78);
+  font: 10px/1.45 ui-monospace, "SFMono-Regular", Consolas, monospace;
+  pointer-events: auto;
+  user-select: text;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.copy-fallback {
+  position: fixed;
+  top: -1000px;
+  left: -1000px;
+  width: 1px;
+  height: 1px;
+}
+
 #hud-layer { padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left)); }
 
 .hud-card {
@@ -142,6 +191,19 @@ button, input { font: inherit; }
 .health-card strong { font-size: 12px; }
 .run-card { right: 20px; bottom: 20px; display: grid; text-align: right; }
 .run-card small { color: #aabce8; }
+
+.controller-hud-card {
+  bottom: 20px;
+  left: 50%;
+  display: grid;
+  width: min(360px, 36vw);
+  text-align: center;
+  transform: translateX(-50%);
+}
+.controller-hud-card .hud-kicker { margin-bottom: 3px; }
+.controller-hud-card strong { font-size: 11px; line-height: 1.3; }
+.controller-hud-card.controller-ready { border-color: rgba(61, 255, 224, .72); }
+.controller-hud-card.controller-warning { border-color: rgba(255, 211, 82, .72); }
 
 .input-overlay {
   position: absolute;
@@ -228,6 +290,7 @@ button, input { font: inherit; }
   .objective-card { max-width: calc(100vw - 40px); right: 20px; }
   .health-card { top: 100px; width: 180px; }
   .input-overlay { display: none; }
+  .controller-hud-card { bottom: 76px; width: calc(100vw - 40px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

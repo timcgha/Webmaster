@@ -1,11 +1,11 @@
 import "./styles.css";
-import { InputManager } from "./core/actions";
+import { InputManager, type ControllerStatus } from "./core/actions";
 import { SaveStore, saveStorageKeyForTests } from "./core/save";
 import { SettingsStore } from "./core/settings";
 import type { Difficulty, GameSettings, RunSavePayload, SemanticActions, SlotId, Vec3Data } from "./core/types";
 import { GameWorld, type WorldFrame } from "./game/world";
 
-type Screen = "main" | "slots" | "difficulty" | "overwrite" | "load" | "settings" | "play" | "pause";
+type Screen = "main" | "slots" | "difficulty" | "overwrite" | "load" | "settings" | "controller" | "play" | "pause";
 
 interface MenuItem {
   label: string;
@@ -24,6 +24,8 @@ declare global {
       performance: () => ReturnType<GameWorld["performanceSummary"]>;
       saveKey: typeof saveStorageKeyForTests;
       getInputDebug: () => { lookXTotal: number; lookYTotal: number };
+      getControllerStatus: () => ControllerStatus;
+      getControllerDiagnostics: () => string;
     };
   }
 }
@@ -47,6 +49,7 @@ const world = await GameWorld.create(canvas, settingsStore.read(), {
 class WebmasterApp {
   private screen: Screen = "main";
   private returnFromSettings: "main" | "pause" = "main";
+  private returnFromControllerDetails: "main" | "settings" | "pause" = "main";
   private menuItems: MenuItem[] = [];
   private selectedIndex = 0;
   private selectedSlot: SlotId = 1;
@@ -58,14 +61,20 @@ class WebmasterApp {
   private toastTimer = 0;
   private fixtureLabel = "";
   private readonly input: InputManager;
+  private controllerStatus!: ControllerStatus;
   private animationFrame = 0;
+  private nextControllerDiagnosticsRefresh = 0;
   private lookXTotal = 0;
   private lookYTotal = 0;
 
   constructor() {
     this.settings = settingsStore.read();
     this.latestFrame = world.stateForTests();
-    this.input = new InputManager(canvas, (message) => this.toast(message));
+    this.input = new InputManager(canvas, (status) => {
+      this.controllerStatus = status;
+      this.refreshControllerUi();
+    });
+    this.controllerStatus = this.input.controllerStatus();
     this.renderMain();
     this.animationFrame = requestAnimationFrame(this.loop);
     document.addEventListener("visibilitychange", () => {
@@ -74,7 +83,7 @@ class WebmasterApp {
     loading.classList.add("hidden");
   }
 
-  private loop = (): void => {
+  private loop = (timestamp: number): void => {
     const actions = this.input.sample();
     this.lookXTotal += actions.lookX;
     this.lookYTotal += actions.lookY;
@@ -83,6 +92,10 @@ class WebmasterApp {
       else world.update(actions);
     } else if (this.screen !== "main" || this.menuItems.length > 0) {
       this.handleMenuInput(actions);
+    }
+    if (this.screen === "controller" && timestamp >= this.nextControllerDiagnosticsRefresh) {
+      this.nextControllerDiagnosticsRefresh = timestamp + 250;
+      this.refreshControllerUi();
     }
     this.animationFrame = requestAnimationFrame(this.loop);
   };
@@ -138,6 +151,12 @@ class WebmasterApp {
     panel.className = "menu-panel";
     panel.setAttribute("aria-label", title);
     panel.innerHTML = `<p class="eyebrow">${eyebrow}</p><h1>${title}</h1><p class="menu-subtitle">${subtitle}</p>`;
+    const controllerStatus = document.createElement("section");
+    controllerStatus.className = "controller-status-card";
+    controllerStatus.dataset.controllerStatusCard = "";
+    controllerStatus.setAttribute("role", "status");
+    controllerStatus.setAttribute("aria-live", "polite");
+    controllerStatus.innerHTML = `<span>CONTROLLER</span><strong data-controller-status-message></strong>`;
     const list = document.createElement("div");
     list.className = "menu-list";
     items.forEach((item, index) => {
@@ -157,10 +176,12 @@ class WebmasterApp {
     });
     const prompt = document.createElement("p");
     prompt.className = "control-prompt";
+    prompt.dataset.controlPrompt = "";
     prompt.textContent = `${this.input.promptText()}  •  Keyboard: arrows + Enter / Esc`;
-    panel.append(list, prompt);
+    panel.append(controllerStatus, list, prompt);
     shade.append(panel);
     menuLayer.append(shade);
+    this.refreshControllerUi();
     queueMicrotask(() => this.updateSelection());
   }
 
@@ -182,6 +203,7 @@ class WebmasterApp {
         },
         { label: "Load", detail: "Choose a manual save or checkpoint", action: () => this.renderLoad() },
         { label: "Settings", detail: "Camera and display", action: () => this.openSettings("main") },
+        { label: "Controller Details", detail: "Connection status and local diagnostics", action: () => this.openControllerDetails("main") },
       ],
     );
   }
@@ -313,6 +335,7 @@ class WebmasterApp {
     menuLayer.classList.add("hidden");
     hudLayer.classList.remove("hidden");
     this.renderHud(this.latestFrame);
+    this.refreshControllerUi();
   }
 
   private pauseGame(): void {
@@ -336,6 +359,7 @@ class WebmasterApp {
         { label: "Save & Quit", detail: safeDetail, disabled: !this.pauseSafeAtEntry, action: () => this.saveManual(true) },
         { label: "Restart at checkpoint", detail: "Full health, current progress", action: () => this.restart() },
         { label: "Settings", detail: "Camera and display", action: () => this.openSettings("pause") },
+        { label: "Controller Details", detail: "Connection status and local diagnostics", action: () => this.openControllerDetails("pause") },
       ],
       `SLOT ${this.currentRun?.slot ?? "—"} • ${this.currentRun?.difficulty ?? "—"}`,
     );
@@ -394,6 +418,7 @@ class WebmasterApp {
           detail: "Balances clarity and frame rate",
           action: () => this.adjustSetting(2, 1),
         },
+        { label: "Controller Details", detail: "Connection status and local diagnostics", action: () => this.openControllerDetails("settings") },
         { label: "Done", detail: "Return", action: () => this.closeSettings() },
       ],
       "ACCESSIBLE CAMERA & DISPLAY",
@@ -424,11 +449,73 @@ class WebmasterApp {
     else this.renderMain();
   }
 
+  private openControllerDetails(from: "main" | "settings" | "pause"): void {
+    this.returnFromControllerDetails = from;
+    this.renderControllerDetails();
+  }
+
+  private renderControllerDetails(): void {
+    this.screen = "controller";
+    this.nextControllerDiagnosticsRefresh = 0;
+    this.renderPanel(
+      "Controller Details",
+      "Everything shown here stays in this browser. Nothing is sent or saved.",
+      [
+        { label: "Copy Diagnostics", detail: "Copy a small controller report for troubleshooting", action: () => void this.copyControllerDiagnostics() },
+        {
+          label: "Forget active controller",
+          detail: "Return to controller detection without changing your game",
+          action: () => {
+            this.input.forgetActiveController();
+            this.controllerStatus = this.input.controllerStatus();
+            this.refreshControllerUi();
+            this.toast("Controller cleared — press a button on the controller you want to use");
+          },
+        },
+        { label: "Back", detail: "Return", action: () => this.closeControllerDetails() },
+      ],
+      "LOCAL CONTROLLER DIAGNOSTICS",
+    );
+    const panel = menuLayer.querySelector<HTMLElement>(".menu-panel")!;
+    const details = document.createElement("pre");
+    details.className = "controller-diagnostics";
+    details.dataset.controllerDiagnostics = "";
+    details.tabIndex = 0;
+    details.setAttribute("aria-label", "Current controller diagnostics");
+    panel.append(details);
+  }
+
+  private async copyControllerDiagnostics(): Promise<void> {
+    const diagnostics = this.input.controllerDiagnosticsText();
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard API unavailable");
+      await navigator.clipboard.writeText(diagnostics);
+      this.toast("Controller diagnostics copied");
+    } catch {
+      const fallback = document.createElement("textarea");
+      fallback.value = diagnostics;
+      fallback.setAttribute("readonly", "");
+      fallback.className = "copy-fallback";
+      document.body.append(fallback);
+      fallback.select();
+      const copied = document.execCommand("copy");
+      fallback.remove();
+      this.toast(copied ? "Controller diagnostics copied" : "Copy unavailable — select the diagnostics text below", !copied);
+    }
+  }
+
+  private closeControllerDetails(): void {
+    if (this.returnFromControllerDetails === "pause") this.renderPause();
+    else if (this.returnFromControllerDetails === "settings") this.renderSettings();
+    else this.renderMain();
+  }
+
   private goBack(): void {
     if (this.screen === "slots" || this.screen === "load") this.renderMain();
     else if (this.screen === "difficulty") this.renderSlots();
     else if (this.screen === "overwrite") this.renderDifficulty();
     else if (this.screen === "settings") this.closeSettings();
+    else if (this.screen === "controller") this.closeControllerDetails();
     else if (this.screen === "pause") this.resume();
   }
 
@@ -467,6 +554,10 @@ class WebmasterApp {
         <span data-hud="run"></span>
         <small data-hud="position"></small>
       </section>
+      <section class="hud-card controller-hud-card" data-controller-status-card role="status" aria-live="polite">
+        <span class="hud-kicker">CONTROLLER</span>
+        <strong data-controller-status-message></strong>
+      </section>
       <section id="input-overlay" class="input-overlay">
         <strong>Move</strong> WASD / Left Stick
         <strong>Look</strong> Drag / Right Stick
@@ -489,6 +580,23 @@ class WebmasterApp {
     const fixtureBadge = hudLayer.querySelector<HTMLElement>("#fixture-badge")!;
     fixtureBadge.textContent = this.fixtureLabel ? `TEST FIXTURE: ${this.fixtureLabel}` : "";
     fixtureBadge.classList.toggle("hidden", !this.fixtureLabel);
+  }
+
+  private refreshControllerUi(): void {
+    if (!this.input || !this.controllerStatus) return;
+    const status = this.input.controllerStatus();
+    this.controllerStatus = status;
+    document.querySelectorAll<HTMLElement>("[data-controller-status-card]").forEach((card) => {
+      card.dataset.controllerState = status.lifecycle;
+      card.classList.toggle("controller-ready", status.lifecycle === "CONTROLLER_READY");
+      card.classList.toggle("controller-warning", status.lifecycle === "CONTROLLER_UNSUPPORTED" || status.lifecycle === "GAMEPAD_API_UNAVAILABLE");
+      card.querySelector<HTMLElement>("[data-controller-status-message]")!.textContent = status.message;
+    });
+    document.querySelectorAll<HTMLElement>("[data-control-prompt]").forEach((prompt) => {
+      prompt.textContent = `${this.input.promptText()}  •  Keyboard: arrows + Enter / Esc`;
+    });
+    const diagnostics = document.querySelector<HTMLElement>("[data-controller-diagnostics]");
+    if (diagnostics) diagnostics.textContent = this.input.controllerDiagnosticsText();
   }
 
   private toast(message: string, error = false): void {
@@ -518,6 +626,14 @@ class WebmasterApp {
     return { lookXTotal: this.lookXTotal, lookYTotal: this.lookYTotal };
   }
 
+  getControllerStatus(): ControllerStatus {
+    return this.input.controllerStatus();
+  }
+
+  getControllerDiagnostics(): string {
+    return this.input.controllerDiagnosticsText();
+  }
+
   dispose(): void {
     cancelAnimationFrame(this.animationFrame);
     this.input.dispose();
@@ -535,6 +651,8 @@ if (new URLSearchParams(location.search).has("test")) {
     performance: () => world.performanceSummary(),
     saveKey: saveStorageKeyForTests,
     getInputDebug: () => app!.getInputDebug(),
+    getControllerStatus: () => app!.getControllerStatus(),
+    getControllerDiagnostics: () => app!.getControllerDiagnostics(),
   };
 }
 
