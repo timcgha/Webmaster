@@ -23,8 +23,9 @@ Controller menus do not require a mouse or typing. A disconnected controller rel
 
 - Three local slots each keep a manual save and a separate rolling checkpoint.
 - Manual Save and Save & Quit are available from pause only when the run was grounded and outside recovery when pause began.
-- Save & Quit leaves play only after a write, read-back validation, and commit-pointer advance all succeed.
-- Every record has two alternating generations. A failed write keeps the prior valid generation active.
+- Save & Quit leaves play only after a pending intent, inactive-generation bytes, and commit pointer are verified and the pending intent is successfully removed.
+- Every record has two alternating generations plus a checksummed pending-intent fence. A returned failure leaves the target fenced off so only the prior committed generation can load.
+- With no pending intent, a missing or invalid pointer deterministically recovers the unique highest valid generation.
 - Continue chooses the newest valid manual save or checkpoint across all slots. Load exposes both kinds explicitly.
 - Saves are promised only for the same device, browser profile, and exact site origin. There are no accounts, cloud saves, or cross-browser guarantees.
 
@@ -42,7 +43,7 @@ pnpm test:e2e
 
 In a constrained runtime, set `WM_CHROMIUM_PATH` to a compatible Chromium executable before `pnpm test:e2e:chromium`. The rendered suite labels Gamepad API input as simulation; it is not physical-controller proof.
 
-Implementation and evidence details are in [evidence/wm-001/implementation-report.md](evidence/wm-001/implementation-report.md).
+Implementation and evidence details are in [evidence/wm-001/implementation-report.md](evidence/wm-001/implementation-report.md). The first independent-QA repair is recorded in [evidence/wm-001/remediation-r1-report.md](evidence/wm-001/remediation-r1-report.md).
 
 ## Architecture and assets
 

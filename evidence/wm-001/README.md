@@ -21,5 +21,5 @@ All captures in this directory are generated from the candidate application thro
 | `captures/chromium-second-timing-profile.png` | Rendered play under a second CPU/frame profile | Chromium CDP 2× CPU throttling |
 | `captures/chromium-performance-samples.json` | 1920×1080 one-second frame samples | Headless Linux software rendering; not device performance proof |
 
-See `implementation-report.md` for command provenance and `physical-controller-run-sheet.md` for the deliberately unverified hardware matrix.
+See `implementation-report.md` for command provenance, `remediation-r1-report.md` for the AC-05 atomic-save repair and revalidation, and `physical-controller-run-sheet.md` for the deliberately unverified hardware matrix.
 Capture byte integrity is recorded in `capture-sha256.txt`. The selected keyboard video is 19.88 seconds / 426,812 bytes; the simulated-gamepad video is 12.52 seconds / 251,723 bytes. Both are VP9, 640×360 evidence transcodes of the original Playwright recordings.

@@ -402,6 +402,65 @@ test("keeps the prior committed save and remains paused when Save & Quit write f
   await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-failed-save-stays-paused.png` });
 });
 
+test("loads only the prior commit after pointer verification fails, then permits a clean retry", async ({ page }) => {
+  await ready(page);
+  await newGameWithMouse(page, 1, "Normal");
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: /^Save Game/ }).click();
+  await expect(page.locator("#toast-layer")).toContainText("Save confirmed");
+  const committedPosition = (await state(page)).position;
+
+  await page.getByRole("button", { name: /^Resume/ }).click();
+  await hold(page, ["w"], 650);
+  const stagedPosition = (await state(page)).position;
+  expect(stagedPosition.z).toBeGreaterThan(committedPosition.z + 1);
+  await page.keyboard.press("Escape");
+  await page.evaluate(() => {
+    const pointerKey = "webmaster.save.v1.slot1.manual.pointer";
+    const nativeGetItem = Storage.prototype.getItem;
+    const nativeSetItem = Storage.prototype.setItem;
+    let failPointerReadback = false;
+    Storage.prototype.setItem = function (key: string, value: string): void {
+      nativeSetItem.call(this, key, value);
+      if (key === pointerKey && value === "b") failPointerReadback = true;
+    };
+    Storage.prototype.getItem = function (key: string): string | null {
+      if (key === pointerKey && failPointerReadback) {
+        failPointerReadback = false;
+        throw new DOMException("Injected pointer readback failure", "UnknownError");
+      }
+      return nativeGetItem.call(this, key);
+    };
+  });
+  await page.getByRole("button", { name: /^Save Game/ }).click();
+  await expect(page.getByRole("heading", { name: "Paused" })).toBeVisible();
+  await expect(page.locator("#toast-layer")).toContainText("previous save was preserved");
+  expect(
+    await page.evaluate(() => ({
+      pointer: localStorage.getItem("webmaster.save.v1.slot1.manual.pointer"),
+      pending: localStorage.getItem("webmaster.save.v1.slot1.manual.pending"),
+    })),
+  ).toMatchObject({ pointer: "b", pending: expect.any(String) });
+
+  await ready(page);
+  await page.getByRole("button", { name: /^Load/ }).click();
+  await page.getByRole("button", { name: /Slot 1 • Manual/ }).click();
+  await expect(page.locator("#input-overlay")).toBeVisible();
+  const restored = await state(page);
+  expect(restored.position.x).toBeCloseTo(committedPosition.x, 2);
+  expect(restored.position.z).toBeCloseTo(committedPosition.z, 2);
+  expect(restored.position.z).not.toBeCloseTo(stagedPosition.z, 1);
+
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: /^Save Game/ }).click();
+  await expect(page.locator("#toast-layer")).toContainText("Save confirmed");
+  expect(await page.evaluate(() => localStorage.getItem("webmaster.save.v1.slot1.manual.pending"))).toBeNull();
+  await page.getByRole("button", { name: /^Save & Quit/ }).click();
+  await expect(page.getByRole("heading", { name: "WEBMASTER" })).toBeVisible();
+  await page.getByRole("button", { name: /Continue/ }).click();
+  await expect(page.locator("#input-overlay")).toBeVisible();
+});
+
 test("renders storage-unavailable records explicitly and refuses destructive replacement", async ({ page, browserName }) => {
   await page.addInitScript(() => {
     const nativeGetItem = Storage.prototype.getItem;
