@@ -1,0 +1,27 @@
+{
+  "author": "WEBMASTER_PRODUCT_OWNER",
+  "recorded_at": "2026-09-12T08:58:13.225Z",
+  "browser": {
+    "name": "Google Chrome for Testing",
+    "version": "153.0.8010.12",
+    "executable": "/workspace/scratch/bb63ed1d5d6d/wm002-browsers/cft153/chrome-headless-shell-linux64/chrome-headless-shell",
+    "sha256": "ded93a9c9a53a1ae040f08124badcca95c938e9d5015ff340c3b5538c41bf39e",
+    "prior_accepted_wm001_binary_match": true,
+    "download": "https://storage.googleapis.com/chrome-for-testing-public/153.0.8010.12/linux64/chrome-headless-shell-linux64.zip",
+    "archive_bytes": 119809080,
+    "archive_md5": "9a8eb6135b1cda56de8f547776291e35",
+    "zip_integrity": "PASS"
+  },
+  "ffmpeg": {
+    "revision": 1011,
+    "executable": "/workspace/scratch/bb63ed1d5d6d/wm002-browsers/ffmpeg-1011/ffmpeg-linux",
+    "install": "PLAYWRIGHT_BROWSERS_PATH=/workspace/scratch/bb63ed1d5d6d/wm002-browsers pnpm exec playwright install ffmpeg",
+    "result": "PASS_OFFICIAL_MICROSOFT_MIRROR"
+  },
+  "harness_history": [
+    "Default Chromium installer exhausted download attempts: CDN timeout and 502. No application tested by that failed install.",
+    "Official exact-version CFT archive download succeeded and matched accepted WM-001 binary hash.",
+    "FFmpeg CDN first attempt timed out; official Microsoft mirror succeeded."
+  ],
+  "scope": "Runtime recovery only. No product source mutation, acceptance result or physical compatibility claim. Does not consume substantive remediation cycle."
+}
