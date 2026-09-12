@@ -11,6 +11,7 @@ export interface Vec3Data {
 export interface RunSavePayload {
   schemaVersion: 1;
   skyline?: import("./skyline").SkylineSave;
+  climb?: import("./traversal").ClimbSave;
   slot: SlotId;
   difficulty: Difficulty;
   health: number;
@@ -43,6 +44,8 @@ export interface SemanticActions {
   lookY: number;
   run: boolean;
   swingHeld?: boolean;
+  climbHeld?: boolean;
+  pullHeld?: boolean;
   jumpPressed: boolean;
   recenterPressed: boolean;
   pausePressed: boolean;

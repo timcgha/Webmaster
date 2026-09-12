@@ -31,6 +31,8 @@ export interface MappedGamepad {
   lookY: number;
   run: boolean;
   swing: boolean;
+  climb: boolean;
+  pull: boolean;
   confirm: boolean;
   back: boolean;
   pause: boolean;
@@ -76,6 +78,8 @@ const EMPTY_ACTIONS: SemanticActions = {
   lookY: 0,
   run: false,
   swingHeld: false,
+  climbHeld: false,
+  pullHeld: false,
   jumpPressed: false,
   recenterPressed: false,
   pausePressed: false,
@@ -86,10 +90,12 @@ const EMPTY_ACTIONS: SemanticActions = {
   source: "keyboard-mouse",
 };
 
-const RELEVANT_BUTTONS = [0, 1, 6, 7, 9, 10, 11, 12, 13, 14, 15] as const;
+const RELEVANT_BUTTONS = [0, 1, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15] as const;
 const BUTTON_LABELS: Record<(typeof RELEVANT_BUTTONS)[number], string> = {
   0: "confirm/jump",
   1: "back",
+  4: "pull web",
+  5: "climb/stick",
   6: "swing web",
   7: "run",
   9: "pause",
@@ -107,7 +113,10 @@ const NEUTRAL_BUTTON_LIMIT = 0.2;
 const BUTTON_PRESS_LIMIT = 0.55;
 
 const buttonPressed = (pad: GamepadLike, index: number): boolean =>
-  Boolean(pad.buttons[index]?.pressed || (pad.buttons[index]?.value ?? 0) > BUTTON_PRESS_LIMIT);
+  Boolean(
+    pad.buttons[index]?.pressed ||
+      (pad.buttons[index]?.value ?? 0) > BUTTON_PRESS_LIMIT,
+  );
 
 function deadzone(value: number, threshold = AXIS_DEADZONE): number {
   if (Math.abs(value) <= threshold) return 0;
@@ -125,21 +134,39 @@ function isStandardMapping(pad: GamepadLike): boolean {
   return pad.mapping === "standard";
 }
 
-function relevantButtonActive(pad: GamepadLike, limit = BUTTON_PRESS_LIMIT): boolean {
-  return RELEVANT_BUTTONS.some((index) => Boolean(pad.buttons[index]?.pressed || (pad.buttons[index]?.value ?? 0) > limit));
+function relevantButtonActive(
+  pad: GamepadLike,
+  limit = BUTTON_PRESS_LIMIT,
+): boolean {
+  return RELEVANT_BUTTONS.some((index) =>
+    Boolean(
+      pad.buttons[index]?.pressed || (pad.buttons[index]?.value ?? 0) > limit,
+    ),
+  );
 }
 
 function deliberateMappedActivity(pad: GamepadLike): boolean {
-  return pad.axes.slice(0, 4).some((axis) => Math.abs(axis) > SELECTION_AXIS_LIMIT) || relevantButtonActive(pad);
+  return (
+    pad.axes
+      .slice(0, 4)
+      .some((axis) => Math.abs(axis) > SELECTION_AXIS_LIMIT) ||
+    relevantButtonActive(pad)
+  );
 }
 
 function rawActivity(pad: GamepadLike): boolean {
-  return pad.axes.some((axis) => Math.abs(axis) > SELECTION_AXIS_LIMIT) ||
-    pad.buttons.some((button) => button.pressed || button.value > BUTTON_PRESS_LIMIT);
+  return (
+    pad.axes.some((axis) => Math.abs(axis) > SELECTION_AXIS_LIMIT) ||
+    pad.buttons.some(
+      (button) => button.pressed || button.value > BUTTON_PRESS_LIMIT,
+    )
+  );
 }
 
 function relevantNeutral(pad: GamepadLike): boolean {
-  const axesNeutral = [0, 1, 2, 3].every((index) => Math.abs(pad.axes[index] ?? 0) <= NEUTRAL_AXIS_LIMIT);
+  const axesNeutral = [0, 1, 2, 3].every(
+    (index) => Math.abs(pad.axes[index] ?? 0) <= NEUTRAL_AXIS_LIMIT,
+  );
   return axesNeutral && !relevantButtonActive(pad, NEUTRAL_BUTTON_LIMIT);
 }
 
@@ -149,7 +176,8 @@ function roundAxis(value: number): number {
 
 export function controllerFamily(id: string): ControllerFamily {
   if (/xbox|xinput|microsoft/i.test(id)) return "xbox";
-  if (/playstation|dualshock|dualsense|wireless controller/i.test(id)) return "playstation";
+  if (/playstation|dualshock|dualsense|wireless controller/i.test(id))
+    return "playstation";
   return "generic";
 }
 
@@ -158,8 +186,10 @@ export function mapStandardGamepad(pad: GamepadLike): MappedGamepad {
   const moveY = -deadzone(pad.axes[1] ?? 0);
   const lookX = deadzone(pad.axes[2] ?? 0);
   const lookY = deadzone(pad.axes[3] ?? 0);
-  const dpadX = (buttonPressed(pad, 15) ? 1 : 0) - (buttonPressed(pad, 14) ? 1 : 0);
-  const dpadY = (buttonPressed(pad, 13) ? 1 : 0) - (buttonPressed(pad, 12) ? 1 : 0);
+  const dpadX =
+    (buttonPressed(pad, 15) ? 1 : 0) - (buttonPressed(pad, 14) ? 1 : 0);
+  const dpadY =
+    (buttonPressed(pad, 13) ? 1 : 0) - (buttonPressed(pad, 12) ? 1 : 0);
   const menuX = direction(dpadX || moveX);
   const menuY = direction(dpadY || -moveY);
   return {
@@ -169,6 +199,8 @@ export function mapStandardGamepad(pad: GamepadLike): MappedGamepad {
     lookY,
     run: buttonPressed(pad, 7),
     swing: buttonPressed(pad, 6),
+    climb: buttonPressed(pad, 5),
+    pull: buttonPressed(pad, 4),
     confirm: buttonPressed(pad, 0),
     back: buttonPressed(pad, 1),
     pause: buttonPressed(pad, 9),
@@ -180,14 +212,23 @@ export function mapStandardGamepad(pad: GamepadLike): MappedGamepad {
   };
 }
 
-function controllerMessage(state: ControllerLifecycleState, family: ControllerFamily): string {
-  if (state === "GAMEPAD_API_UNAVAILABLE") return "Controller: this browser cannot use gamepads — keyboard and mouse are ready";
-  if (state === "WAITING_FOR_CONTROLLER_INPUT") return "Controller: press any button or move a stick to connect";
-  if (state === "CONTROLLER_DETECTED_RELEASE_CONTROLS") return "Controller detected: release sticks and buttons";
-  if (state === "CONTROLLER_UNSUPPORTED") return "Controller detected, but this browser mapping is unsupported — keyboard and mouse are ready";
-  if (state === "CONTROLLER_DISCONNECTED") return "Controller disconnected — keyboard and mouse remain available";
+function controllerMessage(
+  state: ControllerLifecycleState,
+  family: ControllerFamily,
+): string {
+  if (state === "GAMEPAD_API_UNAVAILABLE")
+    return "Controller: this browser cannot use gamepads — keyboard and mouse are ready";
+  if (state === "WAITING_FOR_CONTROLLER_INPUT")
+    return "Controller: press any button or move a stick to connect";
+  if (state === "CONTROLLER_DETECTED_RELEASE_CONTROLS")
+    return "Controller detected: release sticks and buttons";
+  if (state === "CONTROLLER_UNSUPPORTED")
+    return "Controller detected, but this browser mapping is unsupported — keyboard and mouse are ready";
+  if (state === "CONTROLLER_DISCONNECTED")
+    return "Controller disconnected — keyboard and mouse remain available";
   if (family === "xbox") return "Controller ready: Xbox controller";
-  if (family === "playstation") return "Controller ready: PlayStation controller";
+  if (family === "playstation")
+    return "Controller ready: PlayStation controller";
   return "Controller ready: game controller";
 }
 
@@ -224,7 +265,9 @@ export class ControllerTracker {
     this.neutralSince = null;
     this.observedDevice = true;
     this.suppressPassiveUnsupported = false;
-    this.lifecycle = isStandardMapping(pad) ? "CONTROLLER_DETECTED_RELEASE_CONTROLS" : "CONTROLLER_UNSUPPORTED";
+    this.lifecycle = isStandardMapping(pad)
+      ? "CONTROLLER_DETECTED_RELEASE_CONTROLS"
+      : "CONTROLLER_UNSUPPORTED";
     this.emitStatus();
   }
 
@@ -256,7 +299,10 @@ export class ControllerTracker {
   requireFreshInput(): void {
     this.previousPad = null;
     this.neutralSince = null;
-    if (this.activeIndex !== null && this.lifecycle !== "CONTROLLER_UNSUPPORTED") {
+    if (
+      this.activeIndex !== null &&
+      this.lifecycle !== "CONTROLLER_UNSUPPORTED"
+    ) {
       this.setLifecycle("CONTROLLER_DETECTED_RELEASE_CONTROLS");
     }
   }
@@ -267,10 +313,17 @@ export class ControllerTracker {
     this.previousPad = null;
     this.neutralSince = null;
     this.suppressPassiveUnsupported = true;
-    this.setLifecycle(this.apiAvailable ? "WAITING_FOR_CONTROLLER_INPUT" : "GAMEPAD_API_UNAVAILABLE");
+    this.setLifecycle(
+      this.apiAvailable
+        ? "WAITING_FOR_CONTROLLER_INPUT"
+        : "GAMEPAD_API_UNAVAILABLE",
+    );
   }
 
-  sample(pads: readonly (GamepadLike | null)[], apiAvailable = true): ControllerFrame {
+  sample(
+    pads: readonly (GamepadLike | null)[],
+    apiAvailable = true,
+  ): ControllerFrame {
     this.apiAvailable = apiAvailable;
     this.lastPads = pads
       .filter((pad): pad is GamepadLike => Boolean(pad?.connected))
@@ -289,18 +342,27 @@ export class ControllerTracker {
     if (this.lastPads.length > 0) this.observedDevice = true;
 
     let lostActive = false;
-    let active = this.activeIndex === null ? null : this.lastPads.find((pad) => pad.index === this.activeIndex) ?? null;
-    if (active && `${active.index}:${active.id}` !== this.activeIdentity) this.bind(active);
+    let active =
+      this.activeIndex === null
+        ? null
+        : (this.lastPads.find((pad) => pad.index === this.activeIndex) ?? null);
+    if (active && `${active.index}:${active.id}` !== this.activeIdentity)
+      this.bind(active);
 
     if (!active && this.activeIndex !== null) {
       lostActive = true;
       this.clearActive("CONTROLLER_DISCONNECTED");
     }
 
-    active = this.activeIndex === null ? null : this.lastPads.find((pad) => pad.index === this.activeIndex) ?? null;
+    active =
+      this.activeIndex === null
+        ? null
+        : (this.lastPads.find((pad) => pad.index === this.activeIndex) ?? null);
 
     if (active && !isStandardMapping(active)) {
-      const supportedGesture = this.lastPads.find((pad) => isStandardMapping(pad) && deliberateMappedActivity(pad));
+      const supportedGesture = this.lastPads.find(
+        (pad) => isStandardMapping(pad) && deliberateMappedActivity(pad),
+      );
       if (supportedGesture) {
         this.bind(supportedGesture);
         active = supportedGesture;
@@ -311,17 +373,27 @@ export class ControllerTracker {
     }
 
     if (!active) {
-      const deliberate = this.lastPads.find((pad) => isStandardMapping(pad) && deliberateMappedActivity(pad));
+      const deliberate = this.lastPads.find(
+        (pad) => isStandardMapping(pad) && deliberateMappedActivity(pad),
+      );
       if (deliberate) {
         this.bind(deliberate);
         active = deliberate;
       } else {
-        const unsupported = this.lastPads.find((pad) => !isStandardMapping(pad) && (rawActivity(pad) || !this.suppressPassiveUnsupported));
+        const unsupported = this.lastPads.find(
+          (pad) =>
+            !isStandardMapping(pad) &&
+            (rawActivity(pad) || !this.suppressPassiveUnsupported),
+        );
         if (unsupported) {
           this.bind(unsupported);
           return { mapped: null, previous: null, acceptsInput: false };
         }
-        this.setLifecycle(lostActive || (this.lastPads.length === 0 && this.observedDevice) ? "CONTROLLER_DISCONNECTED" : "WAITING_FOR_CONTROLLER_INPUT");
+        this.setLifecycle(
+          lostActive || (this.lastPads.length === 0 && this.observedDevice)
+            ? "CONTROLLER_DISCONNECTED"
+            : "WAITING_FOR_CONTROLLER_INPUT",
+        );
         return { mapped: null, previous: null, acceptsInput: false };
       }
     }
@@ -358,7 +430,11 @@ export class ControllerTracker {
       message: controllerMessage(this.lifecycle, this.family),
       family: this.family,
       selectedIndex: this.activeIndex,
-      selectedId: this.activeIndex === null ? null : this.lastPads.find((pad) => pad.index === this.activeIndex)?.id ?? null,
+      selectedId:
+        this.activeIndex === null
+          ? null
+          : (this.lastPads.find((pad) => pad.index === this.activeIndex)?.id ??
+            null),
       devices: this.lastPads.map((pad) => ({
         index: pad.index,
         id: pad.id,
@@ -366,8 +442,12 @@ export class ControllerTracker {
         supported: isStandardMapping(pad),
         axisCount: pad.axes.length,
         buttonCount: pad.buttons.length,
-        relevantAxes: [0, 1, 2, 3].map((index) => roundAxis(pad.axes[index] ?? 0)),
-        pressedRelevantButtons: RELEVANT_BUTTONS.filter((index) => buttonPressed(pad, index)).map((index) => BUTTON_LABELS[index]),
+        relevantAxes: [0, 1, 2, 3].map((index) =>
+          roundAxis(pad.axes[index] ?? 0),
+        ),
+        pressedRelevantButtons: RELEVANT_BUTTONS.filter((index) =>
+          buttonPressed(pad, index),
+        ).map((index) => BUTTON_LABELS[index]),
         selected: pad.index === this.activeIndex,
       })),
     };
@@ -382,7 +462,10 @@ export class ControllerTracker {
         gamepadApiAvailable: status.apiAvailable,
         enumeratedDeviceCount: status.devices.length,
         lifecycle: status.lifecycle,
-        selectedDevice: status.selectedIndex === null ? null : { index: status.selectedIndex, id: status.selectedId },
+        selectedDevice:
+          status.selectedIndex === null
+            ? null
+            : { index: status.selectedIndex, id: status.selectedId },
         devices: status.devices,
       },
       null,
@@ -397,7 +480,12 @@ export class ControllerTracker {
       lifecycle: status.lifecycle,
       selectedIndex: status.selectedIndex,
       selectedId: status.selectedId,
-      devices: status.devices.map(({ index, id, mapping, supported }) => ({ index, id, mapping, supported })),
+      devices: status.devices.map(({ index, id, mapping, supported }) => ({
+        index,
+        id,
+        mapping,
+        supported,
+      })),
     });
     if (signature === this.lastStatusSignature) return;
     this.lastStatusSignature = signature;
@@ -428,27 +516,52 @@ export class InputManager {
     onControllerStatus: (status: ControllerStatus) => void,
     options: InputManagerOptions = {},
   ) {
-    const nativeGetGamepads = typeof navigator.getGamepads === "function" ? navigator.getGamepads.bind(navigator) : null;
-    this.getGamepads = options.getGamepads ?? (nativeGetGamepads as (() => readonly (GamepadLike | null)[]) | null);
-    this.tracker = new ControllerTracker(options.now, options.neutralWindowMs, onControllerStatus);
+    const nativeGetGamepads =
+      typeof navigator.getGamepads === "function"
+        ? navigator.getGamepads.bind(navigator)
+        : null;
+    this.getGamepads =
+      options.getGamepads ??
+      (nativeGetGamepads as (() => readonly (GamepadLike | null)[]) | null);
+    this.tracker = new ControllerTracker(
+      options.now,
+      options.neutralWindowMs,
+      onControllerStatus,
+    );
     const signal = this.abort.signal;
     window.addEventListener("keydown", this.onKeyDown, { signal });
     window.addEventListener("keyup", this.onKeyUp, { signal });
     window.addEventListener("blur", this.releaseHeldActions, { signal });
     window.addEventListener("focus", this.releaseHeldActions, { signal });
-    window.addEventListener("gamepaddisconnected", this.onGamepadDisconnected, { signal });
-    window.addEventListener("gamepadconnected", this.onGamepadConnected, { signal });
+    window.addEventListener("gamepaddisconnected", this.onGamepadDisconnected, {
+      signal,
+    });
+    window.addEventListener("gamepadconnected", this.onGamepadConnected, {
+      signal,
+    });
     canvas.addEventListener("mousedown", this.onPointerDown, { signal });
     window.addEventListener("mouseup", this.onPointerUp, { signal });
     window.addEventListener("mousemove", this.onPointerMove, { signal });
-    canvas.addEventListener("contextmenu", (event) => event.preventDefault(), { signal });
+    canvas.addEventListener("contextmenu", (event) => event.preventDefault(), {
+      signal,
+    });
   }
 
   private onKeyDown = (event: KeyboardEvent): void => {
     if (event.repeat && !this.heldKeys.has(event.code)) return;
     if (!event.repeat) this.pressedKeys.add(event.code);
     this.heldKeys.add(event.code);
-    if (["Enter", "Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.code)) event.preventDefault();
+    if (
+      [
+        "Enter",
+        "Space",
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+      ].includes(event.code)
+    )
+      event.preventDefault();
   };
 
   private onKeyUp = (event: KeyboardEvent): void => {
@@ -466,7 +579,8 @@ export class InputManager {
   };
 
   private onPointerMove = (event: MouseEvent): void => {
-    if (!this.mouseDragging && document.pointerLockElement !== this.canvas) return;
+    if (!this.mouseDragging && document.pointerLockElement !== this.canvas)
+      return;
     const fallbackX = event.clientX - this.lastPointerX;
     const fallbackY = event.clientY - this.lastPointerY;
     this.mouseLookX += event.movementX || fallbackX;
@@ -496,39 +610,68 @@ export class InputManager {
     const actions: SemanticActions = { ...EMPTY_ACTIONS };
     const key = (code: string): boolean => this.heldKeys.has(code);
     const pressed = (code: string): boolean => this.pressedKeys.has(code);
-    actions.moveX = (key("KeyD") || key("ArrowRight") ? 1 : 0) - (key("KeyA") || key("ArrowLeft") ? 1 : 0);
-    actions.moveY = (key("KeyW") || key("ArrowUp") ? 1 : 0) - (key("KeyS") || key("ArrowDown") ? 1 : 0);
+    actions.moveX =
+      (key("KeyD") || key("ArrowRight") ? 1 : 0) -
+      (key("KeyA") || key("ArrowLeft") ? 1 : 0);
+    actions.moveY =
+      (key("KeyW") || key("ArrowUp") ? 1 : 0) -
+      (key("KeyS") || key("ArrowDown") ? 1 : 0);
     actions.lookX = this.mouseLookX;
     actions.lookY = this.mouseLookY;
     actions.swingHeld = key("KeyE");
+    actions.climbHeld = key("KeyC");
+    actions.pullHeld = key("KeyQ");
     actions.run = key("ShiftLeft") || key("ShiftRight");
     actions.jumpPressed = pressed("Space");
     actions.confirmPressed = pressed("Enter") || pressed("Space");
     actions.backPressed = pressed("Escape") || pressed("Backspace");
     actions.pausePressed = pressed("Escape") || pressed("KeyP");
     actions.recenterPressed = pressed("KeyR");
-    actions.menuX = pressed("ArrowRight") || pressed("KeyD") ? 1 : pressed("ArrowLeft") || pressed("KeyA") ? -1 : 0;
-    actions.menuY = pressed("ArrowDown") || pressed("KeyS") ? 1 : pressed("ArrowUp") || pressed("KeyW") ? -1 : 0;
+    actions.menuX =
+      pressed("ArrowRight") || pressed("KeyD")
+        ? 1
+        : pressed("ArrowLeft") || pressed("KeyA")
+          ? -1
+          : 0;
+    actions.menuY =
+      pressed("ArrowDown") || pressed("KeyS")
+        ? 1
+        : pressed("ArrowUp") || pressed("KeyW")
+          ? -1
+          : 0;
 
     const frame = this.sampleController();
     if (frame.acceptsInput && frame.mapped) {
       const mapped = frame.mapped;
       const previous = frame.previous;
-      const edge = (current: boolean, prior: boolean | undefined): boolean => current && !prior;
-      actions.moveX = Math.abs(mapped.moveX) > Math.abs(actions.moveX) ? mapped.moveX : actions.moveX;
-      actions.moveY = Math.abs(mapped.moveY) > Math.abs(actions.moveY) ? mapped.moveY : actions.moveY;
+      const edge = (current: boolean, prior: boolean | undefined): boolean =>
+        current && !prior;
+      actions.moveX =
+        Math.abs(mapped.moveX) > Math.abs(actions.moveX)
+          ? mapped.moveX
+          : actions.moveX;
+      actions.moveY =
+        Math.abs(mapped.moveY) > Math.abs(actions.moveY)
+          ? mapped.moveY
+          : actions.moveY;
       actions.lookX += mapped.lookX * 16;
       actions.lookY += mapped.lookY * 16;
       actions.run ||= mapped.run;
       actions.swingHeld ||= mapped.swing;
+      actions.climbHeld ||= mapped.climb;
+      actions.pullHeld ||= mapped.pull;
       actions.jumpPressed ||= edge(mapped.confirm, previous?.confirm);
       actions.confirmPressed ||= edge(mapped.confirm, previous?.confirm);
       actions.backPressed ||= edge(mapped.back, previous?.back);
       actions.pausePressed ||= edge(mapped.pause, previous?.pause);
       actions.recenterPressed ||= edge(mapped.recenter, previous?.recenter);
-      if (mapped.menuX !== 0 && mapped.menuX !== previous?.menuX) actions.menuX = mapped.menuX;
-      if (mapped.menuY !== 0 && mapped.menuY !== previous?.menuY) actions.menuY = mapped.menuY;
-      if (!mapped.neutral) actions.source = this.pressedKeys.size || this.heldKeys.size ? "mixed" : "gamepad";
+      if (mapped.menuX !== 0 && mapped.menuX !== previous?.menuX)
+        actions.menuX = mapped.menuX;
+      if (mapped.menuY !== 0 && mapped.menuY !== previous?.menuY)
+        actions.menuY = mapped.menuY;
+      if (!mapped.neutral)
+        actions.source =
+          this.pressedKeys.size || this.heldKeys.size ? "mixed" : "gamepad";
     }
 
     this.pressedKeys.clear();
@@ -560,7 +703,8 @@ export class InputManager {
 
   promptText(): string {
     const family = this.tracker.status().family;
-    if (family === "playstation") return "✕ Select / Jump  •  ○ Back  •  Options Pause";
+    if (family === "playstation")
+      return "✕ Select / Jump  •  ○ Back  •  Options Pause";
     if (family === "xbox") return "A Select / Jump  •  B Back  •  Menu Pause";
     return "A / ✕ Select & Jump  •  B / ○ Back  •  Menu / Options Pause";
   }
