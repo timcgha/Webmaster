@@ -1,0 +1,1422 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/node_modules/@playwright/test/cli.js",
+      "test",
+      "--project=chromium",
+      "--workers=1",
+      "--reporter=list,json"
+    ],
+    "configFile": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/playwright.config.ts",
+    "rootDir": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": true,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      },
+      {
+        "outputDir": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit-ipad-landscape",
+        "name": "webkit-ipad-landscape",
+        "testDir": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "pnpm dev --host 127.0.0.1 --port 4173",
+      "url": "http://127.0.0.1:4173",
+      "reuseExistingServer": false,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "wm001.spec.ts",
+      "file": "wm001.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "keeps occupied-slot bytes unchanged when replacement is cancelled",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3461,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:24:06.714Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-keeps-occupied-slot--e086b-en-replacement-is-cancelled-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-e2c516612db38d40d642",
+          "file": "wm001.spec.ts",
+          "line": 598,
+          "column": 1
+        },
+        {
+          "title": "keeps the prior committed save and remains paused when Save & Quit write fails",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2783,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:24:10.183Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-keeps-the-prior-comm-8d660--when-Save-Quit-write-fails-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-d6d8074bad82aec0a3bb",
+          "file": "wm001.spec.ts",
+          "line": 615,
+          "column": 1
+        },
+        {
+          "title": "loads only the prior commit after pointer verification fails, then permits a clean retry",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5400,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:24:12.974Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-loads-only-the-prior-88ff1--then-permits-a-clean-retry-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-27ee016906245e10a6a7",
+          "file": "wm001.spec.ts",
+          "line": 637,
+          "column": 1
+        },
+        {
+          "title": "renders storage-unavailable records explicitly and refuses destructive replacement",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2675,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:24:18.380Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-renders-storage-unav-bc296-ses-destructive-replacement-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-6d1d6b4cbde52bf7ce51",
+          "file": "wm001.spec.ts",
+          "line": 696,
+          "column": 1
+        },
+        {
+          "title": "remains controllable under a second real-time CPU/frame profile",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6185,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:24:21.062Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-remains-controllable-74bdd-real-time-CPU-frame-profile-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-f96242aa4bad5be46969",
+          "file": "wm001.spec.ts",
+          "line": 728,
+          "column": 1
+        },
+        {
+          "title": "persists a Hard run after closing and reopening the same browser profile and exact origin",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7337,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:24:27.257Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-c059bc2948b975c80b64",
+          "file": "wm001.spec.ts",
+          "line": 753,
+          "column": 1
+        },
+        {
+          "title": "labels corrupt and incompatible save fixtures without hiding valid choices",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2018,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:24:34.603Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-labels-corrupt-and-i-f1a70-ithout-hiding-valid-choices-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-906c3316c6847e33bf1b",
+          "file": "wm001.spec.ts",
+          "line": 802,
+          "column": 1
+        },
+        {
+          "title": "keeps the rendered HUD and menus usable at 1920x1080 and representative iPad landscape",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5322,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:24:36.629Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-keeps-the-rendered-H-54f99-presentative-iPad-landscape-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-2e962b3ceee8d6196372",
+          "file": "wm001.spec.ts",
+          "line": 814,
+          "column": 1
+        }
+      ],
+      "suites": [
+        {
+          "title": "WM-001 rendered keyboard and mouse journey",
+          "file": "wm001.spec.ts",
+          "line": 164,
+          "column": 6,
+          "specs": [
+            {
+              "title": "moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20218,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:22:27.546Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-rendered-keyb-bc063-tes-the-real-practice-route-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-0585bb2fb25258ed894b",
+              "file": "wm001.spec.ts",
+              "line": 165,
+              "column": 3
+            },
+            {
+              "title": "recovers from a fall, reduces health, and performs a clean zero-health retry",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5934,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:22:47.850Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-rendered-keyb-285f0-s-a-clean-zero-health-retry-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-7322cbaf5fc91fc31522",
+              "file": "wm001.spec.ts",
+              "line": 268,
+              "column": 3
+            },
+            {
+              "title": "explains and enforces safe-state saving while airborne",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 8049,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: /^Save Game/ })\nExpected substring: \u001b[32m\"Unavailable while \u001b[7mairborne or recovering\u001b[27m\"\u001b[39m\nReceived string:    \u001b[31m\"\u001b[7mSave Game\u001b[27mUnavailable while \u001b[7mswinging, airborne, landing or recovering — resume to reach safe ground\u001b[27m\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" getByRole('button', { name: /^Save Game/ }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: /^Save Game/ })\u001b[22m\n\u001b[2m    14 × locator resolved to <button disabled type=\"button\" data-menu-item=\"1\" aria-current=\"false\">…</button>\u001b[22m\n\u001b[2m       - unexpected value \"Save GameUnavailable while swinging, airborne, landing or recovering — resume to reach safe ground\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: /^Save Game/ })\nExpected substring: \u001b[32m\"Unavailable while \u001b[7mairborne or recovering\u001b[27m\"\u001b[39m\nReceived string:    \u001b[31m\"\u001b[7mSave Game\u001b[27mUnavailable while \u001b[7mswinging, airborne, landing or recovering — resume to reach safe ground\u001b[27m\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" getByRole('button', { name: /^Save Game/ }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: /^Save Game/ })\u001b[22m\n\u001b[2m    14 × locator resolved to <button disabled type=\"button\" data-menu-item=\"1\" aria-current=\"false\">…</button>\u001b[22m\n\u001b[2m       - unexpected value \"Save GameUnavailable while swinging, airborne, landing or recovering — resume to reach safe ground\"\u001b[22m\n\n    at /workspace/scratch/bb63ed1d5d6d/wm002-worktree/e2e/wm001.spec.ts:293:28",
+                        "location": {
+                          "file": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/e2e/wm001.spec.ts",
+                          "column": 28,
+                          "line": 293
+                        },
+                        "snippet": "  291 |       const button = page.getByRole(\"button\", { name });\n  292 |       await expect(button).toBeDisabled();\n> 293 |       await expect(button).toContainText(\"Unavailable while airborne or recovering\");\n      |                            ^\n  294 |     }\n  295 |     await expect(page.getByRole(\"button\", { name: /^Resume/ })).toBeEnabled();\n  296 |     await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-airborne-safe-save-disabled.png` });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/e2e/wm001.spec.ts",
+                            "column": 28,
+                            "line": 293
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: /^Save Game/ })\nExpected substring: \u001b[32m\"Unavailable while \u001b[7mairborne or recovering\u001b[27m\"\u001b[39m\nReceived string:    \u001b[31m\"\u001b[7mSave Game\u001b[27mUnavailable while \u001b[7mswinging, airborne, landing or recovering — resume to reach safe ground\u001b[27m\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" getByRole('button', { name: /^Save Game/ }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: /^Save Game/ })\u001b[22m\n\u001b[2m    14 × locator resolved to <button disabled type=\"button\" data-menu-item=\"1\" aria-current=\"false\">…</button>\u001b[22m\n\u001b[2m       - unexpected value \"Save GameUnavailable while swinging, airborne, landing or recovering — resume to reach safe ground\"\u001b[22m\n\n\n  291 |       const button = page.getByRole(\"button\", { name });\n  292 |       await expect(button).toBeDisabled();\n> 293 |       await expect(button).toContainText(\"Unavailable while airborne or recovering\");\n      |                            ^\n  294 |     }\n  295 |     await expect(page.getByRole(\"button\", { name: /^Resume/ })).toBeEnabled();\n  296 |     await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-airborne-safe-save-disabled.png` });\n    at /workspace/scratch/bb63ed1d5d6d/wm002-worktree/e2e/wm001.spec.ts:293:28"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:22:53.794Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-rendered-keyb-d7f79-state-saving-while-airborne-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-rendered-keyb-d7f79-state-saving-while-airborne-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-rendered-keyb-d7f79-state-saving-while-airborne-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-rendered-keyb-d7f79-state-saving-while-airborne-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/e2e/wm001.spec.ts",
+                        "column": 28,
+                        "line": 293
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-7f91c346bb0c6a0a7033",
+              "file": "wm001.spec.ts",
+              "line": 282,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "WM-001 rendered simulated Gamepad journey",
+          "file": "wm001.spec.ts",
+          "line": 300,
+          "column": 6,
+          "specs": [
+            {
+              "title": "uses gamepad alone for new game, movement, camera, pause, save, save-and-quit, Continue, and Load",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 16224,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:23:02.638Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-rendered-simu-70887--and-quit-Continue-and-Load-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-847fea2d50eeb0a98d6d",
+              "file": "wm001.spec.ts",
+              "line": 303,
+              "column": 3
+            },
+            {
+              "title": "disconnect releases motion and reconnect requires neutral then fresh input",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5853,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:23:18.962Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-rendered-simu-0c21e-es-neutral-then-fresh-input-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-9c69fc44e8ba52611ed7",
+              "file": "wm001.spec.ts",
+              "line": 362,
+              "column": 3
+            },
+            {
+              "title": "shows PlayStation-style prompts without changing standard semantic actions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2253,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:23:24.825Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-rendered-simu-69b9a-g-standard-semantic-actions-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-b3a54e0670d0a90951ee",
+              "file": "wm001.spec.ts",
+              "line": 384,
+              "column": 3
+            },
+            {
+              "title": "operates persisted main and pause settings without mouse or typing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14885,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:23:27.085Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-rendered-simu-3f8b5-ngs-without-mouse-or-typing-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-ecf77ad4352289010c5b",
+              "file": "wm001.spec.ts",
+              "line": 392,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "WM-001 controller remediation lifecycle (simulated Gamepad API)",
+          "file": "wm001.spec.ts",
+          "line": 428,
+          "column": 6,
+          "specs": [
+            {
+              "title": "makes exposure, release, ready, HUD status, and local copy diagnostics persistent",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3634,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:23:41.978Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-controller-re-c9b54-copy-diagnostics-persistent-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-5030cda5b98a577c6dbc",
+              "file": "wm001.spec.ts",
+              "line": 429,
+              "column": 3
+            },
+            {
+              "title": "keeps keyboard available when the Gamepad API is unavailable",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1381,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:23:45.620Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-controller-re-8a795--Gamepad-API-is-unavailable-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-90dc618fd5bf7faf8be1",
+              "file": "wm001.spec.ts",
+              "line": 464,
+              "column": 3
+            },
+            {
+              "title": "rejects an unsupported mapping visibly while keyboard remains available",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1506,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:23:47.009Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-controller-re-cad4d--keyboard-remains-available-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-80a8bb6a97f5f0882d59",
+              "file": "wm001.spec.ts",
+              "line": 478,
+              "column": 3
+            },
+            {
+              "title": "selects active index 1 over idle index 0 and ignores noisy extra axes",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2729,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:23:48.526Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-controller-re-2c6c7-nd-ignores-noisy-extra-axes-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-6d028d219b217f8e8746",
+              "file": "wm001.spec.ts",
+              "line": 490,
+              "column": 3
+            },
+            {
+              "title": "supports connection after load, disconnect cleanup, keyboard fallback, and deliberate replacement",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7099,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:23:51.263Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-controller-re-b611f--and-deliberate-replacement-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-66003a1564c27a9512fe",
+              "file": "wm001.spec.ts",
+              "line": 514,
+              "column": 3
+            },
+            {
+              "title": "cleans up held movement on blur/focus and requires neutral then fresh input",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5839,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:23:58.373Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-controller-re-f32fc-es-neutral-then-fresh-input-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-8bcd0aa6d9aca6dc0d0d",
+              "file": "wm001.spec.ts",
+              "line": 551,
+              "column": 3
+            },
+            {
+              "title": "keeps controller status and local diagnostics usable at a representative iPad landscape viewport",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2484,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-12T09:24:04.222Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm001-WM-001-controller-re-be7f0-ive-iPad-landscape-viewport-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-091ce56be3a053417eea",
+              "file": "wm001.spec.ts",
+              "line": 578,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "wm002-performance.spec.ts",
+      "file": "wm002-performance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "parent FPS measurement 1280x720",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4407,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "{\"author\":\"WEBMASTER_IMPLEMENTER\",\"label\":\"candidate-isolated\",\"observedAt\":\"2026-09-12T09:24:46.114Z\",\"commit\":\"209466106a7f7d9d4bd13ad7ac3f86f278edd905\",\"tree\":\"e45ef30ebac813a2180fa2202c55a1a339eb099b\",\"sourceDiff\":\" src/core/actions.ts |  13 +-\\n src/core/save.ts    |   2 +\\n src/core/types.ts   |   2 +\\n src/game/world.ts   | 680 ++++++++++++++++++++++++++++++++++++++++++++++------\\n src/main.ts         |  11 +-\\n src/styles.css      |   7 +\\n 6 files changed, 634 insertions(+), 81 deletions(-)\\n\",\"browserName\":\"chromium\",\"viewport\":[1280,720],\"samples\":{\"samples\":[43,41],\"minimum\":41,\"current\":41},\"method\":\"Ordinary New Game / slot 1 / Easy; adaptive quality default; wait 2200ms after input-overlay; same debug.performance() samples as unchanged WM-001 representative gate; video enabled.\",\"absoluteFloor\":30,\"absoluteResult\":\"PASS\",\"limitation\":\"Headless Linux software-renderer measurement; not physical Windows/iPad or swing-route performance.\"}\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:24:41.966Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm002-performance-parent-FPS-measurement-1280x720-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0c17dc5f99660b6ecb1b-4a4e6cdbee439ef97979",
+          "file": "wm002-performance.spec.ts",
+          "line": 11,
+          "column": 3
+        },
+        {
+          "title": "parent FPS measurement 1920x1080",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3954,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "{\"author\":\"WEBMASTER_IMPLEMENTER\",\"label\":\"candidate-isolated\",\"observedAt\":\"2026-09-12T09:24:50.038Z\",\"commit\":\"209466106a7f7d9d4bd13ad7ac3f86f278edd905\",\"tree\":\"e45ef30ebac813a2180fa2202c55a1a339eb099b\",\"sourceDiff\":\" src/core/actions.ts |  13 +-\\n src/core/save.ts    |   2 +\\n src/core/types.ts   |   2 +\\n src/game/world.ts   | 680 ++++++++++++++++++++++++++++++++++++++++++++++------\\n src/main.ts         |  11 +-\\n src/styles.css      |   7 +\\n 6 files changed, 634 insertions(+), 81 deletions(-)\\n\",\"browserName\":\"chromium\",\"viewport\":[1920,1080],\"samples\":{\"samples\":[36,38],\"minimum\":36,\"current\":38},\"method\":\"Ordinary New Game / slot 1 / Easy; adaptive quality default; wait 2200ms after input-overlay; same debug.performance() samples as unchanged WM-001 representative gate; video enabled.\",\"absoluteFloor\":30,\"absoluteResult\":\"PASS\",\"limitation\":\"Headless Linux software-renderer measurement; not physical Windows/iPad or swing-route performance.\"}\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:24:46.380Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm002-performance-parent-FPS-measurement-1920x1080-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0c17dc5f99660b6ecb1b-21e0d8808b412c1cadeb",
+          "file": "wm002-performance.spec.ts",
+          "line": 11,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "title": "wm002.spec.ts",
+      "file": "wm002.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "WM-002 keyboard continuous four-gap route, safe save and same-origin reopen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 100000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 28837,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:24:50.357Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-688432dd8e5644023d48",
+          "file": "wm002.spec.ts",
+          "line": 126,
+          "column": 1
+        },
+        {
+          "title": "WM-002 simulated PlayStation controller-only complete route and safe save/load",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 100000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 25888,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:25:19.204Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm002-WM-002-simulated-Pla-7d5ed-te-route-and-safe-save-load-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-57a4b77a4a379b05953b",
+          "file": "wm002.spec.ts",
+          "line": 349,
+          "column": 1
+        },
+        {
+          "title": "WM-002 targeted anchor, unsafe save, pause, focus, fall recovery, invalid finish and replay cleanup",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12688,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:25:45.099Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm002-WM-002-targeted-anch-56715-d-finish-and-replay-cleanup-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-97052128e58876f83db7",
+          "file": "wm002.spec.ts",
+          "line": 388,
+          "column": 1
+        },
+        {
+          "title": "WM-002 LT disconnect clears web, reconnect needs neutral and diagnostics retain swing mapping",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9541,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:25:57.796Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm002-WM-002-LT-disconnect-d2e92-ostics-retain-swing-mapping-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-4c28fb00a97c4366b0a9",
+          "file": "wm002.spec.ts",
+          "line": 454,
+          "column": 1
+        },
+        {
+          "title": "WM-002 continuous keyboard route under near-30fps render schedule",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 100000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 21156,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:26:07.345Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm002-WM-002-continuous-ke-9c8a0--near-30fps-render-schedule-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-f4960a52a0dbfa4859fd",
+          "file": "wm002.spec.ts",
+          "line": 496,
+          "column": 3
+        },
+        {
+          "title": "WM-002 continuous keyboard route under uneven render schedule",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 100000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 23435,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:26:28.507Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm002-WM-002-continuous-ke-9e755-nder-uneven-render-schedule-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-e14661c2d58b956def73",
+          "file": "wm002.spec.ts",
+          "line": 496,
+          "column": 3
+        },
+        {
+          "title": "WM-002 repeated pause, replay, save and load keeps runtime resources bounded",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 21051,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:26:51.950Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/workspace/scratch/bb63ed1d5d6d/wm002-worktree/test-results/wm002-WM-002-repeated-paus-b4b42-s-runtime-resources-bounded-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-c23b61ce10ecb13c9b34",
+          "file": "wm002.spec.ts",
+          "line": 544,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-12T09:22:26.082Z",
+    "duration": 287148.969,
+    "expected": 30,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

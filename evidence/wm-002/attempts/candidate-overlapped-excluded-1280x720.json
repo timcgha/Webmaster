@@ -1,0 +1,27 @@
+{
+  "author": "WEBMASTER_IMPLEMENTER",
+  "label": "candidate-overlapped-excluded",
+  "observedAt": "2026-09-12T09:15:43.855Z",
+  "commit": "209466106a7f7d9d4bd13ad7ac3f86f278edd905",
+  "tree": "e45ef30ebac813a2180fa2202c55a1a339eb099b",
+  "sourceDiff": " src/core/actions.ts |  13 +-\n src/core/save.ts    |   2 +\n src/core/types.ts   |   2 +\n src/game/world.ts   | 680 ++++++++++++++++++++++++++++++++++++++++++++++------\n src/main.ts         |  11 +-\n src/styles.css      |   7 +\n 6 files changed, 634 insertions(+), 81 deletions(-)\n",
+  "browserName": "chromium",
+  "viewport": [
+    1280,
+    720
+  ],
+  "samples": {
+    "samples": [
+      31,
+      28
+    ],
+    "minimum": 28,
+    "current": 28
+  },
+  "method": "Ordinary New Game / slot 1 / Easy; adaptive quality default; wait 2200ms after input-overlay; same debug.performance() samples as unchanged WM-001 representative gate; video enabled.",
+  "absoluteFloor": 30,
+  "absoluteResult": "NOT_MET",
+  "limitation": "Headless Linux software-renderer measurement; not physical Windows/iPad or swing-route performance.",
+  "comparisonDisposition": "OVERLAPPED_EXCLUDED",
+  "exclusionReason": "Invocation ran 8 tests using 2 workers. Measurement overlapped active continuous 3D route; not comparable to one-worker isolated baseline."
+}

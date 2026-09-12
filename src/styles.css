@@ -296,3 +296,10 @@ button, input { font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+.swing-card { top: 136px; left: 20px; width: min(380px, 42vw); pointer-events: none; }
+.swing-card strong { display: block; color: #ffec63; font-size: 15px; margin: 4px 0; }
+.swing-card small { display: block; color: #e0efff; line-height: 1.4; }
+@media (max-height: 750px) { .swing-card { top: 132px; width: min(330px, 38vw); font-size: 11px; padding: 10px 12px; } }
+
+.swing-card .hud-kicker { letter-spacing: .04em; font-size: 10px; }

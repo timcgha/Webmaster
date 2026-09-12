@@ -1,0 +1,151 @@
+{
+  "author": "WEBMASTER_IMPLEMENTER",
+  "observedAt": "2026-09-12T09:39:58.889299+00:00",
+  "sourceHead": "5251d66fa680675e56b23010b5adf79d06b36957",
+  "sourceTree": "5e42310c9c095487a9fc263a54c1b1d5caebfb9e",
+  "disposition": "IMPLEMENTATION_VERIFIED_READY_FOR_INDEPENDENT_QA",
+  "lockedInstall": "PASS",
+  "deterministic": {
+    "passed": 52,
+    "total": 52,
+    "files": 5
+  },
+  "typescriptBuild": "PASS",
+  "pagesBaseBuild": "PASS",
+  "browser": {
+    "passed": 31,
+    "total": 31,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "wm001": 22,
+    "wm002": 7,
+    "isolatedPerformance": 2
+  },
+  "builtSmoke": {
+    "result": "PASS",
+    "errors": [],
+    "base": "/Webmaster/"
+  },
+  "performance": {
+    "baseline1280": [
+      44,
+      45
+    ],
+    "baseline1920": [
+      38,
+      42
+    ],
+    "candidate1280": {
+      "samples": [
+        35,
+        36
+      ],
+      "minimum": 35,
+      "current": 36
+    },
+    "candidate1920": {
+      "samples": [
+        40,
+        38
+      ],
+      "minimum": 38,
+      "current": 38
+    },
+    "representativeFloor30": "PASS",
+    "near30ScheduledRoute": {
+      "complete": true,
+      "samples": {
+        "samples": [
+          32,
+          30,
+          30,
+          30,
+          31,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          28,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30
+        ],
+        "minimum": 28,
+        "current": 30
+      },
+      "absoluteFloor30": "NOT_MET_IN_DELIBERATELY_SCHEDULED_PROFILE",
+      "functionalResult": "PASS"
+    },
+    "unevenScheduledRoute": {
+      "complete": true,
+      "samples": {
+        "samples": [
+          31,
+          35,
+          34,
+          31,
+          33,
+          34,
+          39,
+          53,
+          46,
+          48,
+          53,
+          50,
+          53,
+          52,
+          52,
+          51,
+          52,
+          51,
+          52,
+          51,
+          52
+        ],
+        "minimum": 31,
+        "current": 52
+      }
+    },
+    "note": "One-worker isolated representative gates preserve >=30 assertions. Deliberately reduced/uneven RAF tests judge route stability and record actual FPS; near30 one28 sample is not labelled performance PASS. Physical target-device performance remains NOT_VERIFIED."
+  },
+  "resourceObservation": {
+    "cycles": 12,
+    "warmupCycle": 2,
+    "heapGrowthBytes": 461564,
+    "nodesBeforeAfter": [
+      290,
+      290
+    ],
+    "listenersBeforeAfter": [
+      82,
+      82
+    ],
+    "result": "PASS_BOUNDED_OBSERVATION"
+  },
+  "build": {
+    "files": 89,
+    "rawBytes": 5025903,
+    "gzipBytes": 1373832,
+    "sourceMaps": 0,
+    "compressedCap": 62914560
+  },
+  "captureIntegrity": {
+    "passed": 38,
+    "total": 38
+  },
+  "dependenciesChanged": false,
+  "thirdPartyArtAdded": false,
+  "spend": 0,
+  "independentQA": "PENDING_PARENT",
+  "remediationCycles": 0,
+  "publication": "NOT_PERFORMED_BY_IMPLEMENTER",
+  "physicalCompatibility": "NOT_VERIFIED_FOR_WM002"
+}

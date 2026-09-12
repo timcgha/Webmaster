@@ -7,6 +7,7 @@ export default defineConfig({
   outputDir: "test-results",
   timeout: 45_000,
   fullyParallel: false,
+  workers: 1, // Keep rendered performance samples free of concurrent browser load.
   forbidOnly: true,
   retries: 0,
   reporter: [["list"], ["html", { outputFolder: "playwright-report", open: "never" }]],

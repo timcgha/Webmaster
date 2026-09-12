@@ -290,7 +290,7 @@ test.describe("WM-001 rendered keyboard and mouse journey", () => {
     for (const name of [/^Save Game/, /^Save & Quit/]) {
       const button = page.getByRole("button", { name });
       await expect(button).toBeDisabled();
-      await expect(button).toContainText("Unavailable while airborne or recovering");
+      await expect(button).toContainText("Unavailable while swinging, airborne, landing or recovering");
     }
     await expect(page.getByRole("button", { name: /^Resume/ })).toBeEnabled();
     await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-airborne-safe-save-disabled.png` });

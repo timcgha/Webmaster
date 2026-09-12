@@ -1,3 +1,4 @@
+import { validSkylineSave } from "./skyline";
 import type { RunSavePayload, SaveKind, SlotId } from "./types";
 
 export const SAVE_VERSION = 1 as const;
@@ -75,6 +76,7 @@ function isPayload(value: unknown): value is RunSavePayload {
   const item = value as Partial<RunSavePayload>;
   return (
     item.schemaVersion === SAVE_VERSION &&
+    (item.skyline === undefined || validSkylineSave(item.skyline)) &&
     (item.slot === 1 || item.slot === 2 || item.slot === 3) &&
     (item.difficulty === "Easy" || item.difficulty === "Normal" || item.difficulty === "Hard") &&
     typeof item.health === "number" &&
