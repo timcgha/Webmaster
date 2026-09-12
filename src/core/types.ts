@@ -10,6 +10,7 @@ export interface Vec3Data {
 
 export interface RunSavePayload {
   schemaVersion: 1;
+  skyline?: import("./skyline").SkylineSave;
   slot: SlotId;
   difficulty: Difficulty;
   health: number;
@@ -41,6 +42,7 @@ export interface SemanticActions {
   lookX: number;
   lookY: number;
   run: boolean;
+  swingHeld?: boolean;
   jumpPressed: boolean;
   recenterPressed: boolean;
   pausePressed: boolean;

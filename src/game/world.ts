@@ -19,15 +19,44 @@ import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
 import { PhysicsShapeType } from "@babylonjs/core/Physics/v2/IPhysicsEnginePlugin";
 import { PhysicsAggregate } from "@babylonjs/core/Physics/v2/physicsAggregate";
 import { Scene } from "@babylonjs/core/scene";
-import { FIXED_STEP, MAX_FRAME_DELTA, MAX_STEPS_PER_FRAME, copyVec3, stepMotion } from "../core/motion";
+import {
+  FIXED_STEP,
+  MAX_FRAME_DELTA,
+  MAX_STEPS_PER_FRAME,
+  copyVec3,
+} from "../core/motion";
 import type {
   GameSettings,
-  MotionEnvironment,
   MotionState,
   RunSavePayload,
   SemanticActions,
   Vec3Data,
 } from "../core/types";
+
+import {
+  clearSwing,
+  distance,
+  handOrigin,
+  newSwing,
+  safeToSave,
+  stepSwing,
+  type Solid,
+  type SwingState,
+} from "../core/swing";
+import {
+  ANCHORS,
+  CHECKPOINTS,
+  FALLBACK,
+  ROOFS,
+  ROUTE_LABELS,
+  SKY_START,
+  advanceSkyline,
+  newSkyline,
+  resetSegment,
+  restoreSkylinePosition,
+  type SkylineState,
+} from "../core/skyline";
+import type { LinesMesh } from "@babylonjs/core/Meshes/linesMesh";
 
 interface SolidBox {
   minX: number;
@@ -50,6 +79,10 @@ export interface WorldFrame {
   cameraAlpha: number;
   cameraBeta: number;
   inputSource: SemanticActions["source"];
+  velocity: Vec3Data;
+  swing: SwingState;
+  hand: Vec3Data;
+  skyline: SkylineState;
 }
 
 export interface WorldCallbacks {
@@ -90,6 +123,14 @@ export class GameWorld {
   private pendingJump = false;
   private solids: SolidBox[] = [];
   private settings: GameSettings;
+  private swing = newSwing();
+  private skyline = newSkyline();
+  private skylineSolids: Solid[] = [...ROOFS, FALLBACK];
+  private readonly anchorMeshes = new Map<string, Mesh>();
+  private webLine: LinesMesh | null = null;
+  private wristFlash: Mesh | null = null;
+  private rightArm: Mesh | null = null;
+  private pendingCheckpoint = false;
 
   private constructor(
     canvas: HTMLCanvasElement,
@@ -105,12 +146,19 @@ export class GameWorld {
     });
     this.scene = new Scene(this.engine);
     this.scene.clearColor = new Color4(0.38, 0.76, 0.98, 1);
-    this.camera = new ArcRotateCamera("hero-camera", -Math.PI / 2, 1.08, 10.5, new Vector3(0, 1.4, 0), this.scene);
+    this.camera = new ArcRotateCamera(
+      "hero-camera",
+      -Math.PI / 2,
+      1.08,
+      10.5,
+      new Vector3(0, 1.4, 0),
+      this.scene,
+    );
     this.camera.minZ = 0.1;
     this.camera.lowerBetaLimit = 0.55;
-    this.camera.upperBetaLimit = 1.35;
+    this.camera.upperBetaLimit = 1.65;
     this.camera.lowerRadiusLimit = 7;
-    this.camera.upperRadiusLimit = 13;
+    this.camera.upperRadiusLimit = 18;
     this.heroRoot = new TransformNode("webmaster-root", this.scene);
     this.applySettings(settings);
   }
@@ -130,15 +178,29 @@ export class GameWorld {
   private async buildScene(): Promise<void> {
     try {
       const havok = await HavokPhysics();
-      this.scene.enablePhysics(new Vector3(0, -9.81, 0), new HavokPlugin(true, havok));
+      this.scene.enablePhysics(
+        new Vector3(0, -9.81, 0),
+        new HavokPlugin(true, havok),
+      );
     } catch (error) {
-      console.warn("Havok initialization failed; static collision fallback remains active.", error);
+      console.warn(
+        "Havok initialization failed; static collision fallback remains active.",
+        error,
+      );
     }
 
-    const skyLight = new HemisphericLight("sky-light", new Vector3(0, 1, 0), this.scene);
+    const skyLight = new HemisphericLight(
+      "sky-light",
+      new Vector3(0, 1, 0),
+      this.scene,
+    );
     skyLight.intensity = 1.05;
     skyLight.groundColor = new Color3(0.12, 0.2, 0.42);
-    const sun = new DirectionalLight("sun", new Vector3(-0.4, -1, 0.35), this.scene);
+    const sun = new DirectionalLight(
+      "sun",
+      new Vector3(-0.4, -1, 0.35),
+      this.scene,
+    );
     sun.position = new Vector3(14, 24, -16);
     sun.intensity = 1.6;
     const shadows = new ShadowGenerator(256, sun);
@@ -146,19 +208,31 @@ export class GameWorld {
 
     const arenaMaterial = this.material("arena-mat", "#273f8f", "#173167");
     const edgeMaterial = this.material("edge-mat", "#00e7d3", "#00a99c");
-    const platform = CreateBox("practice-roof", { width: 28, depth: 36, height: 1 }, this.scene);
+    const platform = CreateBox(
+      "practice-roof",
+      { width: 28, depth: 36, height: 1 },
+      this.scene,
+    );
     platform.position.set(0, -0.5, 6);
     platform.material = arenaMaterial;
     platform.receiveShadows = true;
     this.addStaticPhysics(platform);
 
-    const lane = CreateBox("practice-lane", { width: 6, depth: 31, height: 0.08 }, this.scene);
+    const lane = CreateBox(
+      "practice-lane",
+      { width: 6, depth: 31, height: 0.08 },
+      this.scene,
+    );
     lane.position.set(0, 0.02, 5.5);
     lane.material = this.material("lane-mat", "#7259e8", "#4635ab");
     lane.receiveShadows = true;
 
     for (const x of [-13.6, 13.6]) {
-      const edge = CreateBox(`edge-${x}`, { width: 0.25, depth: 36, height: 0.35 }, this.scene);
+      const edge = CreateBox(
+        `edge-${x}`,
+        { width: 0.25, depth: 36, height: 0.35 },
+        this.scene,
+      );
       edge.position.set(x, 0.15, 6);
       edge.material = edgeMaterial;
     }
@@ -170,38 +244,76 @@ export class GameWorld {
     this.createObstacle(6.5, 18, 2.6, 2.6, 4.2, "#ff7a32");
     this.createCity();
     this.createHero(shadows);
+    this.createSkyline();
 
     this.scene.onBeforeRenderObservable.add(() => {
       const pulse = 1 + Math.sin(performance.now() / 280) * 0.08;
-      for (const mesh of this.scene.meshes.filter((candidate) => candidate.name.startsWith("marker-ring"))) {
+      for (const mesh of this.scene.meshes.filter((candidate) =>
+        candidate.name.startsWith("marker-ring"),
+      )) {
         mesh.scaling.setAll(pulse);
         mesh.rotation.y += 0.01;
       }
     });
   }
 
-  private material(name: string, diffuse: string, emissive?: string): StandardMaterial {
+  private material(
+    name: string,
+    diffuse: string,
+    emissive?: string,
+  ): StandardMaterial {
     const material = new StandardMaterial(name, this.scene);
     material.diffuseColor = Color3.FromHexString(diffuse);
     material.specularColor = new Color3(0.18, 0.18, 0.28);
-    if (emissive) material.emissiveColor = Color3.FromHexString(emissive).scale(0.25);
+    if (emissive)
+      material.emissiveColor = Color3.FromHexString(emissive).scale(0.25);
     return material;
   }
 
   private addStaticPhysics(mesh: Mesh): void {
     if (!this.scene.isPhysicsEnabled()) return;
     this.physicsBodies.push(
-      new PhysicsAggregate(mesh, PhysicsShapeType.BOX, { mass: 0, restitution: 0, friction: 0.8 }, this.scene),
+      new PhysicsAggregate(
+        mesh,
+        PhysicsShapeType.BOX,
+        { mass: 0, restitution: 0, friction: 0.8 },
+        this.scene,
+      ),
     );
   }
 
-  private createObstacle(x: number, z: number, width: number, depth: number, height: number, color: string): void {
-    const obstacle = CreateBox(`training-block-${x}-${z}`, { width, depth, height }, this.scene);
+  private createObstacle(
+    x: number,
+    z: number,
+    width: number,
+    depth: number,
+    height: number,
+    color: string,
+  ): void {
+    const obstacle = CreateBox(
+      `training-block-${x}-${z}`,
+      { width, depth, height },
+      this.scene,
+    );
     obstacle.position.set(x, height / 2, z);
     obstacle.material = this.material(`training-block-mat-${x}-${z}`, color);
     obstacle.receiveShadows = true;
     this.addStaticPhysics(obstacle);
-    this.solids.push({ minX: x - width / 2, maxX: x + width / 2, minZ: z - depth / 2, maxZ: z + depth / 2 });
+    this.solids.push({
+      minX: x - width / 2,
+      maxX: x + width / 2,
+      minZ: z - depth / 2,
+      maxZ: z + depth / 2,
+    });
+    this.skylineSolids.push({
+      id: obstacle.name,
+      minX: x - width / 2,
+      maxX: x + width / 2,
+      minZ: z - depth / 2,
+      maxZ: z + depth / 2,
+      minY: 0,
+      maxY: height,
+    });
   }
 
   private createPracticeMarkers(): void {
@@ -209,30 +321,58 @@ export class GameWorld {
     const gold = this.material("marker-gold", "#ffd83d", "#ffb91d");
     const pink = this.material("marker-pink", "#ff5db6", "#ff5db6");
 
-    const archTop = CreateBox("sky-gate-top", { width: 6, height: 0.35, depth: 0.35 }, this.scene);
+    const archTop = CreateBox(
+      "sky-gate-top",
+      { width: 6, height: 0.35, depth: 0.35 },
+      this.scene,
+    );
     archTop.position.set(0, 4.2, 0);
     archTop.material = teal;
     for (const x of [-2.8, 2.8]) {
-      const pillar = CreateBox(`sky-gate-pillar-${x}`, { width: 0.35, height: 4.2, depth: 0.35 }, this.scene);
+      const pillar = CreateBox(
+        `sky-gate-pillar-${x}`,
+        { width: 0.35, height: 4.2, depth: 0.35 },
+        this.scene,
+      );
       pillar.position.set(x, 2.1, 0);
       pillar.material = teal;
     }
-    const ring1 = CreateTorus("marker-ring-gate", { diameter: 3.2, thickness: 0.12 }, this.scene);
+    const ring1 = CreateTorus(
+      "marker-ring-gate",
+      { diameter: 3.2, thickness: 0.12 },
+      this.scene,
+    );
     ring1.position.set(0, 2.4, 0);
     ring1.rotation.x = Math.PI / 2;
     ring1.material = teal;
 
-    const sunPad = CreateCylinder("sun-pad", { diameter: 4.5, height: 0.22, tessellation: 48 }, this.scene);
+    const sunPad = CreateCylinder(
+      "sun-pad",
+      { diameter: 4.5, height: 0.22, tessellation: 48 },
+      this.scene,
+    );
     sunPad.position.set(5, 0.11, 10);
     sunPad.material = gold;
-    const ring2 = CreateTorus("marker-ring-pad", { diameter: 2.8, thickness: 0.12 }, this.scene);
+    const ring2 = CreateTorus(
+      "marker-ring-pad",
+      { diameter: 2.8, thickness: 0.12 },
+      this.scene,
+    );
     ring2.position.set(5, 1.9, 10);
     ring2.material = gold;
 
-    const finish = CreateCylinder("finish-beacon", { diameter: 1.2, height: 5, tessellation: 32 }, this.scene);
+    const finish = CreateCylinder(
+      "finish-beacon",
+      { diameter: 1.2, height: 5, tessellation: 32 },
+      this.scene,
+    );
     finish.position.set(-4, 2.5, 18);
     finish.material = pink;
-    const ring3 = CreateTorus("marker-ring-finish", { diameter: 3.2, thickness: 0.14 }, this.scene);
+    const ring3 = CreateTorus(
+      "marker-ring-finish",
+      { diameter: 3.2, thickness: 0.14 },
+      this.scene,
+    );
     ring3.position.set(-4, 4.8, 18);
     ring3.material = pink;
   }
@@ -245,14 +385,42 @@ export class GameWorld {
       const z = -16 + (index % 13) * 4;
       const height = 5 + ((index * 7) % 14);
       const width = 3 + (index % 3);
-      const building = CreateBox(`city-${index}`, { width, depth: width, height }, this.scene);
+      const building = CreateBox(
+        `city-${index}`,
+        { width, depth: width, height },
+        this.scene,
+      );
       building.position.set(x, height / 2 - 5, z);
-      building.material = this.material(`city-mat-${index}`, colors[index % colors.length]!);
-      const roof = CreateBox(`city-roof-${index}`, { width: width + 0.2, depth: width + 0.2, height: 0.2 }, this.scene);
+      building.material = this.material(
+        `city-mat-${index}`,
+        colors[index % colors.length]!,
+      );
+      this.skylineSolids.push({
+        id: building.name,
+        minX: x - width / 2,
+        maxX: x + width / 2,
+        minZ: z - width / 2,
+        maxZ: z + width / 2,
+        minY: -5,
+        maxY: height - 5,
+      });
+      const roof = CreateBox(
+        `city-roof-${index}`,
+        { width: width + 0.2, depth: width + 0.2, height: 0.2 },
+        this.scene,
+      );
       roof.position.set(x, height - 5.1, z);
-      roof.material = this.material(`city-roof-mat-${index}`, "#25e0d1", "#25e0d1");
+      roof.material = this.material(
+        `city-roof-mat-${index}`,
+        "#25e0d1",
+        "#25e0d1",
+      );
     }
-    const sun = CreateSphere("sky-sun", { diameter: 7, segments: 20 }, this.scene);
+    const sun = CreateSphere(
+      "sky-sun",
+      { diameter: 7, segments: 20 },
+      this.scene,
+    );
     sun.position.set(-28, 27, 38);
     sun.material = this.material("sky-sun-mat", "#ffed78", "#ffd34a");
   }
@@ -264,22 +432,38 @@ export class GameWorld {
     const orange = this.material("hero-emblem", "#ffb21c", "#ff8c1a");
     const web = Color3.FromHexString("#c9ffff");
 
-    const torso = CreateCylinder("webmaster-torso", { height: 1.75, diameterTop: 0.8, diameterBottom: 1, tessellation: 20 }, this.scene);
+    const torso = CreateCylinder(
+      "webmaster-torso",
+      { height: 1.75, diameterTop: 0.8, diameterBottom: 1, tessellation: 20 },
+      this.scene,
+    );
     torso.parent = this.heroRoot;
     torso.position.y = 1.65;
     torso.material = teal;
-    const waist = CreateCylinder("webmaster-waist", { height: 0.7, diameter: 0.86, tessellation: 20 }, this.scene);
+    const waist = CreateCylinder(
+      "webmaster-waist",
+      { height: 0.7, diameter: 0.86, tessellation: 20 },
+      this.scene,
+    );
     waist.parent = this.heroRoot;
     waist.position.y = 0.75;
     waist.material = navy;
-    const head = CreateSphere("webmaster-mask", { diameter: 1.05, segments: 24 }, this.scene);
+    const head = CreateSphere(
+      "webmaster-mask",
+      { diameter: 1.05, segments: 24 },
+      this.scene,
+    );
     head.parent = this.heroRoot;
     head.position.y = 2.9;
     head.scaling.y = 1.12;
     head.material = teal;
 
     for (const x of [-0.22, 0.22]) {
-      const eye = CreateSphere(`webmaster-eye-${x}`, { diameter: 0.34, segments: 16 }, this.scene);
+      const eye = CreateSphere(
+        `webmaster-eye-${x}`,
+        { diameter: 0.34, segments: 16 },
+        this.scene,
+      );
       eye.parent = this.heroRoot;
       eye.position.set(x, 2.98, 0.49);
       eye.scaling.set(0.68, 1.15, 0.18);
@@ -288,30 +472,59 @@ export class GameWorld {
     }
 
     for (const x of [-0.56, 0.56]) {
-      const arm = CreateCapsule(`webmaster-arm-${x}`, { height: 1.65, radius: 0.19, tessellation: 16 }, this.scene);
+      const arm = CreateCapsule(
+        `webmaster-arm-${x}`,
+        { height: 1.65, radius: 0.19, tessellation: 16 },
+        this.scene,
+      );
       arm.parent = this.heroRoot;
       arm.position.set(x, 1.62, 0);
       arm.rotation.z = x < 0 ? -0.13 : 0.13;
       arm.material = teal;
-      const leg = CreateCapsule(`webmaster-leg-${x}`, { height: 1.62, radius: 0.24, tessellation: 16 }, this.scene);
+      if (x > 0) this.rightArm = arm;
+      const leg = CreateCapsule(
+        `webmaster-leg-${x}`,
+        { height: 1.62, radius: 0.24, tessellation: 16 },
+        this.scene,
+      );
       leg.parent = this.heroRoot;
       leg.position.set(x * 0.48, -0.02, 0);
       leg.material = navy;
     }
 
     const webLines: Vector3[][] = [
-      [new Vector3(-0.42, 2.2, 0.5), new Vector3(0, 1.75, 0.54), new Vector3(0.42, 2.2, 0.5)],
-      [new Vector3(-0.46, 1.75, 0.52), new Vector3(0, 1.42, 0.55), new Vector3(0.46, 1.75, 0.52)],
+      [
+        new Vector3(-0.42, 2.2, 0.5),
+        new Vector3(0, 1.75, 0.54),
+        new Vector3(0.42, 2.2, 0.5),
+      ],
+      [
+        new Vector3(-0.46, 1.75, 0.52),
+        new Vector3(0, 1.42, 0.55),
+        new Vector3(0.46, 1.75, 0.52),
+      ],
       [new Vector3(0, 2.42, 0.5), new Vector3(0, 1.2, 0.54)],
-      [new Vector3(-0.42, 2.05, -0.48), new Vector3(0, 1.65, -0.52), new Vector3(0.42, 2.05, -0.48)],
+      [
+        new Vector3(-0.42, 2.05, -0.48),
+        new Vector3(0, 1.65, -0.52),
+        new Vector3(0.42, 2.05, -0.48),
+      ],
     ];
     for (const [index, points] of webLines.entries()) {
-      const line = CreateLines(`webmaster-webline-${index}`, { points }, this.scene);
+      const line = CreateLines(
+        `webmaster-webline-${index}`,
+        { points },
+        this.scene,
+      );
       line.parent = this.heroRoot;
       line.color = web;
     }
 
-    const emblemBody = CreateSphere("webmaster-original-emblem", { diameter: 0.26, segments: 12 }, this.scene);
+    const emblemBody = CreateSphere(
+      "webmaster-original-emblem",
+      { diameter: 0.26, segments: 12 },
+      this.scene,
+    );
     emblemBody.parent = this.heroRoot;
     emblemBody.position.set(0, 1.86, 0.56);
     emblemBody.scaling.y = 1.6;
@@ -333,16 +546,162 @@ export class GameWorld {
         leg.color = Color3.FromHexString("#ffb21c");
       }
     }
-    for (const mesh of this.heroRoot.getChildMeshes()) shadows.addShadowCaster(mesh);
+    for (const mesh of this.heroRoot.getChildMeshes())
+      shadows.addShadowCaster(mesh);
   }
 
-  private readonly environment: MotionEnvironment = {
-    floorHeightAt: (x, z) => (Math.abs(x) <= 14 && z >= -12 && z <= 24 ? 0 : null),
-    blocks: (x, z, radius) =>
-      this.solids.some(
-        (box) => x + radius > box.minX && x - radius < box.maxX && z + radius > box.minZ && z - radius < box.maxZ,
-      ),
-  };
+  private createSkyline(): void {
+    const colors = ["#2456a7", "#785cd4", "#edaf37", "#149ab3", "#de4f8b"];
+    for (const [index, roof] of [...ROOFS.slice(1), FALLBACK].entries()) {
+      const mesh = CreateBox(
+        roof.id,
+        {
+          width: roof.maxX - roof.minX,
+          height: roof.maxY - roof.minY,
+          depth: roof.maxZ - roof.minZ,
+        },
+        this.scene,
+      );
+      mesh.position.set(
+        (roof.minX + roof.maxX) / 2,
+        (roof.minY + roof.maxY) / 2,
+        (roof.minZ + roof.maxZ) / 2,
+      );
+      mesh.material = this.material(`${roof.id}-material`, colors[index]!);
+      mesh.receiveShadows = true;
+      this.addStaticPhysics(mesh);
+      const trim = CreateBox(
+        `${roof.id}-trim`,
+        {
+          width: roof.maxX - roof.minX,
+          depth: roof.maxZ - roof.minZ,
+          height: 0.1,
+        },
+        this.scene,
+      );
+      trim.position.set(mesh.position.x, roof.maxY + 0.01, mesh.position.z);
+      trim.material = this.material(
+        `${roof.id}-trim-mat`,
+        "#40efd0",
+        "#40efd0",
+      );
+    }
+    const available = this.material("anchor-available", "#35ffee", "#35ffee");
+    for (const a of ANCHORS) {
+      const ring = CreateTorus(
+        a.id,
+        { diameter: 2, thickness: 0.22, tessellation: 24 },
+        this.scene,
+      );
+      ring.position.copyFromFloats(a.position.x, a.position.y, a.position.z);
+      ring.rotation.x = Math.PI / 2;
+      ring.material = available;
+      ring.metadata = { swingAnchorId: a.id, eligible: true };
+      this.anchorMeshes.set(a.id, ring);
+      const core = CreateSphere(
+        `${a.id}-core`,
+        { diameter: 0.48, segments: 10 },
+        this.scene,
+      );
+      core.position.copyFrom(ring.position);
+      core.material = available;
+    }
+    this.material("anchor-target", "#ffec63", "#ffec63");
+    this.material("anchor-attached", "#ffffff", "#ffffff");
+    for (const [index, p] of CHECKPOINTS.entries()) {
+      const marker = CreateTorus(
+        `skyline-roof-marker-${index}`,
+        { diameter: 3, thickness: 0.16, tessellation: 24 },
+        this.scene,
+      );
+      marker.position.set(p.x, p.y + 0.14, p.z);
+      marker.material = this.material(
+        `skyline-marker-${index}`,
+        index === 4 ? "#ff65c6" : "#fff376",
+        index === 4 ? "#ff65c6" : "#fff376",
+      );
+      if (index < 4) {
+        const tip = CreateCylinder(
+          `skyline-arrow-${index}`,
+          { diameterTop: 0, diameterBottom: 1.6, height: 2, tessellation: 3 },
+          this.scene,
+        );
+        tip.position.set(p.x, p.y + 0.15, p.z + 2);
+        tip.rotation.x = Math.PI / 2;
+        tip.material = marker.material;
+        if (index === 3) {
+          tip.position.set(p.x + 3, p.y + 0.15, p.z);
+          tip.rotation.z = -Math.PI / 2;
+          tip.rotation.x = 0;
+        }
+      }
+    }
+    this.webLine = CreateLines(
+      "active-hand-web",
+      { points: [Vector3.Zero(), Vector3.Zero()], updatable: true },
+      this.scene,
+    );
+    this.webLine.color = Color3.White();
+    this.webLine.setEnabled(false);
+    this.wristFlash = CreateSphere(
+      "right-wrist-firing",
+      { diameter: 0.22, segments: 8 },
+      this.scene,
+    );
+    this.wristFlash.material = this.scene.getMaterialByName("anchor-attached");
+    this.wristFlash.setEnabled(false);
+  }
+
+  private renderSwing(): void {
+    const web = this.swing.web;
+    for (const [id, mesh] of this.anchorMeshes) {
+      const attached = web?.anchorId === id,
+        target = this.swing.targetId === id;
+      mesh.material = this.scene.getMaterialByName(
+        attached
+          ? "anchor-attached"
+          : target
+            ? "anchor-target"
+            : "anchor-available",
+      );
+      mesh.scaling.setAll(attached ? 1.2 : target ? 1.18 : 1);
+      mesh.visibility =
+        distance(this.motion.position, {
+          x: mesh.position.x,
+          y: mesh.position.y,
+          z: mesh.position.z,
+        }) < 45
+          ? 1
+          : 0.28;
+    }
+    if (this.rightArm) {
+      this.rightArm.rotation.x = web ? 1.05 : 0;
+      this.rightArm.rotation.z = web ? 0 : 0.13;
+    }
+    this.webLine?.setEnabled(Boolean(web));
+    this.wristFlash?.setEnabled(Boolean(web));
+    if (web && this.webLine && this.wristFlash) {
+      const h = handOrigin(this.motion),
+        origin = new Vector3(h.x, h.y, h.z),
+        target = new Vector3(web.anchor.x, web.anchor.y, web.anchor.z);
+      const amount =
+        this.swing.phase === "WEB_FIRING"
+          ? Math.max(0.1, 1 - this.swing.phaseTime / 0.12)
+          : 1;
+      CreateLines(
+        "active-hand-web",
+        {
+          points: [origin, Vector3.Lerp(origin, target, amount)],
+          instance: this.webLine,
+        },
+        this.scene,
+      );
+      this.wristFlash.position.copyFrom(origin);
+      this.wristFlash.scaling.setAll(
+        this.swing.phase === "WEB_FIRING" ? 1.8 : 1,
+      );
+    }
+  }
 
   private renderFrame = (): void => {
     const now = performance.now();
@@ -350,20 +709,35 @@ export class GameWorld {
     this.lastFrameAt = now;
     this.fpsFrameCount += 1;
     if (now - this.fpsWindowAt >= 1000) {
-      this.fps = Math.round((this.fpsFrameCount * 1000) / (now - this.fpsWindowAt));
+      this.fps = Math.round(
+        (this.fpsFrameCount * 1000) / (now - this.fpsWindowAt),
+      );
       this.fpsSamples.push(this.fps);
       if (this.fpsSamples.length > 60) this.fpsSamples.shift();
       if (this.settings.adaptiveQuality && this.fps < 30) {
-        this.engine.setHardwareScalingLevel(Math.min(2.25, this.engine.getHardwareScalingLevel() + 0.2));
+        this.engine.setHardwareScalingLevel(
+          Math.min(2.25, this.engine.getHardwareScalingLevel() + 0.2),
+        );
       }
       this.fpsWindowAt = now;
       this.fpsFrameCount = 0;
     }
     if (this.active && !this.paused) this.tick(delta);
-    this.heroRoot.position.copyFromFloats(this.motion.position.x, this.motion.position.y, this.motion.position.z);
+    this.heroRoot.position.copyFromFloats(
+      this.motion.position.x,
+      this.motion.position.y,
+      this.motion.position.z,
+    );
     this.heroRoot.rotation.y = this.motion.facingYaw;
-    const target = new Vector3(this.motion.position.x, this.motion.position.y + 1.55, this.motion.position.z);
-    this.camera.target.copyFrom(Vector3.Lerp(this.camera.target, target, Math.min(1, delta * 10)));
+    const target = new Vector3(
+      this.motion.position.x,
+      this.motion.position.y + (this.skyline.active ? 3.4 : 1.55),
+      this.motion.position.z,
+    );
+    this.camera.target.copyFrom(
+      Vector3.Lerp(this.camera.target, target, Math.min(1, delta * 10)),
+    );
+    this.renderSwing();
     this.scene.render();
     if (now - this.lastHudAt > 100) {
       this.lastHudAt = now;
@@ -375,18 +749,23 @@ export class GameWorld {
 
   update(actions: SemanticActions): void {
     this.latestActions = actions;
-    if (!this.active || this.paused || performance.now() < this.recoveringUntil) return;
+    if (!this.active || this.paused || performance.now() < this.recoveringUntil)
+      return;
     const sensitivity = this.settings.cameraSensitivity * 0.0035;
     this.camera.alpha -= actions.lookX * sensitivity;
     const invert = this.settings.invertY ? -1 : 1;
-    this.camera.beta = Math.max(0.55, Math.min(1.35, this.camera.beta + actions.lookY * sensitivity * invert));
-    if (actions.recenterPressed) this.camera.alpha = -Math.PI / 2 - this.motion.facingYaw;
+    this.camera.beta = Math.max(
+      0.55,
+      Math.min(1.65, this.camera.beta + actions.lookY * sensitivity * invert),
+    );
+    if (actions.recenterPressed)
+      this.camera.alpha = -Math.PI / 2 - this.motion.facingYaw;
     if (actions.jumpPressed) this.pendingJump = true;
   }
 
   private tick(delta: number): void {
     const actions = this.latestActions;
-    if (!actions) return;
+    if (!actions || performance.now() < this.recoveringUntil) return;
     this.accumulator += delta;
     let steps = 0;
     while (this.accumulator >= FIXED_STEP && steps < MAX_STEPS_PER_FRAME) {
@@ -395,22 +774,70 @@ export class GameWorld {
         y: 0,
         z: -Math.sin(this.camera.alpha),
       };
-      this.motion = stepMotion(
+      const before = this.motion,
+        priorSwing = this.swing;
+      const target = this.camera.target;
+      const cameraPosition = this.camera.position;
+      const result = stepSwing(
         this.motion,
+        this.swing,
         {
           moveX: actions.moveX,
           moveY: actions.moveY,
           run: actions.run,
           jumpPressed: this.pendingJump,
+          swingHeld: Boolean(actions.swingHeld),
           cameraForward,
+          aim: {
+            origin: {
+              x: cameraPosition.x,
+              y: cameraPosition.y,
+              z: cameraPosition.z,
+            },
+            direction: {
+              x: target.x - cameraPosition.x,
+              y: target.y - cameraPosition.y,
+              z: target.z - cameraPosition.z,
+            },
+          },
         },
-        this.environment,
+        ANCHORS,
+        this.skylineSolids,
       );
+      this.motion = result.motion;
+      this.swing = result.swing;
+      const route = advanceSkyline(
+        this.skyline,
+        before,
+        this.motion,
+        priorSwing,
+        this.swing,
+      );
+      this.skyline = route.route;
+      if (route.changed) {
+        if (this.skyline.active) {
+          this.camera.radius = 16;
+          this.camera.fov = 1.08;
+        }
+        this.checkpoint = copyVec3(CHECKPOINTS[this.skyline.stage]!);
+        this.pendingCheckpoint = true;
+      }
+      if (this.pendingCheckpoint && this.isSafe()) {
+        this.pendingCheckpoint = false;
+        this.callbacks.onProgress(
+          this.progress,
+          ROUTE_LABELS[this.skyline.stage]!,
+        );
+      }
+      if (this.motion.grounded && this.motion.position.y === FALLBACK.maxY) {
+        this.recoverFromFall();
+        break;
+      }
       this.pendingJump = false;
       this.accumulator -= FIXED_STEP;
       steps += 1;
       this.checkProgress();
-      if (this.motion.position.y < -10) {
+      if (this.motion.position.y < (this.skyline.active ? -20 : -10)) {
         this.recoverFromFall();
         break;
       }
@@ -420,6 +847,7 @@ export class GameWorld {
   }
 
   private checkProgress(): void {
+    if (this.skyline.active || !this.motion.grounded) return;
     let next = this.progress;
     let label = this.progressLabel;
     let checkpoint = this.checkpoint;
@@ -427,11 +855,19 @@ export class GameWorld {
       next = 1;
       label = "Reach the golden sun pad";
       checkpoint = { x: 0, y: 0, z: 1.2 };
-    } else if (this.progress === 1 && this.motion.position.x >= 3.2 && this.motion.position.z >= 8) {
+    } else if (
+      this.progress === 1 &&
+      this.motion.position.x >= 3.2 &&
+      this.motion.position.z >= 8
+    ) {
       next = 2;
       label = "Race to the pink finish beacon";
       checkpoint = { x: 5, y: 0, z: 10 };
-    } else if (this.progress === 2 && this.motion.position.x <= -2.2 && this.motion.position.z >= 16) {
+    } else if (
+      this.progress === 2 &&
+      this.motion.position.x <= -2.2 &&
+      this.motion.position.z >= 16
+    ) {
       next = 3;
       label = "Practice route complete — explore or save";
       checkpoint = { x: -4, y: 0, z: 18 };
@@ -454,6 +890,11 @@ export class GameWorld {
       grounded: true,
       facingYaw: 0,
     };
+    this.swing = clearSwing(this.swing, "FALL_RECOVERY");
+    this.skyline = resetSegment(this.skyline);
+    this.accumulator = 0;
+    this.latestActions = null;
+    this.pendingJump = false;
     this.recoveringUntil = performance.now() + 650;
     this.callbacks.onRecovery(this.health, fullRetry);
   }
@@ -466,13 +907,19 @@ export class GameWorld {
       health: this.health,
       maxHealth: MAX_HEALTH,
       progress: this.progress,
-      progressLabel: this.progressLabel,
+      progressLabel: this.skyline.active
+        ? ROUTE_LABELS[this.skyline.stage]!
+        : this.progressLabel,
       position: copyVec3(this.motion.position),
       grounded: this.motion.grounded,
       fps: this.fps,
       cameraAlpha: this.camera.alpha,
       cameraBeta: this.camera.beta,
       inputSource: source,
+      velocity: copyVec3(this.motion.velocity),
+      swing: structuredClone(this.swing),
+      hand: handOrigin(this.motion),
+      skyline: structuredClone(this.skyline),
     });
   }
 
@@ -484,10 +931,37 @@ export class GameWorld {
     this.fpsFrameCount = 0;
     this.health = payload?.health ?? MAX_HEALTH;
     this.progress = payload?.progress ?? 0;
-    this.progressLabel = payload?.progressLabel ?? "Reach the glowing sky gate";
-    this.checkpoint = copyVec3(payload?.checkpoint ?? START);
+    this.progressLabel = payload?.skyline
+      ? [
+          "Reach the glowing sky gate",
+          "Reach the golden sun pad",
+          "Race to the pink finish beacon",
+          "Practice route complete — explore or save",
+        ][Math.min(payload.progress, 3)]!
+      : (payload?.progressLabel ?? "Reach the glowing sky gate");
+    this.swing = newSwing();
+    this.swing.freshRequired = true;
+    this.skyline = newSkyline();
+    this.pendingCheckpoint = false;
+    if (payload?.skyline) {
+      this.skyline = {
+        ...this.skyline,
+        active: true,
+        stage: payload.skyline.checkpoint,
+        completed: payload.skyline.completed,
+      };
+    }
+    this.checkpoint = copyVec3(
+      payload?.skyline
+        ? CHECKPOINTS[payload.skyline.checkpoint]!
+        : (payload?.checkpoint ?? START),
+    );
     this.motion = {
-      position: copyVec3(payload?.position ?? this.checkpoint),
+      position: copyVec3(
+        payload?.skyline
+          ? restoreSkylinePosition(payload.position, payload.skyline.checkpoint)
+          : (payload?.position ?? this.checkpoint),
+      ),
       velocity: { x: 0, y: 0, z: 0 },
       grounded: true,
       facingYaw: 0,
@@ -497,10 +971,13 @@ export class GameWorld {
     this.recoveringUntil = 0;
     this.camera.alpha = -Math.PI / 2;
     this.camera.beta = 1.08;
+    this.camera.radius = this.skyline.active ? 16 : 10.5;
+    this.camera.fov = this.skyline.active ? 1.08 : 0.8;
     this.emitFrame("keyboard-mouse");
   }
 
   stop(): void {
+    this.swing = clearSwing(this.swing);
     this.active = false;
     this.paused = true;
     this.latestActions = null;
@@ -515,8 +992,11 @@ export class GameWorld {
     this.accumulator = 0;
     // Pausing is an input lifecycle boundary: do not let pre-pause running
     // momentum act like a held control after the player resumes.
-    this.motion.velocity.x = 0;
-    this.motion.velocity.z = 0;
+    if (this.motion.grounded) {
+      this.motion.velocity.x = 0;
+      this.motion.velocity.z = 0;
+    }
+    this.swing = clearSwing(this.swing);
     this.emitFrame("keyboard-mouse");
     return true;
   }
@@ -529,6 +1009,9 @@ export class GameWorld {
   }
 
   restart(): void {
+    this.swing = clearSwing(this.swing);
+    this.skyline = resetSegment(this.skyline);
+    this.latestActions = null;
     this.health = MAX_HEALTH;
     this.motion = {
       position: copyVec3(this.checkpoint),
@@ -543,12 +1026,31 @@ export class GameWorld {
   }
 
   isSafe(): boolean {
-    return this.active && this.motion.grounded && performance.now() >= this.recoveringUntil;
+    return (
+      this.active &&
+      safeToSave(
+        this.motion,
+        this.swing,
+        performance.now() < this.recoveringUntil,
+      )
+    );
   }
 
-  snapshot(slot: 1 | 2 | 3, difficulty: RunSavePayload["difficulty"]): RunSavePayload {
+  snapshot(
+    slot: 1 | 2 | 3,
+    difficulty: RunSavePayload["difficulty"],
+  ): RunSavePayload {
     return {
       schemaVersion: 1,
+      ...(this.skyline.active
+        ? {
+            skyline: {
+              version: 1 as const,
+              checkpoint: this.skyline.stage,
+              completed: this.skyline.completed,
+            },
+          }
+        : {}),
       slot,
       difficulty,
       health: this.health,
@@ -556,7 +1058,9 @@ export class GameWorld {
       position: copyVec3(this.motion.position),
       checkpoint: copyVec3(this.checkpoint),
       progress: this.progress,
-      progressLabel: this.progressLabel,
+      progressLabel: this.skyline.active
+        ? ROUTE_LABELS[this.skyline.stage]!
+        : this.progressLabel,
       costumeId: "skyline-teal",
       completion: false,
       updatedAt: Date.now(),
@@ -566,10 +1070,16 @@ export class GameWorld {
   applySettings(settings: GameSettings): void {
     this.settings = { ...settings };
     const adaptiveScale = window.innerWidth >= 1600 ? 2.25 : 1.4;
-    this.engine.setHardwareScalingLevel(settings.adaptiveQuality ? adaptiveScale : 1);
+    this.engine.setHardwareScalingLevel(
+      settings.adaptiveQuality ? adaptiveScale : 1,
+    );
   }
 
-  performanceSummary(): { samples: number[]; minimum: number | null; current: number } {
+  performanceSummary(): {
+    samples: number[];
+    minimum: number | null;
+    current: number;
+  } {
     return {
       samples: [...this.fpsSamples],
       minimum: this.fpsSamples.length ? Math.min(...this.fpsSamples) : null,
@@ -578,12 +1088,24 @@ export class GameWorld {
   }
 
   setFixturePosition(position: Vec3Data): void {
+    this.swing = clearSwing(this.swing);
+    this.skyline = { ...resetSegment(this.skyline), valid: false };
     this.motion.position = copyVec3(position);
     this.motion.velocity = { x: 0, y: 0, z: 0 };
     this.motion.grounded = false;
     this.motion.facingYaw = 0;
     this.camera.alpha = -Math.PI / 2;
     this.camera.beta = 1.08;
+  }
+
+  replaySkyline(): void {
+    this.skyline = {
+      ...newSkyline(),
+      completed: this.skyline.completed,
+      completions: this.skyline.completions,
+    };
+    this.checkpoint = copyVec3(SKY_START);
+    this.restart();
   }
 
   stateForTests(): WorldFrame {
@@ -594,13 +1116,19 @@ export class GameWorld {
       health: this.health,
       maxHealth: MAX_HEALTH,
       progress: this.progress,
-      progressLabel: this.progressLabel,
+      progressLabel: this.skyline.active
+        ? ROUTE_LABELS[this.skyline.stage]!
+        : this.progressLabel,
       position: copyVec3(this.motion.position),
       grounded: this.motion.grounded,
       fps: this.fps,
       cameraAlpha: this.camera.alpha,
       cameraBeta: this.camera.beta,
       inputSource: this.latestActions?.source ?? "keyboard-mouse",
+      velocity: copyVec3(this.motion.velocity),
+      swing: structuredClone(this.swing),
+      hand: handOrigin(this.motion),
+      skyline: structuredClone(this.skyline),
     };
   }
 

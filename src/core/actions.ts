@@ -30,6 +30,7 @@ export interface MappedGamepad {
   lookX: number;
   lookY: number;
   run: boolean;
+  swing: boolean;
   confirm: boolean;
   back: boolean;
   pause: boolean;
@@ -74,6 +75,7 @@ const EMPTY_ACTIONS: SemanticActions = {
   lookX: 0,
   lookY: 0,
   run: false,
+  swingHeld: false,
   jumpPressed: false,
   recenterPressed: false,
   pausePressed: false,
@@ -84,13 +86,15 @@ const EMPTY_ACTIONS: SemanticActions = {
   source: "keyboard-mouse",
 };
 
-const RELEVANT_BUTTONS = [0, 1, 7, 9, 10, 12, 13, 14, 15] as const;
+const RELEVANT_BUTTONS = [0, 1, 6, 7, 9, 10, 11, 12, 13, 14, 15] as const;
 const BUTTON_LABELS: Record<(typeof RELEVANT_BUTTONS)[number], string> = {
   0: "confirm/jump",
   1: "back",
+  6: "swing web",
   7: "run",
   9: "pause",
-  10: "recenter",
+  10: "recenter (legacy)",
+  11: "recenter",
   12: "d-pad up",
   13: "d-pad down",
   14: "d-pad left",
@@ -164,10 +168,11 @@ export function mapStandardGamepad(pad: GamepadLike): MappedGamepad {
     lookX,
     lookY,
     run: buttonPressed(pad, 7),
+    swing: buttonPressed(pad, 6),
     confirm: buttonPressed(pad, 0),
     back: buttonPressed(pad, 1),
     pause: buttonPressed(pad, 9),
-    recenter: buttonPressed(pad, 10),
+    recenter: buttonPressed(pad, 11) || buttonPressed(pad, 10),
     menuX,
     menuY,
     neutral: relevantNeutral(pad),
@@ -495,6 +500,7 @@ export class InputManager {
     actions.moveY = (key("KeyW") || key("ArrowUp") ? 1 : 0) - (key("KeyS") || key("ArrowDown") ? 1 : 0);
     actions.lookX = this.mouseLookX;
     actions.lookY = this.mouseLookY;
+    actions.swingHeld = key("KeyE");
     actions.run = key("ShiftLeft") || key("ShiftRight");
     actions.jumpPressed = pressed("Space");
     actions.confirmPressed = pressed("Enter") || pressed("Space");
@@ -514,6 +520,7 @@ export class InputManager {
       actions.lookX += mapped.lookX * 16;
       actions.lookY += mapped.lookY * 16;
       actions.run ||= mapped.run;
+      actions.swingHeld ||= mapped.swing;
       actions.jumpPressed ||= edge(mapped.confirm, previous?.confirm);
       actions.confirmPressed ||= edge(mapped.confirm, previous?.confirm);
       actions.backPressed ||= edge(mapped.back, previous?.back);

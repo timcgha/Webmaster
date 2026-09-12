@@ -192,3 +192,19 @@ describe("controller lifecycle and active-device selection", () => {
     expect(tracker.diagnosticsText()).not.toMatch(/save|localStorage|health/i);
   });
 });
+
+describe("WM-002 swing semantic lifecycle",()=>{
+  it("maps LT/L2 to swing while preserving RT/R2 run and both stick recenter routes",()=>{
+    expect(mapStandardGamepad(pad("DualSense",{pressed:[6]}))).toMatchObject({swing:true,run:false,neutral:false});
+    expect(mapStandardGamepad(pad("Xbox",{pressed:[7,11]}))).toMatchObject({swing:false,run:true,recenter:true});
+    expect(mapStandardGamepad(pad("Xbox",{pressed:[10]})).recenter).toBe(true);
+  });
+  it("requires neutral release of LT after first exposure, pause/focus reset and reconnect",()=>{
+    let now=0;const tracker=new ControllerTracker(()=>now);const held=pad("Xbox",{pressed:[6]}),neutral=pad("Xbox");
+    expect(tracker.sample([held]).acceptsInput).toBe(false);now+=1000;expect(tracker.sample([held]).acceptsInput).toBe(false);
+    tracker.sample([neutral]);now+=121;tracker.sample([neutral]);expect(tracker.sample([held])).toMatchObject({acceptsInput:true,mapped:{swing:true}});
+    tracker.requireFreshInput();expect(tracker.sample([held]).acceptsInput).toBe(false);
+    tracker.noteDisconnected(0);expect(tracker.sample([]).acceptsInput).toBe(false);expect(tracker.sample([held]).acceptsInput).toBe(false);
+    expect(tracker.diagnosticsText()).toContain('swing web');
+  });
+});

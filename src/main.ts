@@ -349,7 +349,7 @@ class WebmasterApp {
     this.screen = "pause";
     const safeDetail = this.pauseSafeAtEntry
       ? "Grounded safe position ready"
-      : "Unavailable while airborne or recovering — resume to reach safe ground";
+      : "Unavailable while swinging, airborne, landing or recovering — resume to reach safe ground";
     this.renderPanel(
       "Paused",
       "The city and all held inputs are frozen. Resume requires fresh input.",
@@ -357,6 +357,7 @@ class WebmasterApp {
         { label: "Resume", detail: "Return to practice", action: () => this.resume() },
         { label: "Save Game", detail: safeDetail, disabled: !this.pauseSafeAtEntry, action: () => this.saveManual(false) },
         { label: "Save & Quit", detail: safeDetail, disabled: !this.pauseSafeAtEntry, action: () => this.saveManual(true) },
+        ...(this.latestFrame.skyline.active ? [{ label: "Replay skyline route", detail: "Return to the first ring; keep earned completion", action: () => { world.replaySkyline(); this.resume(); } }] : []),
         { label: "Restart at checkpoint", detail: "Full health, current progress", action: () => this.restart() },
         { label: "Settings", detail: "Camera and display", action: () => this.openSettings("pause") },
         { label: "Controller Details", detail: "Connection status and local diagnostics", action: () => this.openControllerDetails("pause") },
@@ -563,13 +564,19 @@ class WebmasterApp {
         <strong>Look</strong> Drag / Right Stick
         <strong>Jump</strong> Space / A / ✕
         <strong>Run</strong> Shift / RT / R2
+        <strong>Swing</strong> Hold E / LT / L2, release to let go
         <strong>Recenter</strong> R / RS
         <strong>Pause</strong> Esc / Menu / Options
       </section>
+      <section class="hud-card swing-card" aria-label="Swing status"><span class="hud-kicker" data-hud="swing-prompt"></span><strong data-hud="swing-state"></strong><small data-hud="swing-message"></small></section>
       <p id="fixture-badge" class="fixture-badge hidden"></p>
       `;
     }
-    hudLayer.querySelector<HTMLElement>("[data-hud='practice']")!.textContent = `PRACTICE ${Math.min(frame.progress + 1, 3)} / 3`;
+    hudLayer.querySelector<HTMLElement>("[data-hud='practice']")!.textContent = frame.skyline.active ? `SKYLINE ${Math.min(frame.skyline.stage + 1, 4)} / 4` : `PRACTICE ${Math.min(frame.progress + 1, 3)} / 3`;
+    hudLayer.querySelector<HTMLElement>("[data-hud='swing-state']")!.textContent = frame.swing.web ? `Attached to ${frame.swing.web.anchorId.replace("ring-", "ring ")}` : frame.swing.targetId ? "Ring in reach" : "Find a glowing ring";
+    hudLayer.querySelector<HTMLElement>("[data-hud='swing-message']")!.textContent = frame.swing.message;
+    hudLayer.querySelector<HTMLElement>("[data-hud='swing-prompt']")!.textContent = `SWING: Hold E / ${this.input.controllerStatus().family === "playstation" ? "L2" : "LT"} • release to let go`;
+    hudLayer.querySelector<HTMLElement>(".swing-card")!.classList.toggle("hidden", !frame.skyline.active && frame.position.z < 16);
     hudLayer.querySelector<HTMLElement>("[data-hud='objective']")!.textContent = frame.progressLabel;
     const healthCard = hudLayer.querySelector<HTMLElement>(".health-card")!;
     healthCard.setAttribute("aria-label", `Health ${healthPercent} percent`);

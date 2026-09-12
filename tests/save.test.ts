@@ -176,3 +176,18 @@ describe("SaveStore two-generation commits", () => {
     expect(store.read(1, "checkpoint").payload).toMatchObject({ difficulty: "Hard", updatedAt: 100 });
   });
 });
+
+describe("WM-002 additive progress compatibility",()=>{
+  it("reads exact WM-001 schema records unchanged and keeps the manual record when skyline checkpoint advances",()=>{
+    const storage=new MemoryStorage(),store=new SaveStore(storage);const old=payload(1,"Hard",10);
+    expect(store.write(1,"manual",old).ok).toBe(true);expect(store.read(1,"manual").payload).toEqual(old);
+    const upgraded={...old,updatedAt:20,skyline:{version:1 as const,checkpoint:2 as const,completed:false}};
+    expect(store.write(1,"checkpoint",upgraded).ok).toBe(true);expect(store.read(1,"checkpoint").payload).toEqual(upgraded);expect(store.read(1,"manual").payload).toEqual(old);
+  });
+  it("rejects malformed or future skyline versions while preserving the committed record",()=>{
+    const storage=new MemoryStorage(),store=new SaveStore(storage);const old=payload(1,"Easy",10);store.write(1,"manual",old);
+    for(const skyline of [{version:2,checkpoint:0,completed:false},{version:1,checkpoint:9,completed:true},{version:1,checkpoint:4,completed:false}]){
+      expect(store.write(1,"manual",{...old,skyline} as any).ok).toBe(false);expect(store.read(1,"manual").payload).toEqual(old);
+    }
+  });
+});
