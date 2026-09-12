@@ -480,7 +480,12 @@ test("WM003 original eyes palette body lattice and actual backward forward swing
   await wait(page, (s) => !!s.swing.web);
   await page.keyboard.up("w");
   await page.keyboard.up("Shift");
-  await look(page, 0, 1.15);
+  // A single ordinary drag gets the side view before the initial trailing phase passes.
+  const beforeOrbit=await state(page),dx=beforeOrbit.cameraAlpha/.0035,dy=(1.15-beforeOrbit.cameraBeta)/.0035;
+  await page.locator('#game-canvas').dispatchEvent('mousedown',{clientX:600,clientY:380,button:0,buttons:1,bubbles:true});
+  await page.locator('body').dispatchEvent('mousemove',{clientX:600+dx,clientY:380+dy,buttons:1,bubbles:true});
+  await page.locator('body').dispatchEvent('mouseup',{clientX:600+dx,clientY:380+dy,button:0,bubbles:true});
+  await page.waitForTimeout(50);
   await page.keyboard.down("a");
   await wait(
     page,
