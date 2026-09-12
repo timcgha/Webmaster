@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import { chromium } from "@playwright/test";
 import { route } from "../e2e/routes/wm003-route.ts";
 
-const root = resolve("dist");
+const root = resolve(process.env.WM_DIST_ROOT || "dist");
 const output = "evidence/wm-003";
 await mkdir(output, { recursive: true });
 const identity = {
@@ -53,9 +53,24 @@ assert(
   !html.includes("/src/"),
   "Compiled HTML cannot contain development source entry",
 );
+const viteGraph = JSON.parse(await readFile(join(root, ".vite/manifest.json"), "utf8"));
+const visited = new Set(), reachable = new Set(["index.html", ".vite/manifest.json"]);
+function visit(key) {
+  if (visited.has(key)) return;
+  const item = viteGraph[key];
+  assert(item, `Missing manifest entry ${key}`);
+  visited.add(key); reachable.add(item.file);
+  for (const file of [...(item.css || []), ...(item.assets || [])]) reachable.add(file);
+  for (const dependency of [...(item.imports || []), ...(item.dynamicImports || [])]) visit(dependency);
+}
+visit("index.html");
+assert.deepEqual(files.map(f => f.path).sort(), [...reachable].sort(), "Build must contain exactly the reachable entry graph plus Vite manifest; no stale chunks");
+assert(files.every(f => f.path === "index.html" || f.path === ".vite/manifest.json" || /^assets\/[^/]+\.(js|css|wasm)$/.test(f.path)), "Deployment input excludes repository/source/test/environment files");
 const manifest = {
   ...identity,
   base: "/Webmaster/",
+  outputDirectory: root,
+  reachableGraph: { root: "index.html", entryFile: viteGraph["index.html"].file, entries: visited.size, reachableFiles: reachable.size, unusedFiles: [], result: "PASS" },
   files,
   rawBytes: files.reduce((sum, f) => sum + f.bytes, 0),
   gzipBytes: files.reduce((sum, f) => sum + f.gzipBytes, 0),
