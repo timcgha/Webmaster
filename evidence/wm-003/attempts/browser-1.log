@@ -1,0 +1,48 @@
+[WebServer] (node:39) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ vite --host 127.0.0.1 --port 4173
+[WebServer] (node:54) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:96) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › e2e/wm003.spec.ts:29:1 › WM003 ordinary keyboard combined swing climb ceiling pull route (32.6s)
+
+
+  1) [chromium] › e2e/wm003.spec.ts:29:1 › WM003 ordinary keyboard combined swing climb ceiling pull route 
+
+    TimeoutError: page.waitForFunction: Timeout 20000ms exceeded.
+
+      3 | const out='evidence/wm-003/captures';
+      4 | const state=(p:Page)=>p.evaluate(()=>window.__WM_DEBUG__!.getState());
+    > 5 | async function wait(p:Page,fn:(s:any)=>boolean,timeout=20000){await p.waitForFunction(({body})=>new Function('s',`return (${body})(s)`)(window.__WM_DEBUG__!.getState()),{body:fn.toString()},{timeout});}
+        |                                                                       ^
+      6 | async function shot(p:Page,name:string){await mkdir(out,{recursive:true});await p.screenshot({path:`${out}/${name}.png`});}
+      7 | async function start(p:Page){await p.goto('/?test=1');await expect(p.locator('#loading')).toHaveClass(/hidden/);await p.getByRole('button',{name:/New Game/}).click();await p.getByRole('button',{name:/Slot 1/}).click();await p.getByRole('button',{name:/Normal/}).click();}
+      8 | async function look(p:Page,alpha:number,beta?:number){const before=await state(p);const dx=(before.cameraAlpha-alpha)/.0035,dy=beta===undefined?0:(beta-before.cameraBeta)/.0035;await p.locator('#game-canvas').dispatchEvent('mousedown',{clientX:600,clientY:380,button:0,buttons:1,bubbles:true});for(let n=1;n<=10;n++){await p.locator('body').dispatchEvent('mousemove',{clientX:600+dx*n/10,clientY:380+dy*n/10,buttons:1,bubbles:true});await p.waitForTimeout(20);}await p.locator('body').dispatchEvent('mouseup',{clientX:600+dx,clientY:380+dy,button:0,bubbles:true});await p.waitForTimeout(120);}
+        at wait (/workspace/scratch/bb63ed1d5d6d/wm003-implementation/e2e/wm003.spec.ts:5:71)
+        at route (/workspace/scratch/bb63ed1d5d6d/wm003-implementation/e2e/wm003.spec.ts:16:36)
+        at /workspace/scratch/bb63ed1d5d6d/wm003-implementation/e2e/wm003.spec.ts:29:211
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/wm003-WM003-ordinary-keybo-56c90-ng-climb-ceiling-pull-route-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/wm003-WM003-ordinary-keybo-56c90-ng-climb-ceiling-pull-route-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/wm003-WM003-ordinary-keybo-56c90-ng-climb-ceiling-pull-route-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/wm003-WM003-ordinary-keybo-56c90-ng-climb-ceiling-pull-route-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/wm003-WM003-ordinary-keybo-56c90-ng-climb-ceiling-pull-route-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › e2e/wm003.spec.ts:29:1 › WM003 ordinary keyboard combined swing climb ceiling pull route 

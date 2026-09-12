@@ -1,0 +1,95 @@
+[WebServer] (node:37) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ vite --host 127.0.0.1 --port 4173
+[WebServer] (node:52) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 42 tests using 1 worker
+
+(node:91) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › e2e/wm001.spec.ts:165:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route (21.3s)
+  ✓   2 [chromium] › e2e/wm001.spec.ts:268:3 › WM-001 rendered keyboard and mouse journey › recovers from a fall, reduces health, and performs a clean zero-health retry (6.4s)
+  ✓   3 [chromium] › e2e/wm001.spec.ts:282:3 › WM-001 rendered keyboard and mouse journey › explains and enforces safe-state saving while airborne (3.1s)
+  ✓   4 [chromium] › e2e/wm001.spec.ts:303:3 › WM-001 rendered simulated Gamepad journey › uses gamepad alone for new game, movement, camera, pause, save, save-and-quit, Continue, and Load (15.9s)
+  ✓   5 [chromium] › e2e/wm001.spec.ts:362:3 › WM-001 rendered simulated Gamepad journey › disconnect releases motion and reconnect requires neutral then fresh input (6.0s)
+  ✓   6 [chromium] › e2e/wm001.spec.ts:384:3 › WM-001 rendered simulated Gamepad journey › shows PlayStation-style prompts without changing standard semantic actions (2.2s)
+  ✓   7 [chromium] › e2e/wm001.spec.ts:392:3 › WM-001 rendered simulated Gamepad journey › operates persisted main and pause settings without mouse or typing (14.9s)
+  ✓   8 [chromium] › e2e/wm001.spec.ts:429:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › makes exposure, release, ready, HUD status, and local copy diagnostics persistent (3.9s)
+  ✓   9 [chromium] › e2e/wm001.spec.ts:464:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps keyboard available when the Gamepad API is unavailable (1.6s)
+  ✓  10 [chromium] › e2e/wm001.spec.ts:478:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › rejects an unsupported mapping visibly while keyboard remains available (1.4s)
+  ✓  11 [chromium] › e2e/wm001.spec.ts:490:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › selects active index 1 over idle index 0 and ignores noisy extra axes (2.8s)
+  ✓  12 [chromium] › e2e/wm001.spec.ts:514:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › supports connection after load, disconnect cleanup, keyboard fallback, and deliberate replacement (7.1s)
+  ✓  13 [chromium] › e2e/wm001.spec.ts:551:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › cleans up held movement on blur/focus and requires neutral then fresh input (6.0s)
+  ✓  14 [chromium] › e2e/wm001.spec.ts:578:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps controller status and local diagnostics usable at a representative iPad landscape viewport (2.5s)
+  ✓  15 [chromium] › e2e/wm001.spec.ts:598:1 › keeps occupied-slot bytes unchanged when replacement is cancelled (3.4s)
+  ✓  16 [chromium] › e2e/wm001.spec.ts:615:1 › keeps the prior committed save and remains paused when Save & Quit write fails (2.9s)
+  ✓  17 [chromium] › e2e/wm001.spec.ts:637:1 › loads only the prior commit after pointer verification fails, then permits a clean retry (5.9s)
+  ✓  18 [chromium] › e2e/wm001.spec.ts:696:1 › renders storage-unavailable records explicitly and refuses destructive replacement (2.9s)
+  ✓  19 [chromium] › e2e/wm001.spec.ts:728:1 › remains controllable under a second real-time CPU/frame profile (6.7s)
+  ✓  20 [chromium] › e2e/wm001.spec.ts:753:1 › persists a Hard run after closing and reopening the same browser profile and exact origin (6.8s)
+  ✓  21 [chromium] › e2e/wm001.spec.ts:802:1 › labels corrupt and incompatible save fixtures without hiding valid choices (1.8s)
+  ✓  22 [chromium] › e2e/wm001.spec.ts:814:1 › keeps the rendered HUD and menus usable at 1920x1080 and representative iPad landscape (5.4s)
+{"author":"WEBMASTER_IMPLEMENTER","label":"candidate","observedAt":"2026-09-12T17:16:03.318Z","commit":"38065d798dafe7db0b88421d4243e84f93cd1f04","tree":"602c5a206c85b418c4f269f22d777794ab9cbe04","sourceDiff":"","browserName":"chromium","viewport":[1280,720],"samples":{"samples":[37,37],"minimum":37,"current":37},"method":"Ordinary New Game / slot 1 / Easy; adaptive quality default; wait 2200ms after input-overlay; same debug.performance() samples as unchanged WM-001 representative gate; video enabled.","absoluteFloor":30,"absoluteResult":"PASS","limitation":"Headless Linux software-renderer measurement; not physical Windows/iPad or swing-route performance."}
+  ✓  23 [chromium] › e2e/wm002-performance.spec.ts:11:3 › parent FPS measurement 1280x720 (4.4s)
+{"author":"WEBMASTER_IMPLEMENTER","label":"candidate","observedAt":"2026-09-12T17:16:07.263Z","commit":"38065d798dafe7db0b88421d4243e84f93cd1f04","tree":"602c5a206c85b418c4f269f22d777794ab9cbe04","sourceDiff":"","browserName":"chromium","viewport":[1920,1080],"samples":{"samples":[33,36],"minimum":33,"current":36},"method":"Ordinary New Game / slot 1 / Easy; adaptive quality default; wait 2200ms after input-overlay; same debug.performance() samples as unchanged WM-001 representative gate; video enabled.","absoluteFloor":30,"absoluteResult":"PASS","limitation":"Headless Linux software-renderer measurement; not physical Windows/iPad or swing-route performance."}
+  ✓  24 [chromium] › e2e/wm002-performance.spec.ts:11:3 › parent FPS measurement 1920x1080 (3.8s)
+  ✓  25 [chromium] › e2e/wm002.spec.ts:126:1 › WM-002 keyboard continuous four-gap route, safe save and same-origin reopen (29.2s)
+  ✓  26 [chromium] › e2e/wm002.spec.ts:349:1 › WM-002 simulated PlayStation controller-only complete route and safe save/load (26.4s)
+  ✓  27 [chromium] › e2e/wm002.spec.ts:388:1 › WM-002 targeted anchor, unsafe save, pause, focus, fall recovery, invalid finish and replay cleanup (12.8s)
+  ✓  28 [chromium] › e2e/wm002.spec.ts:454:1 › WM-002 LT disconnect clears web, reconnect needs neutral and diagnostics retain swing mapping (10.1s)
+  ✓  29 [chromium] › e2e/wm002.spec.ts:496:3 › WM-002 continuous keyboard route under near-30fps render schedule (22.6s)
+  ✓  30 [chromium] › e2e/wm002.spec.ts:496:3 › WM-002 continuous keyboard route under uneven render schedule (23.2s)
+  ✓  31 [chromium] › e2e/wm002.spec.ts:544:1 › WM-002 repeated pause, replay, save and load keeps runtime resources bounded (21.3s)
+  ✓  32 [chromium] › e2e/wm003.spec.ts:20:1 › WM003 ordinary keyboard combined swing climb ceiling pull route (55.3s)
+  ✓  33 [chromium] › e2e/wm003.spec.ts:59:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback (46.1s)
+  ✓  34 [chromium] › e2e/wm003.spec.ts:123:3 › WM003 loads exact historical WM-001 writer records without changing old generations (1.6s)
+  ✓  35 [chromium] › e2e/wm003.spec.ts:123:3 › WM003 loads exact historical WM-002 writer records without changing old generations (1.4s)
+  ✓  36 [chromium] › e2e/wm003.spec.ts:167:1 › WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen (1.5m)
+  ✓  37 [chromium] › e2e/wm003.spec.ts:281:1 › WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web (24.8s)
+  ✓  38 [chromium] › e2e/wm003.spec.ts:394:1 › WM003 RB and LB disconnect cleanup with neutral reconnect and keyboard fallback (9.6s)
+  ✘  39 [chromium] › e2e/wm003.spec.ts:457:1 › WM003 original eyes palette body lattice and actual backward forward swing-leg phases (39.3s)
+(node:2013) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  40 [chromium] › e2e/wm003.spec.ts:536:3 › WM003 complete route under near-30 rendered timing (30.6s)
+  ✓  41 [chromium] › e2e/wm003.spec.ts:536:3 › WM003 complete route under uneven rendered timing (38.8s)
+  ✓  42 [chromium] › e2e/wm003.spec.ts:593:1 › WM003 repeated replay pause save load clears transients and bounds resources (21.5s)
+
+
+  1) [chromium] › e2e/wm003.spec.ts:457:1 › WM003 original eyes palette body lattice and actual backward forward swing-leg phases 
+
+    TimeoutError: page.waitForFunction: Timeout 20000ms exceeded.
+
+       at routes/wm003-route.ts:7
+
+       5 |   p.evaluate(() => window.__WM_DEBUG__!.getState());
+       6 | export async function wait(p: Page, fn: (s: any) => boolean, timeout = 20000) {
+    >  7 |   await p.waitForFunction(
+         |           ^
+       8 |     ({ body }) =>
+       9 |       new Function("s", `return (${body})(s)`)(window.__WM_DEBUG__!.getState()),
+      10 |     { body: fn.toString() },
+        at wait (/workspace/scratch/bb63ed1d5d6d/wm003-implementation/e2e/routes/wm003-route.ts:7:11)
+        at /workspace/scratch/bb63ed1d5d6d/wm003-implementation/e2e/wm003.spec.ts:485:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/wm003-WM003-original-eyes--d935c-rd-forward-swing-leg-phases-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/wm003-WM003-original-eyes--d935c-rd-forward-swing-leg-phases-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/wm003-WM003-original-eyes--d935c-rd-forward-swing-leg-phases-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/wm003-WM003-original-eyes--d935c-rd-forward-swing-leg-phases-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/wm003-WM003-original-eyes--d935c-rd-forward-swing-leg-phases-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › e2e/wm003.spec.ts:457:1 › WM003 original eyes palette body lattice and actual backward forward swing-leg phases 
+  41 passed (10.8m)

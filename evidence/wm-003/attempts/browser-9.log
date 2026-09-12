@@ -1,0 +1,111 @@
+[WebServer] (node:38) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ vite --host 127.0.0.1 --port 4173
+[WebServer] (node:53) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:92) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › e2e/wm002.spec.ts:126:1 › WM-002 keyboard continuous four-gap route, safe save and same-origin reopen (33.4s)
+  ✘  2 [chromium] › e2e/wm003.spec.ts:49:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback (50.9s)
+(node:384) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [chromium] › e2e/wm003.spec.ts:57:1 › WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen (1.2m)
+
+
+  1) [chromium] › e2e/wm003.spec.ts:49:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+    -   "x": 0,
+    +   "x": -0,
+        "y": 0,
+        "z": 0,
+      }
+
+      47 | test('WM003 ordinary keyboard combined swing climb ceiling pull route',async({page},info)=>{test.setTimeout(180000);const errors:string[]=[];page.on('pageerror',e=>errors.push(String(e)));try{await start(page);await route(page);expect((await state(page)).training).toMatchObject({completed:true,stage:6,completions:1,valid:true});expect(errors).toEqual([]);await writeFile(`${out}/keyboard-route.json`,JSON.stringify({method:'Ordinary New Game and keyboard/mouse; no fixture positioning',state:await state(page),errors},null,2));}catch(e){await writeFile(info.outputPath('last-state.json'),JSON.stringify(await state(page),null,2));await shot(page,'failed-keyboard-route');throw e;}});
+      48 |
+    > 49 | test('WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback',async({page},info)=>{test.setTimeout(210000);const errors:string[]=[];page.on('pageerror',e=>errors.push(String(e)));try{await controllerStart(page);const controls=controller(page);await route(page,controls,'controller');expect((await state(page)).training).toMatchObject({stage:6,completed:true,completions:1,valid:true});await padTap(page,9);await expect(page.getByRole('heading',{name:'Paused'})).toBeVisible();await padTap(page,13);await padTap(page,0);await expect(page.locator('#toast-layer')).toContainText('Save confirmed');await padTap(page,13);await padTap(page,13);await padTap(page,0);await expect(page.getByRole('heading',{name:'WEBMASTER'})).toBeVisible();await padTap(page,13);await padTap(page,0);const loaded=await state(page);expect(loaded.training.stage).toBe(6);expect(loaded.traversal.surfaceId).toBeNull();expect(loaded.traversal.pullId).toBeNull();expect(loaded.swing.web).toBeNull();expect(loaded.velocity).toEqual({x:0,y:0,z:0});await page.keyboard.down('w');await page.waitForTimeout(180);await page.keyboard.up('w');expect((await state(page)).position).not.toEqual(loaded.position);expect(errors).toEqual([]);await writeFile(`${out}/controller-route.json`,JSON.stringify({method:'Simulated standard PlayStation semantic actions only through route and save/load menus; keyboard fallback separately; not physical evidence',loaded,errors},null,2));}catch(e){await writeFile(info.outputPath('last-state.json'),JSON.stringify(await state(page),null,2));await shot(page,'failed-controller-route');throw e;}});
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ^
+      50 |
+      51 | for(const name of ['WM-001','WM-002'])test(`WM003 loads exact historical ${name} writer records without changing old generations`,async({page})=>{
+      52 |   const fixture=JSON.parse(await readFile(`evidence/wm-003/legacy-saves/${name}.json`,'utf8'));
+        at /workspace/scratch/bb63ed1d5d6d/wm003-implementation/e2e/wm003.spec.ts:49:1032
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/wm003-WM003-simulated-Play-7b400--load-and-keyboard-fallback-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/wm003-WM003-simulated-Play-7b400--load-and-keyboard-fallback-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/wm003-WM003-simulated-Play-7b400--load-and-keyboard-fallback-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/wm003-WM003-simulated-Play-7b400--load-and-keyboard-fallback-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/wm003-WM003-simulated-Play-7b400--load-and-keyboard-fallback-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/wm003.spec.ts:57:1 › WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+    -   "x": 0,
+    +   "x": -0,
+        "y": 0,
+        "z": 0,
+      }
+
+      63 |   await page.keyboard.press('Escape');await page.getByRole('button',{name:/Replay skyline/}).click();try{await legacyKeyboardRoute(page,false);}catch(e){await writeFile(info.outputPath("legacy-last-state.json"),JSON.stringify(await state(page),null,2));throw e;}expect((await state(page)).skyline.completed).toBe(true);
+      64 |   await page.keyboard.press('Escape');await page.getByRole('button',{name:/Replay skyline/}).click();await route(page,keyboard(page),'cross-sprint');await page.keyboard.press('Escape');await expect(page.getByRole('button',{name:/^Save Game/})).toBeEnabled();await page.getByRole('button',{name:/^Save Game/}).click();await expect(page.locator('#toast-layer')).toContainText('Save confirmed');const before=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([k])=>k.startsWith('webmaster.save'))));const saved=await state(page);await context.close();
+    > 65 |   context=await playwright.chromium.launchPersistentContext(profile,options);page=await context.newPage();await page.goto('/?test=1');await expect(page.locator('#loading')).toHaveClass(/hidden/);await page.getByRole('button',{name:/Continue/}).click();const loaded=await state(page);expect(loaded.training).toMatchObject({stage:6,completed:true});expect(loaded.traversal.surfaceId).toBeNull();expect(loaded.traversal.pullId).toBeNull();expect(loaded.swing.web).toBeNull();expect(loaded.velocity).toEqual({x:0,y:0,z:0});expect(loaded.grounded).toBe(true);expect(await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([k])=>k.startsWith('webmaster.save'))))).toEqual(before);await shot(page,'cross-sprint-persistent-return');await writeFile(`${out}/cross-sprint-persistence.json`,JSON.stringify({oldWriterSource:old.source_head,method:'Historical WM002 writer save loaded; ordinary replay and all four swing gaps; ordinary south route with all S3 mechanics; manual save; actual persistent browser closed and reopened on identical origin/profile',saved,loaded,stored:before},null,2));await context.close();
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^
+      66 | });
+      67 |
+      68 | async function fixture(p:Page,x:number,y:number,z:number,label:string){await p.evaluate(({x,y,z,label})=>window.__WM_DEBUG__!.setFixturePosition({x,y,z},label),{x,y,z,label});await p.waitForTimeout(250);}
+        at /workspace/scratch/bb63ed1d5d6d/wm003-implementation/e2e/wm003.spec.ts:65:497
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/wm003-WM003-historical-WM0-c26f0-d-real-browser-close-reopen-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/wm003-WM003-historical-WM0-c26f0-d-real-browser-close-reopen-chromium/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/wm003-WM003-historical-WM0-c26f0-d-real-browser-close-reopen-chromium/test-failed-3.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/wm003-WM003-historical-WM0-c26f0-d-real-browser-close-reopen-chromium/test-failed-4.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/wm003-WM003-historical-WM0-c26f0-d-real-browser-close-reopen-chromium/error-context.md
+
+    attachment #6: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/wm003-WM003-historical-WM0-c26f0-d-real-browser-close-reopen-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/wm003-WM003-historical-WM0-c26f0-d-real-browser-close-reopen-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › e2e/wm003.spec.ts:49:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback 
+    [chromium] › e2e/wm003.spec.ts:57:1 › WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen 
+  1 passed (2.8m)

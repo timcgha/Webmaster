@@ -1,0 +1,140 @@
+[WebServer] (node:37) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ vite --host 127.0.0.1 --port 4173
+[WebServer] (node:52) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 42 tests using 1 worker
+
+(node:91) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › e2e/wm001.spec.ts:165:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route (21.0s)
+  ✓   2 [chromium] › e2e/wm001.spec.ts:268:3 › WM-001 rendered keyboard and mouse journey › recovers from a fall, reduces health, and performs a clean zero-health retry (6.2s)
+  ✘   3 [chromium] › e2e/wm001.spec.ts:282:3 › WM-001 rendered keyboard and mouse journey › explains and enforces safe-state saving while airborne (8.1s)
+(node:224) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   4 [chromium] › e2e/wm001.spec.ts:303:3 › WM-001 rendered simulated Gamepad journey › uses gamepad alone for new game, movement, camera, pause, save, save-and-quit, Continue, and Load (16.7s)
+  ✓   5 [chromium] › e2e/wm001.spec.ts:362:3 › WM-001 rendered simulated Gamepad journey › disconnect releases motion and reconnect requires neutral then fresh input (6.0s)
+  ✓   6 [chromium] › e2e/wm001.spec.ts:384:3 › WM-001 rendered simulated Gamepad journey › shows PlayStation-style prompts without changing standard semantic actions (2.4s)
+  ✓   7 [chromium] › e2e/wm001.spec.ts:392:3 › WM-001 rendered simulated Gamepad journey › operates persisted main and pause settings without mouse or typing (16.4s)
+  ✓   8 [chromium] › e2e/wm001.spec.ts:429:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › makes exposure, release, ready, HUD status, and local copy diagnostics persistent (4.1s)
+  ✓   9 [chromium] › e2e/wm001.spec.ts:464:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps keyboard available when the Gamepad API is unavailable (1.5s)
+  ✓  10 [chromium] › e2e/wm001.spec.ts:478:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › rejects an unsupported mapping visibly while keyboard remains available (1.7s)
+  ✓  11 [chromium] › e2e/wm001.spec.ts:490:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › selects active index 1 over idle index 0 and ignores noisy extra axes (3.3s)
+  ✓  12 [chromium] › e2e/wm001.spec.ts:514:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › supports connection after load, disconnect cleanup, keyboard fallback, and deliberate replacement (7.0s)
+  ✓  13 [chromium] › e2e/wm001.spec.ts:551:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › cleans up held movement on blur/focus and requires neutral then fresh input (6.0s)
+  ✓  14 [chromium] › e2e/wm001.spec.ts:578:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps controller status and local diagnostics usable at a representative iPad landscape viewport (2.5s)
+  ✓  15 [chromium] › e2e/wm001.spec.ts:598:1 › keeps occupied-slot bytes unchanged when replacement is cancelled (3.3s)
+  ✓  16 [chromium] › e2e/wm001.spec.ts:615:1 › keeps the prior committed save and remains paused when Save & Quit write fails (2.9s)
+  ✓  17 [chromium] › e2e/wm001.spec.ts:637:1 › loads only the prior commit after pointer verification fails, then permits a clean retry (6.1s)
+  ✓  18 [chromium] › e2e/wm001.spec.ts:696:1 › renders storage-unavailable records explicitly and refuses destructive replacement (2.9s)
+  ✓  19 [chromium] › e2e/wm001.spec.ts:728:1 › remains controllable under a second real-time CPU/frame profile (6.5s)
+  ✓  20 [chromium] › e2e/wm001.spec.ts:753:1 › persists a Hard run after closing and reopening the same browser profile and exact origin (7.5s)
+  ✓  21 [chromium] › e2e/wm001.spec.ts:802:1 › labels corrupt and incompatible save fixtures without hiding valid choices (2.1s)
+  ✓  22 [chromium] › e2e/wm001.spec.ts:814:1 › keeps the rendered HUD and menus usable at 1920x1080 and representative iPad landscape (5.7s)
+{"author":"WEBMASTER_IMPLEMENTER","label":"candidate","observedAt":"2026-09-12T16:55:53.709Z","commit":"6ae9d2ea23f212be31709e76ff5a3302c96cc3b4","tree":"37053c069a9e839f8f9a42a85a8bc3554795c089","sourceDiff":" src/core/actions.ts |  14 +++-\n src/core/save.ts    |   2 +\n src/core/types.ts   |   3 +\n src/game/world.ts   | 210 ++++++++++++++++++++++++++++++++++++++--------------\n src/main.ts         |  13 +++-\n src/styles.css      |   4 +\n 6 files changed, 186 insertions(+), 60 deletions(-)\n","browserName":"chromium","viewport":[1280,720],"samples":{"samples":[34,39],"minimum":34,"current":39},"method":"Ordinary New Game / slot 1 / Easy; adaptive quality default; wait 2200ms after input-overlay; same debug.performance() samples as unchanged WM-001 representative gate; video enabled.","absoluteFloor":30,"absoluteResult":"PASS","limitation":"Headless Linux software-renderer measurement; not physical Windows/iPad or swing-route performance."}
+  ✓  23 [chromium] › e2e/wm002-performance.spec.ts:11:3 › parent FPS measurement 1280x720 (4.5s)
+{"author":"WEBMASTER_IMPLEMENTER","label":"candidate","observedAt":"2026-09-12T16:55:57.766Z","commit":"6ae9d2ea23f212be31709e76ff5a3302c96cc3b4","tree":"37053c069a9e839f8f9a42a85a8bc3554795c089","sourceDiff":" src/core/actions.ts |  14 +++-\n src/core/save.ts    |   2 +\n src/core/types.ts   |   3 +\n src/game/world.ts   | 210 ++++++++++++++++++++++++++++++++++++++--------------\n src/main.ts         |  13 +++-\n src/styles.css      |   4 +\n 6 files changed, 186 insertions(+), 60 deletions(-)\n","browserName":"chromium","viewport":[1920,1080],"samples":{"samples":[35,36],"minimum":35,"current":36},"method":"Ordinary New Game / slot 1 / Easy; adaptive quality default; wait 2200ms after input-overlay; same debug.performance() samples as unchanged WM-001 representative gate; video enabled.","absoluteFloor":30,"absoluteResult":"PASS","limitation":"Headless Linux software-renderer measurement; not physical Windows/iPad or swing-route performance."}
+  ✓  24 [chromium] › e2e/wm002-performance.spec.ts:11:3 › parent FPS measurement 1920x1080 (4.0s)
+  ✓  25 [chromium] › e2e/wm002.spec.ts:126:1 › WM-002 keyboard continuous four-gap route, safe save and same-origin reopen (27.9s)
+  ✓  26 [chromium] › e2e/wm002.spec.ts:349:1 › WM-002 simulated PlayStation controller-only complete route and safe save/load (26.4s)
+  ✓  27 [chromium] › e2e/wm002.spec.ts:388:1 › WM-002 targeted anchor, unsafe save, pause, focus, fall recovery, invalid finish and replay cleanup (12.9s)
+  ✓  28 [chromium] › e2e/wm002.spec.ts:454:1 › WM-002 LT disconnect clears web, reconnect needs neutral and diagnostics retain swing mapping (10.5s)
+  ✓  29 [chromium] › e2e/wm002.spec.ts:496:3 › WM-002 continuous keyboard route under near-30fps render schedule (27.7s)
+  ✓  30 [chromium] › e2e/wm002.spec.ts:496:3 › WM-002 continuous keyboard route under uneven render schedule (23.8s)
+  ✓  31 [chromium] › e2e/wm002.spec.ts:544:1 › WM-002 repeated pause, replay, save and load keeps runtime resources bounded (20.8s)
+  ✓  32 [chromium] › e2e/wm003.spec.ts:6:1 › WM003 ordinary keyboard combined swing climb ceiling pull route (40.0s)
+  ✓  33 [chromium] › e2e/wm003.spec.ts:8:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback (47.1s)
+  ✓  34 [chromium] › e2e/wm003.spec.ts:10:39 › WM003 loads exact historical WM-001 writer records without changing old generations (1.8s)
+  ✓  35 [chromium] › e2e/wm003.spec.ts:10:39 › WM003 loads exact historical WM-002 writer records without changing old generations (1.6s)
+  ✓  36 [chromium] › e2e/wm003.spec.ts:16:1 › WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen (1.3m)
+  ✓  37 [chromium] › e2e/wm003.spec.ts:28:1 › WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web (24.0s)
+  ✓  38 [chromium] › e2e/wm003.spec.ts:38:1 › WM003 RB and LB disconnect cleanup with neutral reconnect and keyboard fallback (10.3s)
+  ✓  39 [chromium] › e2e/wm003.spec.ts:43:1 › WM003 original eyes palette body lattice and actual backward forward swing-leg phases (13.5s)
+  ✓  40 [chromium] › e2e/wm003.spec.ts:47:102 › WM003 complete route under near-30 rendered timing (30.2s)
+  ✓  41 [chromium] › e2e/wm003.spec.ts:47:102 › WM003 complete route under uneven rendered timing (42.2s)
+  ✘  42 [chromium] › e2e/wm003.spec.ts:51:1 › WM003 repeated replay pause save load clears transients and bounds resources (16.8s)
+
+
+  1) [chromium] › e2e/wm001.spec.ts:282:3 › WM-001 rendered keyboard and mouse journey › explains and enforces safe-state saving while airborne 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('button', { name: /^Save Game/ })
+    Expected substring: "Unavailable while swinging, airborne, landing or recovering"
+    Received string:    "Save GameUnavailable while climbing, on a ceiling, pulling, swinging, airborne, landing or recovering — resume to reach safe ground"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('button', { name: /^Save Game/ }) with timeout 5000ms
+      - waiting for getByRole('button', { name: /^Save Game/ })
+        14 × locator resolved to <button disabled type="button" data-menu-item="1" aria-current="false">…</button>
+           - unexpected value "Save GameUnavailable while climbing, on a ceiling, pulling, swinging, airborne, landing or recovering — resume to reach safe ground"
+
+
+      291 |       const button = page.getByRole("button", { name });
+      292 |       await expect(button).toBeDisabled();
+    > 293 |       await expect(button).toContainText("Unavailable while swinging, airborne, landing or recovering");
+          |                            ^
+      294 |     }
+      295 |     await expect(page.getByRole("button", { name: /^Resume/ })).toBeEnabled();
+      296 |     await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-airborne-safe-save-disabled.png` });
+        at /workspace/scratch/bb63ed1d5d6d/wm003-implementation/e2e/wm001.spec.ts:293:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/wm001-WM-001-rendered-keyb-d7f79-state-saving-while-airborne-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/wm001-WM-001-rendered-keyb-d7f79-state-saving-while-airborne-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/wm001-WM-001-rendered-keyb-d7f79-state-saving-while-airborne-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/wm001-WM-001-rendered-keyb-d7f79-state-saving-while-airborne-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/wm001-WM-001-rendered-keyb-d7f79-state-saving-while-airborne-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/wm003.spec.ts:51:1 › WM003 repeated replay pause save load clears transients and bounds resources 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 10
+    Received:    20
+
+      52 |   test.setTimeout(100000);await start(page);await page.keyboard.down('s');await wait(page,s=>s.position.z<-19);await stop(page);const cdp=await context.newCDPSession(page),measurements=[];
+      53 |   for(let cycle=0;cycle<12;cycle++){await page.keyboard.press('Escape');await page.getByRole('button',{name:/Replay Climb/}).click();await page.waitForTimeout(250);await page.keyboard.press('Escape');await page.getByRole('button',{name:/^Save & Quit/}).click();await expect(page.getByRole('heading',{name:'WEBMASTER'})).toBeVisible();await page.getByRole('button',{name:/Continue/}).click();const s=await state(page);expect(s.traversal.surfaceId).toBeNull();expect(s.traversal.pullId).toBeNull();expect(s.swing.web).toBeNull();expect(s.heroPitch).toBe(0);expect(s.surfaceCameraBlend).toBe(0);expect(s.pullObjects.every(o=>o.speed===0)).toBe(true);await cdp.send('HeapProfiler.collectGarbage');const heap=await cdp.send('Runtime.getHeapUsage'),dom=await cdp.send('Memory.getDOMCounters');measurements.push({cycle,heap:heap.usedSize,nodes:dom.nodes,listeners:dom.jsEventListeners});}
+    > 54 |   const warm=measurements[3]!,last=measurements.at(-1)!;expect(last.heap-warm.heap).toBeLessThan(4*1024*1024);expect(last.nodes-warm.nodes).toBeLessThanOrEqual(10);expect(last.listeners-warm.listeners).toBeLessThanOrEqual(2);await writeFile(info.outputPath('resources.json'),JSON.stringify({method:'12 ordinary S3 replay/pause/save/Continue cycles; post-GC heap and DOM/listeners; finite warmup bounds',measurements},null,2));
+         |                                                                                                                                             ^
+      55 | });
+      56 |
+        at /workspace/scratch/bb63ed1d5d6d/wm003-implementation/e2e/wm003.spec.ts:54:141
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/wm003-WM003-repeated-repla-fc15b-sients-and-bounds-resources-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/wm003-WM003-repeated-repla-fc15b-sients-and-bounds-resources-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/wm003-WM003-repeated-repla-fc15b-sients-and-bounds-resources-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/wm003-WM003-repeated-repla-fc15b-sients-and-bounds-resources-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/wm003-WM003-repeated-repla-fc15b-sients-and-bounds-resources-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  Slow test file: [chromium] › e2e/wm003.spec.ts (5.1m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  2 failed
+    [chromium] › e2e/wm001.spec.ts:282:3 › WM-001 rendered keyboard and mouse journey › explains and enforces safe-state saving while airborne 
+    [chromium] › e2e/wm003.spec.ts:51:1 › WM003 repeated replay pause save load clears transients and bounds resources 
+  40 passed (10.2m)
