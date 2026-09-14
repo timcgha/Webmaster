@@ -1,5 +1,5 @@
-name: WM-003 W3 capture-overhead diagnosis
-run-name: WM-003 SELF-REVIEW diagnostic ${{ github.sha }}
+name: WM-003 full Chromium runtime verification probe
+run-name: WM-003 SELF-REVIEW browser runtime probe ${{ github.sha }}
 
 on:
   push:
@@ -59,7 +59,7 @@ jobs:
           import {execFileSync} from 'node:child_process';
           const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
           assert.equal(git('rev-parse','HEAD'),process.env.GITHUB_SHA);
-          assert.equal(git('rev-parse','HEAD^'),'6e5ee6ea3039dd338b14e4c08e03f84d55810279');
+          assert.equal(git('rev-parse','HEAD^'),'e33d05585a6084cb8da9b9510390df62dfb43f0f');
           assert.deepEqual(git('diff','--name-only','HEAD^','HEAD').split('\n'),['.github/workflows/wm003-verification.yml']);
           const files=[];
           for(const entry of execFileSync('git',['ls-files','-s','-z'],{encoding:'utf8'}).split('\0').filter(Boolean)){
@@ -106,7 +106,7 @@ jobs:
           };
           assert.equal(identity.head, label === 'candidate' ? process.env.GITHUB_SHA : '6ae9d2ea23f212be31709e76ff5a3302c96cc3b4');
           const record = { ...identity, started: new Date().toISOString(), scenarios: [], complete: false,
-            purpose: 'Measure capture overhead on the existing Windows runtime before product changes. All >=30 assertions retained. This is not the full required suite or playtest acceptance.' };
+            purpose: 'Compare headless-shell and full Chromium new headless on one existing Windows runner, candidate and baseline sequentially. Product, viewports, recording and >=30 assertions unchanged. W3 artifacts already recovered. This bounded runtime probe cannot establish full-suite acceptance.' };
           const persist = () => fs.writeFileSync(path.join(out, 'report.json'), JSON.stringify(record, null, 2));
           persist();
           const log = fs.openSync(path.join(out, 'server.log'), 'w');
@@ -120,15 +120,16 @@ jobs:
             }
             assert(ready, 'Diagnostic server did not become ready');
             for (const [width, height] of [[1280, 720], [1920, 1080]]) {
-              for (const video of [true, false]) {
-                const name = `${width}x${height}-video-${video ? 'on' : 'off'}`;
+              for (const channel of [undefined, "chromium"]) {
+                const video = true;
+                const name = `${width}x${height}-${channel || 'headless-shell'}-video-on`;
                 const directory = path.join(out, name);
                 fs.mkdirSync(directory, { recursive: true });
-                const result = { name, viewport: [width, height], video, at: new Date().toISOString(), errors: [], absoluteFloor: 30 };
+                const result = { name, viewport: [width, height], video, channel: channel || 'headless-shell', at: new Date().toISOString(), errors: [], absoluteFloor: 30 };
                 record.scenarios.push(result); persist();
                 let browser;
                 try {
-                  browser = await chromium.launch({ headless: true });
+                  browser = await chromium.launch({ headless: true, ...(channel ? { channel } : {}) });
                   result.browserVersion = browser.version();
                   const context = await browser.newContext({ viewport: { width, height }, ...(video ? { recordVideo: { dir: directory, size: { width: 800, height: 450 } } } : {}) });
                   const page = await context.newPage();
@@ -209,7 +210,7 @@ jobs:
             process.exitCode = record.passed ? 0 : 1;
           }
           JS
-      - name: Candidate paired recording-on and recording-off diagnostics
+      - name: Candidate headless-shell and full Chromium, identical recording
         id: candidate
         timeout-minutes: 6
         continue-on-error: true
@@ -217,7 +218,7 @@ jobs:
           WM_DIAGNOSTIC_LABEL: candidate
           WM_DIAGNOSTIC_OUTPUT: ${{ github.workspace }}/candidate/diagnostic-output
         run: node .wm003-render-diagnostic.mjs
-      - name: Baseline paired diagnostics on the same runner without competing renderers
+      - name: Baseline headless-shell and full Chromium on the same runner
         id: baseline
         timeout-minutes: 6
         continue-on-error: true
@@ -232,7 +233,7 @@ jobs:
         timeout-minutes: 2
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: wm003-self-review-diagnostic-${{ github.sha }}
+          name: wm003-runtime-probe-${{ github.sha }}
           path: candidate/diagnostic-output/
           if-no-files-found: error
           retention-days: 7
