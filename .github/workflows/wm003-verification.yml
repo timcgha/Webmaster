@@ -1,0 +1,150 @@
+name: WM-003 exact candidate verification
+run-name: WM-003 verification ${{ github.sha }}
+
+on:
+  push:
+    branches: [release/webmaster-v1]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wm003-verification-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5, verified official ref
+        with:
+          ref: ${{ github.sha }}
+          path: candidate
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Activate exact package manager and record identity
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          node --version
+          pnpm --version
+          git show -s --format='head=%H%ntree=%T%nparents=%P' HEAD
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Locked candidate install
+        id: install
+        continue-on-error: true
+        run: pnpm install --frozen-lockfile
+      - name: Complete deterministic suite
+        id: units
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        run: pnpm test
+      - name: TypeScript
+        id: types
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        run: pnpm exec tsc --noEmit
+      - name: Fresh production build
+        id: production
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        run: pnpm exec vite build --outDir "$RUNNER_TEMP/wm003-production" --emptyOutDir
+      - name: Fresh Pages-base build
+        id: pages
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        run: pnpm exec vite build --base=/Webmaster/ --outDir "$RUNNER_TEMP/wm003-pages" --emptyOutDir
+      - name: Install pinned Playwright Chromium runtime
+        id: browser
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Complete candidate Chromium suite
+        id: rendered
+        if: steps.browser.outcome == 'success'
+        continue-on-error: true
+        env:
+          WM_MEASUREMENT_LABEL: github-candidate
+          WM_MEASUREMENT_OUTPUT: evidence/wm-003/ci
+        run: pnpm exec playwright test --project=chromium --workers=1 --reporter=list
+      - name: Compiled Pages-base genuine route smoke
+        id: smoke
+        if: steps.browser.outcome == 'success' && steps.pages.outcome == 'success'
+        continue-on-error: true
+        env:
+          WM_DIST_ROOT: ${{ runner.temp }}/wm003-pages
+        run: node --experimental-strip-types scripts/wm003-built-smoke.mjs
+      - name: Production dependency audit
+        id: production_audit
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        run: pnpm audit --prod --json
+      - name: Complete dependency audit
+        id: complete_audit
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        run: pnpm audit --json
+      - name: Verify tested candidate source stayed unchanged
+        id: source
+        if: always()
+        continue-on-error: true
+        run: git diff --exit-code HEAD -- src tests e2e scripts package.json pnpm-lock.yaml playwright.config.ts tsconfig.json vite.config.ts vitest.config.ts
+      - name: Check out exact merged WM-002 baseline
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: 6ae9d2ea23f212be31709e76ff5a3302c96cc3b4
+          path: baseline
+          persist-credentials: false
+      - name: Locked baseline install
+        id: baseline_install
+        continue-on-error: true
+        working-directory: baseline
+        run: |
+          git show -s --format='head=%H%ntree=%T' HEAD
+          pnpm install --frozen-lockfile
+      - name: Same-runner baseline FPS measurements
+        id: baseline_rendered
+        if: steps.baseline_install.outcome == 'success' && steps.browser.outcome == 'success'
+        continue-on-error: true
+        working-directory: baseline
+        env:
+          WM_MEASUREMENT_LABEL: github-baseline
+          WM_MEASUREMENT_OUTPUT: evidence/wm-003/ci
+        run: pnpm exec playwright test e2e/wm002-performance.spec.ts --project=chromium --workers=1 --reporter=list
+      - name: Source-bound results and final gate
+        if: always()
+        env:
+          GATE_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {execFileSync} from 'node:child_process';
+          const steps=JSON.parse(process.env.GATE_OUTCOMES);
+          const gates=['install','units','types','production','pages','browser','rendered','smoke','production_audit','complete_audit','source','baseline_install','baseline_rendered'];
+          const results=Object.fromEntries(gates.map(k=>[k,steps[k]?.outcome??'not_run']));
+          const identity={head:process.env.GITHUB_SHA,tree:execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT,node:process.version};
+          console.log(JSON.stringify({identity,results},null,2));
+          for(const root of ['evidence/wm-003/ci','../baseline/evidence/wm-003/ci'])
+            if(fs.existsSync(root))for(const file of fs.readdirSync(root))
+              if(file.endsWith('.json'))console.log(root+'/'+file+'\n'+fs.readFileSync(path.join(root,file),'utf8'));
+          for(const name of ['build-manifest.json','built-runtime-smoke.json']){
+            const file='evidence/wm-003/'+name;
+            if(!fs.existsSync(file))continue;
+            const data=JSON.parse(fs.readFileSync(file,'utf8'));
+            if(data.sourceHead===process.env.GITHUB_SHA)console.log(name+'\n'+JSON.stringify(data,null,2));
+          }
+          const summary=['## WM-003 exact candidate verification','',JSON.stringify(identity),'','| Gate | Outcome |','| --- | --- |',...Object.entries(results).map(([k,v])=>`| ${k} | ${v} |`),'','Logs only. No deployment, cache, artifact upload, merge or acceptance is performed. Absolute FPS failures remain NOT_MET.'];
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,summary.join('\n')+'\n');
+          if(Object.values(results).some(v=>v!=='success'))process.exitCode=1;
+          JS
