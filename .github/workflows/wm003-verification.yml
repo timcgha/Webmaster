@@ -1,5 +1,5 @@
-name: WM-003 W2 DIAGNOSTIC ONLY
-run-name: WM-003 W2 DIAGNOSTIC ONLY ${{ github.sha }}
+name: WM-003 W3 capture-overhead diagnosis
+run-name: WM-003 SELF-REVIEW diagnostic ${{ github.sha }}
 
 on:
   push:
@@ -15,258 +15,249 @@ concurrency:
 jobs:
   verify:
     runs-on: windows-2025
-    timeout-minutes: 45
+    timeout-minutes: 30
     defaults:
       run:
         shell: bash
         working-directory: candidate
     steps:
-      - name: Preserve exact checkout bytes on Windows
-        timeout-minutes: 1
+      - name: Preserve exact checkout bytes
         working-directory: ${{ github.workspace }}
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
-          git config --global --get core.autocrlf
-      - name: Check out exact candidate
-        timeout-minutes: 2
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5, verified official ref
+      - name: Check out diagnostic candidate
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           ref: ${{ github.sha }}
           path: candidate
           persist-credentials: false
           fetch-depth: 2
-      - name: Set up Node
-        timeout-minutes: 2
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
-        with:
-          node-version: '24.19.0'
-          package-manager-cache: false
-      - name: Activate exact package manager and record identity
-        timeout-minutes: 3
-        id: identity
-        run: |
-          echo 'DIAGNOSTIC_ONLY: four selected candidate cases and two baseline FPS cases. No full-suite or acceptance result.'
-          corepack enable
-          corepack prepare pnpm@11.19.0 --activate
-          node --version
-          pnpm --version
-          git show -s --format='head=%H%ntree=%T%nparents=%P' HEAD
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          node --input-type=module <<'JS'
-          import fs from 'node:fs';
-          import path from 'node:path';
-          import os from 'node:os';
-          import crypto from 'node:crypto';
-          import assert from 'node:assert/strict';
-          import {execFileSync} from 'node:child_process';
-          const previous='b3da7ce1de4dbe0a4a2532d0abffe903d38b69c7';
-          const changed=execFileSync('git',['diff','--name-only',previous,'HEAD'],{encoding:'utf8'}).trim().split('\n');
-          assert.deepEqual(changed,['.github/workflows/wm003-verification.yml'],'W2 must change only the verification workflow');
-          const files=[];
-          for(const entry of execFileSync('git',['ls-files','-s','-z'],{encoding:'utf8'}).split('\0').filter(Boolean)){
-            const [meta,name]=entry.split('\t');
-            if(name.startsWith('evidence/')&&!name.startsWith('evidence/wm-003/legacy-saves/'))continue;
-            const bytes=fs.readFileSync(name),expected=meta.split(' ')[1];
-            const blob=crypto.createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
-            assert.equal(blob,expected,`Checkout bytes changed: ${name}`);
-            files.push({path:name,bytes:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),gitBlob:blob});
-          }
-          assert.equal(files.length,47);
-          const identity={head:process.env.GITHUB_SHA,tree:execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),previous,changed,files,node:process.version,platform:process.platform,release:os.release(),arch:os.arch(),cpuCount:os.cpus().length,cpuModel:os.cpus()[0]?.model,totalMemory:os.totalmem()};
-          fs.writeFileSync(path.join(process.env.RUNNER_TEMP,'wm003-source-start.json'),JSON.stringify(identity));
-          console.log(JSON.stringify({...identity,mode:'DIAGNOSTIC_ONLY',metadataCorrection:'Measurement JSON retains historical Linux wording; actual OS is this Windows runtime. No physical-device claim.'},null,2));
-          JS
-      - name: Locked candidate install
-        timeout-minutes: 4
-        id: install
-        continue-on-error: true
-        run: pnpm install --frozen-lockfile
-      - name: Install pinned Playwright Chromium runtime
-        timeout-minutes: 6
-        id: browser
-        if: steps.install.outcome == 'success'
-        continue-on-error: true
-        run: |
-          pnpm exec playwright install --with-deps chromium
-          node --input-type=module <<'JS'
-          import {chromium} from '@playwright/test';
-          const browser=await chromium.launch();
-          try{
-            const page=await browser.newPage();
-            const graphics=await page.evaluate(()=>{
-              const gl=document.createElement('canvas').getContext('webgl2');
-              if(!gl)return {webgl2:false};
-              const ext=gl.getExtension('WEBGL_debug_renderer_info');
-              return {webgl2:true,version:gl.getParameter(gl.VERSION),vendor:ext?gl.getParameter(ext.UNMASKED_VENDOR_WEBGL):null,renderer:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):null};
-            });
-            console.log(JSON.stringify({method:'Default Playwright launch; blank-page runtime identity only',browserVersion:browser.version(),executable:chromium.executablePath(),graphics}));
-          }finally{await browser.close();}
-          JS
-      - name: DIAGNOSTIC ONLY unchanged save cases and candidate FPS
-        id: rendered
-        timeout-minutes: 7
-        if: steps.browser.outcome == 'success'
-        continue-on-error: true
-        env:
-          WM_MEASUREMENT_LABEL: github-w2-candidate
-          WM_MEASUREMENT_OUTPUT: evidence/wm-003/ci-w2
-        run: pnpm exec playwright test e2e/wm003-remediation.spec.ts e2e/wm002-performance.spec.ts --project=chromium --workers=1 --reporter=list
-      - name: Preserve candidate diagnostics after success failure or cancellation
-        id: candidate_diagnostics
-        timeout-minutes: 2
-        if: always()
-        continue-on-error: true
-        working-directory: ${{ github.workspace }}
-        env:
-          WM_DIAGNOSTIC_ROOT: candidate
-        run: |
-          node --input-type=module <<'JS'
-          import fs from 'node:fs';
-          import path from 'node:path';
-          import crypto from 'node:crypto';
-          import {execFileSync} from 'node:child_process';
-          const root=path.resolve(process.env.WM_DIAGNOSTIC_ROOT),files=[];
-          let collectedSourceHead='MISSING',collectedSourceTree='MISSING',collectedIdentityError=null;
-          if(fs.existsSync(root))try{
-            collectedSourceHead=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
-            collectedSourceTree=execFileSync('git',['rev-parse','HEAD^{tree}'],{cwd:root,encoding:'utf8'}).trim();
-          }catch(error){collectedIdentityError=String(error.message);}
-          const excluded=['wm003-persistent-profile','skyline-persistent-profile'];
-          const walk=(directory,allJSON=false)=>{
-            if(!fs.existsSync(directory))return;
-            for(const item of fs.readdirSync(directory,{withFileTypes:true})){
-              const file=path.join(directory,item.name);
-              if(item.isDirectory()){if(!excluded.includes(item.name))walk(file,allJSON);}
-              else if(item.isFile()&&(item.name==='error-context.md'||item.name==='.last-run.json'||/^(last-state|legacy-last-state|state|rendered-.+|resources|negative-lifecycle|presentation-phases|controller-cleanup)\.json$/.test(item.name)||(allJSON&&item.name.endsWith('.json'))))files.push(file);
-            }
-          };
-          walk(path.join(root,'test-results'));
-          walk(path.join(root,'evidence/wm-003/ci-w2'),true);
-          walk(path.join(root,'evidence/wm-003/remediation-r1/captures'),true);
-          const recorded=[];let used=0;
-          for(const file of [...new Set(files)].sort()){
-            const bytes=fs.readFileSync(file),limit=Math.min(bytes.length,81920,Math.max(0,524288-used));
-            const record={path:path.relative(root,file),bytes:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),loggedBytes:limit,truncated:limit<bytes.length};
-            recorded.push(record);console.log(JSON.stringify(record));
-            if(limit)console.log(bytes.subarray(0,limit).toString('utf8'));used+=limit;
-          }
-          const states=recorded.filter(x=>/(?:^|[\\/])(?:last-state|legacy-last-state|state)\.json$/.test(x.path)).map(x=>x.path);
-          console.log(JSON.stringify({mode:'DIAGNOSTIC_ONLY',workflowSourceHead:process.env.GITHUB_SHA,collectedSourceHead,collectedSourceTree,collectedIdentityError,root,rootAvailable:fs.existsSync(root),recorded,availableStateFiles:states,missingStates:'Only existing state files are listed. Failed assertions without a state file remain MISSING; error-context/list-reporter details are retained when available.',loggedBytes:used,limits:{perFile:81920,total:524288},excludedProfiles:excluded,media:'No image/video/profile/trace upload or base64 media output.'},null,2));
-          JS
-      - name: Verify tested candidate source stayed unchanged
-        timeout-minutes: 1
-        id: source
-        if: always()
-        continue-on-error: true
-        run: |
-          git diff --exit-code HEAD -- src tests e2e scripts .github package.json pnpm-lock.yaml playwright.config.ts tsconfig.json vite.config.ts vitest.config.ts
-          node --input-type=module <<'JS'
-          import fs from 'node:fs';
-          import path from 'node:path';
-          import crypto from 'node:crypto';
-          import assert from 'node:assert/strict';
-          const before=JSON.parse(fs.readFileSync(path.join(process.env.RUNNER_TEMP,'wm003-source-start.json'),'utf8'));
-          for(const file of before.files){const bytes=fs.readFileSync(file.path);assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),file.sha256,file.path);}
-          console.log(JSON.stringify({sourceHead:process.env.GITHUB_SHA,exactSourceFiles:before.files.length,byteIntegrity:'PASS'}));
-          JS
-      - name: Check out exact merged WM-002 baseline
-        timeout-minutes: 2
+      - name: Check out exact WM-002 baseline
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           ref: 6ae9d2ea23f212be31709e76ff5a3302c96cc3b4
           path: baseline
           persist-credentials: false
-          fetch-depth: 2
-      - name: Locked baseline install
-        timeout-minutes: 4
-        id: baseline_install
-        continue-on-error: true
-        working-directory: baseline
+          fetch-depth: 1
+      - name: Set up exact Node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Locked installs and unchanged product guard
+        timeout-minutes: 5
         run: |
-          git show -s --format='head=%H%ntree=%T' HEAD
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          node --version
+          pnpm --version
           node --input-type=module <<'JS'
           import fs from 'node:fs';
           import crypto from 'node:crypto';
           import assert from 'node:assert/strict';
           import {execFileSync} from 'node:child_process';
-          assert.equal(execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),'6ae9d2ea23f212be31709e76ff5a3302c96cc3b4');
-          let verified=0;
+          const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
+          assert.equal(git('rev-parse','HEAD'),process.env.GITHUB_SHA);
+          assert.equal(git('rev-parse','HEAD^'),'6e5ee6ea3039dd338b14e4c08e03f84d55810279');
+          assert.deepEqual(git('diff','--name-only','HEAD^','HEAD').split('\n'),['.github/workflows/wm003-verification.yml']);
+          const files=[];
           for(const entry of execFileSync('git',['ls-files','-s','-z'],{encoding:'utf8'}).split('\0').filter(Boolean)){
-            const [meta,name]=entry.split('\t');if(name.startsWith('evidence/'))continue;
+            const [meta,name]=entry.split('\t');
+            if(name.startsWith('evidence/')&&!name.startsWith('evidence/wm-003/legacy-saves/'))continue;
             const bytes=fs.readFileSync(name),blob=crypto.createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
-            assert.equal(blob,meta.split(' ')[1],`Baseline checkout bytes changed: ${name}`);verified++;
+            assert.equal(blob,meta.split(' ')[1],name);
+            files.push({path:name,gitBlob:blob,sha256:crypto.createHash('sha256').update(bytes).digest('hex')});
           }
-          console.log(JSON.stringify({baselineExactSourceFiles:verified,byteIntegrity:'PASS'}));
+          assert.equal(files.length,47);
+          fs.mkdirSync('diagnostic-output',{recursive:true});
+          fs.writeFileSync('diagnostic-output/source-manifest.json',JSON.stringify({author:'WEBMASTER_PRODUCT_OWNER',reviewType:'SELF-REVIEW_DIAGNOSTIC_ONLY',head:git('rev-parse','HEAD'),tree:git('rev-parse','HEAD^{tree}'),files},null,2));
+          console.log('47/47 source files verified; 46 non-workflow files unchanged; no independent QA or acceptance claim.');
           JS
           pnpm install --frozen-lockfile
-      - name: Same-runner baseline FPS measurements
-        timeout-minutes: 4
-        id: baseline_rendered
-        if: steps.baseline_install.outcome == 'success' && steps.browser.outcome == 'success'
-        continue-on-error: true
-        working-directory: baseline
-        env:
-          WM_MEASUREMENT_LABEL: github-w2-baseline
-          WM_MEASUREMENT_OUTPUT: evidence/wm-003/ci-w2
-        run: pnpm exec playwright test e2e/wm002-performance.spec.ts --project=chromium --workers=1 --reporter=list
-      - name: Preserve baseline diagnostics after success failure or cancellation
-        id: baseline_diagnostics
-        timeout-minutes: 2
-        if: always()
-        continue-on-error: true
-        working-directory: ${{ github.workspace }}
-        env:
-          WM_DIAGNOSTIC_ROOT: baseline
+          pnpm --dir ../baseline install --frozen-lockfile
+      - name: Install prescribed Chromium and recorder
+        timeout-minutes: 6
+        run: pnpm exec playwright install chromium
+      - name: Prepare bounded diagnostic
         run: |
-          node --input-type=module <<'JS'
+          cat > .wm003-render-diagnostic.mjs <<'JS'
+          import { chromium } from '@playwright/test';
           import fs from 'node:fs';
           import path from 'node:path';
+          import os from 'node:os';
+          import assert from 'node:assert/strict';
           import crypto from 'node:crypto';
-          import {execFileSync} from 'node:child_process';
-          const root=path.resolve(process.env.WM_DIAGNOSTIC_ROOT),files=[];
-          let collectedSourceHead='MISSING',collectedSourceTree='MISSING',collectedIdentityError=null;
-          if(fs.existsSync(root))try{
-            collectedSourceHead=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
-            collectedSourceTree=execFileSync('git',['rev-parse','HEAD^{tree}'],{cwd:root,encoding:'utf8'}).trim();
-          }catch(error){collectedIdentityError=String(error.message);}
-          const excluded=['wm003-persistent-profile','skyline-persistent-profile'];
-          const walk=(directory,allJSON=false)=>{
-            if(!fs.existsSync(directory))return;
-            for(const item of fs.readdirSync(directory,{withFileTypes:true})){
-              const file=path.join(directory,item.name);
-              if(item.isDirectory()){if(!excluded.includes(item.name))walk(file,allJSON);}
-              else if(item.isFile()&&(item.name==='error-context.md'||item.name==='.last-run.json'||/^(last-state|legacy-last-state|state|rendered-.+|resources|negative-lifecycle|presentation-phases|controller-cleanup)\.json$/.test(item.name)||(allJSON&&item.name.endsWith('.json'))))files.push(file);
-            }
+          import { execFileSync, spawn } from 'node:child_process';
+
+          const root = process.cwd();
+          const label = process.env.WM_DIAGNOSTIC_LABEL;
+          assert(['candidate', 'baseline'].includes(label));
+          const out = path.resolve(process.env.WM_DIAGNOSTIC_OUTPUT, label);
+          fs.mkdirSync(out, { recursive: true });
+          const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
+          const identity = {
+            author: 'WEBMASTER_PRODUCT_OWNER', reviewType: 'SELF-REVIEW_DIAGNOSTIC_ONLY',
+            label, head: git('rev-parse', 'HEAD'), tree: git('rev-parse', 'HEAD^{tree}'),
+            workflowSourceHead: process.env.GITHUB_SHA,
+            node: process.version, platform: process.platform, release: os.release(),
+            cpuCount: os.cpus().length, cpuModel: os.cpus()[0]?.model,
+            executable: chromium.executablePath(),
           };
-          walk(path.join(root,'test-results'));
-          walk(path.join(root,'evidence/wm-003/ci-w2'),true);
-          walk(path.join(root,'evidence/wm-003/remediation-r1/captures'),true);
-          const recorded=[];let used=0;
-          for(const file of [...new Set(files)].sort()){
-            const bytes=fs.readFileSync(file),limit=Math.min(bytes.length,81920,Math.max(0,524288-used));
-            const record={path:path.relative(root,file),bytes:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),loggedBytes:limit,truncated:limit<bytes.length};
-            recorded.push(record);console.log(JSON.stringify(record));
-            if(limit)console.log(bytes.subarray(0,limit).toString('utf8'));used+=limit;
+          assert.equal(identity.head, label === 'candidate' ? process.env.GITHUB_SHA : '6ae9d2ea23f212be31709e76ff5a3302c96cc3b4');
+          const record = { ...identity, started: new Date().toISOString(), scenarios: [], complete: false,
+            purpose: 'Measure capture overhead on the existing Windows runtime before product changes. All >=30 assertions retained. This is not the full required suite or playtest acceptance.' };
+          const persist = () => fs.writeFileSync(path.join(out, 'report.json'), JSON.stringify(record, null, 2));
+          persist();
+          const log = fs.openSync(path.join(out, 'server.log'), 'w');
+          const server = spawn(process.execPath, [path.join(root, 'node_modules/vite/bin/vite.js'), '--host', '127.0.0.1', '--port', '4173'], { stdio: ['ignore', log, log] });
+          try {
+            let ready = false;
+            for (let attempt = 0; attempt < 80; attempt++) {
+              if (server.exitCode !== null) throw new Error(`Vite exited ${server.exitCode}`);
+              try { if ((await fetch('http://127.0.0.1:4173')).ok) { ready = true; break; } } catch {}
+              await new Promise(resolve => setTimeout(resolve, 250));
+            }
+            assert(ready, 'Diagnostic server did not become ready');
+            for (const [width, height] of [[1280, 720], [1920, 1080]]) {
+              for (const video of [true, false]) {
+                const name = `${width}x${height}-video-${video ? 'on' : 'off'}`;
+                const directory = path.join(out, name);
+                fs.mkdirSync(directory, { recursive: true });
+                const result = { name, viewport: [width, height], video, at: new Date().toISOString(), errors: [], absoluteFloor: 30 };
+                record.scenarios.push(result); persist();
+                let browser;
+                try {
+                  browser = await chromium.launch({ headless: true });
+                  result.browserVersion = browser.version();
+                  const context = await browser.newContext({ viewport: { width, height }, ...(video ? { recordVideo: { dir: directory, size: { width: 800, height: 450 } } } : {}) });
+                  const page = await context.newPage();
+                  page.on('pageerror', error => result.errors.push(String(error)));
+                  await page.goto('http://127.0.0.1:4173/?test=1');
+                  await page.waitForFunction(() => document.getElementById('loading')?.classList.contains('hidden'), null, { timeout: 45000 });
+                  result.graphics = await page.evaluate(() => {
+                    const canvas = document.getElementById('game-canvas'), gl = canvas.getContext('webgl2');
+                    if (!gl) return { webgl2: false };
+                    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+                    return { webgl2: true, renderer: ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER), version: gl.getParameter(gl.VERSION), width: canvas.width, height: canvas.height, devicePixelRatio };
+                  });
+                  await page.getByRole('button', { name: /New Game/ }).click();
+                  await page.getByRole('button', { name: /Slot 1/ }).click();
+                  await page.getByRole('button', { name: /Easy/ }).click();
+                  await page.locator('#input-overlay').waitFor({ state: 'visible' });
+                  await page.waitForTimeout(2200);
+                  result.initial = await page.evaluate(() => window.__WM_DEBUG__.performance());
+                  result.initialAbsoluteResult = result.initial.minimum >= 30 ? 'PASS' : 'NOT_MET';
+                  persist();
+                  // Profiling begins AFTER the original 2200ms measurement. It cannot improve or replace that result.
+                  const cdp = await context.newCDPSession(page);
+                  await cdp.send('Performance.enable');
+                  await cdp.send('Profiler.enable');
+                  await cdp.send('Profiler.start');
+                  const metricsBefore = await cdp.send('Performance.getMetrics');
+                  for (let cycle = 0; cycle < 3; cycle++) {
+                    await page.keyboard.down('w'); await page.waitForTimeout(400); await page.keyboard.up('w');
+                    await page.keyboard.down('s'); await page.waitForTimeout(400); await page.keyboard.up('s');
+                  }
+                  await page.waitForTimeout(3500);
+                  const { profile } = await cdp.send('Profiler.stop');
+                  const metricsAfter = await cdp.send('Performance.getMetrics');
+                  result.metricsDelta = Object.fromEntries(metricsAfter.metrics.map(m => [m.name, m.value - (metricsBefore.metrics.find(x => x.name === m.name)?.value ?? 0)]));
+                  const byId = new Map(profile.nodes.map(n => [n.id, n.callFrame]));
+                  const times = new Map();
+                  for (let i = 0; i < (profile.samples || []).length; i++) {
+                    const frame = byId.get(profile.samples[i]);
+                    if (!frame) continue;
+                    const key = `${frame.functionName || '(anonymous)'} ${frame.url}:${frame.lineNumber + 1}`;
+                    times.set(key, (times.get(key) || 0) + (profile.timeDeltas?.[i] || 0));
+                  }
+                  result.profileTop = [...times].sort((a, b) => b[1] - a[1]).slice(0, 25).map(([frame, microseconds]) => ({ frame, microseconds }));
+                  fs.writeFileSync(path.join(directory, 'cpu-profile.json'), JSON.stringify(profile));
+                  result.extended = await page.evaluate(() => window.__WM_DEBUG__.performance());
+                  result.finalState = await page.evaluate(() => window.__WM_DEBUG__.getState());
+                  result.extendedAbsoluteResult = result.extended.minimum >= 30 ? 'PASS' : 'NOT_MET';
+                  result.extendedQualification = 'Contains deliberate profiling and ordinary keyboard motion, all samples retained; diagnostic only.';
+                  await page.screenshot({ path: path.join(directory, 'ordinary-game.png') });
+                  await context.close();
+                  assert(result.initial.samples.length > 0);
+                  assert.equal(result.errors.length, 0, JSON.stringify(result.errors));
+                  assert(result.initial.minimum >= 30, `Unchanged 30 FPS floor NOT_MET: ${result.initial.minimum}`);
+                  result.status = 'SELECTED_INITIAL_FLOOR_PASS_DIAGNOSTIC_ONLY';
+                } catch (error) {
+                  result.status = 'FAIL'; result.failure = String(error.stack || error);
+                } finally {
+                  if (browser) await browser.close();
+                  persist(); console.log(JSON.stringify({ ...identity, ...result }));
+                }
+              }
+            }
+            record.complete = true;
+          } catch (error) { record.setupFailure = String(error.stack || error); }
+          finally {
+            server.kill();
+            await Promise.race([new Promise(resolve => server.once('exit', resolve)), new Promise(resolve => setTimeout(resolve, 2000))]);
+            fs.closeSync(log);
+            record.finished = new Date().toISOString();
+            record.passed = record.complete && record.scenarios.every(s => s.status === 'SELECTED_INITIAL_FLOOR_PASS_DIAGNOSTIC_ONLY');
+            record.acceptance = 'NOT_ASSESSED_FULL_REQUIRED_SUITE_NOT_RUN';
+            persist();
+            const files = [];
+            const walk = directory => { for (const item of fs.readdirSync(directory, { withFileTypes: true })) { const file = path.join(directory, item.name); if (item.isDirectory()) walk(file); else { const bytes = fs.readFileSync(file); files.push({ path: path.relative(out, file), bytes: bytes.length, sha256: crypto.createHash('sha256').update(bytes).digest('hex') }); } } };
+            walk(out);
+            fs.writeFileSync(path.join(out, 'artifact-manifest.json'), JSON.stringify({ ...identity, files, selfExcluded: 'artifact-manifest.json' }, null, 2));
+            console.log(JSON.stringify({ ...identity, complete: record.complete, passed: record.passed, acceptance: record.acceptance, setupFailure: record.setupFailure }));
+            process.exitCode = record.passed ? 0 : 1;
           }
-          const states=recorded.filter(x=>/(?:^|[\\/])(?:last-state|legacy-last-state|state)\.json$/.test(x.path)).map(x=>x.path);
-          console.log(JSON.stringify({mode:'DIAGNOSTIC_ONLY',workflowSourceHead:process.env.GITHUB_SHA,collectedSourceHead,collectedSourceTree,collectedIdentityError,root,rootAvailable:fs.existsSync(root),recorded,availableStateFiles:states,missingStates:'Only existing state files are listed. Failed assertions without a state file remain MISSING; error-context/list-reporter details are retained when available.',loggedBytes:used,limits:{perFile:81920,total:524288},excludedProfiles:excluded,media:'No image/video/profile/trace upload or base64 media output.'},null,2));
           JS
-      - name: DIAGNOSTIC ONLY outcomes and final status
-        timeout-minutes: 1
-        if: always()
-        working-directory: ${{ github.workspace }}
+      - name: Candidate paired recording-on and recording-off diagnostics
+        id: candidate
+        timeout-minutes: 6
+        continue-on-error: true
         env:
-          GATE_OUTCOMES: ${{ toJSON(steps) }}
+          WM_DIAGNOSTIC_LABEL: candidate
+          WM_DIAGNOSTIC_OUTPUT: ${{ github.workspace }}/candidate/diagnostic-output
+        run: node .wm003-render-diagnostic.mjs
+      - name: Baseline paired diagnostics on the same runner without competing renderers
+        id: baseline
+        timeout-minutes: 6
+        continue-on-error: true
+        if: always()
+        working-directory: baseline
+        env:
+          WM_DIAGNOSTIC_LABEL: baseline
+          WM_DIAGNOSTIC_OUTPUT: ${{ github.workspace }}/candidate/diagnostic-output
+        run: node ../candidate/.wm003-render-diagnostic.mjs
+      - name: Preserve full diagnostics after success failure or cancellation
+        if: always()
+        timeout-minutes: 2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm003-self-review-diagnostic-${{ github.sha }}
+          path: candidate/diagnostic-output/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 1
+          overwrite: false
+          include-hidden-files: false
+      - name: Confirm source integrity and report the diagnostic disposition
+        if: always()
+        timeout-minutes: 2
+        env:
+          CANDIDATE_OUTCOME: ${{ steps.candidate.outcome }}
+          BASELINE_OUTCOME: ${{ steps.baseline.outcome }}
         run: |
+          git diff --exit-code HEAD -- src tests e2e scripts .github package.json pnpm-lock.yaml playwright.config.ts tsconfig.json vite.config.ts vitest.config.ts
           node --input-type=module <<'JS'
           import fs from 'node:fs';
-          import os from 'node:os';
-          const steps=JSON.parse(process.env.GATE_OUTCOMES);
-          const required=['identity','install','browser','rendered','candidate_diagnostics','source','baseline_install','baseline_rendered','baseline_diagnostics'];
-          const outcomes=Object.fromEntries(required.map(k=>[k,steps[k]?.outcome??'not_run']));
-          const result={mode:'DIAGNOSTIC_ONLY',sourceHead:process.env.GITHUB_SHA,run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT,os:{platform:process.platform,release:os.release()},outcomes,planned:{candidateSaveCases:2,candidateFPSCases:2,baselineFPSCases:2,full44Suite:'NOT_RUN'},carriedForward:'W1 on b3da7ce:172 units,TypeScript,production/Pages builds and47-source-byte integrity passed. These gates are NOT_RUN_FRESH in W2. Compiled smoke/audits are omitted here; prior evidence remains historical.',interpretation:'Selected-case outcomes only. No full-suite PASS, source acceptance, physical-device proof or threshold waiver. Historical measurement Linux wording is stale; actual OS is Windows. Failed FPS floors remain NOT_MET.'};
-          console.log(JSON.stringify(result,null,2));
-          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'## WM-003 W2 DIAGNOSTIC ONLY\n\n'+JSON.stringify(result,null,2)+'\n');
-          if(Object.values(outcomes).some(v=>v!=='success'))process.exitCode=1;
+          import crypto from 'node:crypto';
+          import assert from 'node:assert/strict';
+          const manifest=JSON.parse(fs.readFileSync('diagnostic-output/source-manifest.json','utf8'));
+          for(const file of manifest.files)assert.equal(crypto.createHash('sha256').update(fs.readFileSync(file.path)).digest('hex'),file.sha256,file.path);
+          for(const label of ['candidate','baseline']){
+            const file=`diagnostic-output/${label}/report.json`;
+            console.log(fs.existsSync(file)?fs.readFileSync(file,'utf8'):JSON.stringify({label,missingReport:true}));
+          }
+          console.log(JSON.stringify({sourceIntegrity:'47/47_PASS',review:'SELF-REVIEW_DIAGNOSTIC_ONLY',fullRequiredSuite:'NOT_RUN',publication:'NOT_STARTED',candidate:process.env.CANDIDATE_OUTCOME,baseline:process.env.BASELINE_OUTCOME}));
+          assert.equal(process.env.CANDIDATE_OUTCOME,'success','Candidate selected diagnostic has failures; no acceptance');
+          assert.equal(process.env.BASELINE_OUTCOME,'success','Baseline selected diagnostic has failures; no acceptance');
           JS
