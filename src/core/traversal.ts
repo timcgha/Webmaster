@@ -295,6 +295,26 @@ function heroOverlaps(p: Vec3Data, b: Solid): boolean {
     p.y < b.maxY - 0.001
   );
 }
+function wallContact(m: MotionState, wall: Surface): Vec3Data {
+  return { ...m.position, z: wall.maxZ + HERO_RADIUS + 0.015 };
+}
+function clearAttachmentPath(
+  from: Vec3Data,
+  to: Vec3Data,
+  solids: readonly Solid[],
+): boolean {
+  // Wall contact changes only Z. Its swept body volume therefore is this box,
+  // including the final pose, rather than only a center-line visibility ray.
+  return !solids.some(
+    (b) =>
+      from.x + HERO_RADIUS > b.minX + 0.001 &&
+      from.x - HERO_RADIUS < b.maxX - 0.001 &&
+      Math.max(from.z, to.z) + HERO_RADIUS > b.minZ + 0.001 &&
+      Math.min(from.z, to.z) - HERO_RADIUS < b.maxZ - 0.001 &&
+      from.y + HERO_HEIGHT > b.minY + 0.001 &&
+      from.y < b.maxY - 0.001,
+  );
+}
 export function selectWall(
   m: MotionState,
   held: boolean,
@@ -316,6 +336,11 @@ export function selectWall(
           m.position.z >= s.maxZ + HERO_RADIUS - 0.03 &&
           m.position.z - s.maxZ <= LIMITS.attachDistance &&
           dot(facing, s.normal) <= -LIMITS.facingCosine &&
+          clearAttachmentPath(
+            m.position,
+            wallContact(m, s),
+            solids.filter((b) => b.id !== s.id),
+          ) &&
           !segmentBlocked(
             { x: m.position.x, y: m.position.y + 1.5, z: m.position.z },
             { x: m.position.x, y: m.position.y + 1.5, z: s.maxZ + 0.01 },
@@ -451,9 +476,14 @@ export function stepTraversal(
     surface = wall;
     m.velocity = { x: 0, y: 0, z: 0 };
     m.grounded = false;
-    m.position.z = wall.maxZ + HERO_RADIUS + 0.015;
+    m.position = wallContact(m, wall);
   }
   if (surface) {
+    // Bound combined keyboard/controller axes without promoting a partial
+    // analog deflection to full speed. Camera rotation preserves this length.
+    const inputLength = Math.max(1, Math.hypot(input.moveX, input.moveY));
+    const moveX = input.moveX / inputLength;
+    const moveY = input.moveY / inputLength;
     m.grounded = false;
     m.velocity = { x: 0, y: 0, z: 0 };
     sw.web = null;
@@ -461,12 +491,12 @@ export function stepTraversal(
       const p = {
         ...m.position,
         x: clamp(
-          m.position.x - input.moveX * LIMITS.climbSpeed * step,
+          m.position.x - moveX * LIMITS.climbSpeed * step,
           surface.minX + HERO_RADIUS + 0.02,
           surface.maxX - HERO_RADIUS - 0.02,
         ),
         y: clamp(
-          m.position.y + input.moveY * LIMITS.climbSpeed * step,
+          m.position.y + moveY * LIMITS.climbSpeed * step,
           surface.minY,
           surface.maxY - HERO_HEIGHT,
         ),
@@ -505,11 +535,11 @@ export function stepTraversal(
       const p = {
         x:
           m.position.x +
-          (f.z * input.moveX + f.x * input.moveY) * LIMITS.ceilingSpeed * step,
+          (f.z * moveX + f.x * moveY) * LIMITS.ceilingSpeed * step,
         y: surface.minY - HERO_HEIGHT,
         z:
           m.position.z +
-          (-f.x * input.moveX + f.z * input.moveY) * LIMITS.ceilingSpeed * step,
+          (-f.x * moveX + f.z * moveY) * LIMITS.ceilingSpeed * step,
       };
       if (s.phaseTime === 0) {
         if (
@@ -833,12 +863,25 @@ export function safeTraversal(
   m: MotionState,
   t: TraversalState,
   recovering = false,
+  objects: readonly PullObject[] = [],
 ): boolean {
   return (
     m.grounded &&
     !recovering &&
     !t.surfaceId &&
     !t.pullId &&
+    !objects.some((o) => {
+      const b = objectSolid(o);
+      // Match the horizontal footprint used by grounding. An unrelated crate
+      // at the same elevation must not make a static roof unsafe to save on.
+      return (
+        Math.abs(m.position.y - b.maxY) < 0.02 &&
+        m.position.x + HERO_RADIUS > b.minX &&
+        m.position.x - HERO_RADIUS < b.maxX &&
+        m.position.z + HERO_RADIUS > b.minZ &&
+        m.position.z - HERO_RADIUS < b.maxZ
+      );
+    }) &&
     [
       "FREE_OR_GROUNDED",
       "PULL_TARGET_AVAILABLE",

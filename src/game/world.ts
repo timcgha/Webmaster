@@ -72,7 +72,6 @@ import {
   safeTraversal,
   trainingCheckpoint,
   restoreTraining,
-  objectSolid,
   type TraversalState,
   type TrainingRoute,
   type PullObject,
@@ -1321,9 +1320,7 @@ export class GameWorld {
         this.motion,
         this.traversal,
         performance.now() < this.recoveringUntil,
-      ) &&
-      !this.pullObjects.some(
-        (o) => Math.abs(this.motion.position.y - objectSolid(o).maxY) < 0.02,
+        this.pullObjects,
       ) &&
       safeToSave(
         this.motion,
