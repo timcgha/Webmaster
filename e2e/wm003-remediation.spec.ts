@@ -3,6 +3,10 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { start, state, wait, look } from "./routes/wm003-route";
 
 const output = "evidence/wm-003/remediation-r1/captures";
+test.afterEach(async ({ page }, info) => {
+  if (info.status !== info.expectedStatus)
+    await writeFile(info.outputPath("last-state.json"), JSON.stringify(await state(page), null, 2));
+});
 async function records(page: Page) {
   return page.evaluate(() => Object.fromEntries(Object.entries(localStorage).filter(([k]) => k.startsWith("webmaster.save"))));
 }
@@ -74,8 +78,11 @@ test("WM003 R1 standing on dynamic step still disables both save actions", async
   await mkdir(output, { recursive: true });
   await start(page);
   await page.evaluate(() => window.__WM_DEBUG__!.setFixturePosition({ x: 0, y: 1.3, z: -51 }, "negative save restriction: standing on dynamic route-step"));
-  await wait(page, (s) => s.grounded && s.traversal.phase === "FREE_OR_GROUNDED");
+  await wait(page, (s) => s.grounded && ["FREE_OR_GROUNDED", "PULL_TARGET_AVAILABLE", "WALL_TARGET_AVAILABLE"].includes(s.traversal.phase));
   const grounded = await state(page);
+  expect(grounded.traversal.surfaceId).toBeNull();
+  expect(grounded.traversal.pullId).toBeNull();
+  expect(grounded.swing.web).toBeNull();
   expect(grounded.safe).toBe(false);
   expect(grounded.position.y).toBe(1.3);
   const before = await records(page);
@@ -84,5 +91,10 @@ test("WM003 R1 standing on dynamic step still disables both save actions", async
   await expect(page.getByRole("button", { name: /^Save & Quit/ })).toBeDisabled();
   expect(await records(page)).toEqual(before);
   await page.screenshot({ path: `${output}/dynamic-step-save-disabled.png` });
-  await writeFile(`${output}/dynamic-step-save.json`, JSON.stringify({ method: "Explicit labelled negative fixture only, not route evidence", grounded, bytesPreserved: true }, null, 2));
+  const graphics = await page.evaluate(() => {
+    const gl = document.querySelector<HTMLCanvasElement>("#game-canvas")!.getContext("webgl2")!;
+    const ext = gl.getExtension("WEBGL_debug_renderer_info");
+    return { renderer: gl.getParameter(gl.RENDERER), vendor: gl.getParameter(gl.VENDOR), unmaskedRenderer: ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : null, version: gl.getParameter(gl.VERSION) };
+  });
+  await writeFile(`${output}/dynamic-step-save.json`, JSON.stringify({ method: "Explicit labelled negative fixture only, not route evidence", grounded, bytesPreserved: true, graphics }, null, 2));
 });
