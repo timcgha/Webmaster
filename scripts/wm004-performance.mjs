@@ -8,10 +8,10 @@ const records=[];let browser;
 try{
   browser=await chromium.launch({headless:true,channel:'chromium'});
   for(const[width,height]of[[1280,720],[1920,1080]])for(const round of[0,1])for(const name of round?['candidate','baseline']:['baseline','candidate']){
-    const server=await createServer({root:roots[name],configFile:path.join(roots[name],'vite.config.ts'),server:{host:'127.0.0.1',port:4176,strictPort:true}});await server.listen();
+    const server=await createServer({root:roots[name],configFile:path.join(roots[name],'vite.config.ts'),server:{host:'127.0.0.1',port:4176,strictPort:true,watch:null,hmr:false}});await server.listen();
     const context=await browser.newContext({viewport:{width,height}}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
     try{
-      await page.goto('http://127.0.0.1:4176/?test=1');await page.locator('#loading.hidden').waitFor({timeout:45000});
+      await page.goto('http://127.0.0.1:4176/?test=1');await page.locator('#loading.hidden').waitFor({state:'attached',timeout:45000});
       await page.getByRole('button',{name:/New Game/}).click();await page.getByRole('button',{name:/Slot 1/}).click();await page.getByRole('button',{name:/Normal/}).click();
       await page.waitForTimeout(10000);
       const gpu=await page.evaluate(()=>{const c=document.querySelector('#game-canvas'),g=c.getContext('webgl2')||c.getContext('webgl');if(!g)return{renderer:'unavailable'};const e=g.getExtension('WEBGL_debug_renderer_info');return{renderer:e?g.getParameter(e.UNMASKED_RENDERER_WEBGL):g.getParameter(g.RENDERER),vendor:e?g.getParameter(e.UNMASKED_VENDOR_WEBGL):g.getParameter(g.VENDOR),canvas:[c.width,c.height]};});

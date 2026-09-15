@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
-const root = "evidence/wm-002/captures";
+const root = process.env.WM_EVIDENCE_ROOT ? `${process.env.WM_EVIDENCE_ROOT}/wm002` : "evidence/wm-002/captures";
 const state = (page: Page) =>
   page.evaluate(() => window.__WM_DEBUG__!.getState());
 async function until(page: Page, axis: "x" | "z", position: number) {

@@ -9,7 +9,7 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
 import { createBlockHero } from "./hero";
-import { COURSE_ANCHORS, COURSE_NODES, COURSE_ROOFS, COURSE_START, COURSE_FINISH, RECOVERY_WALLS, STREET, newCourse, advanceCourse, restoreSafePosition, cameraClearFraction, type CourseState } from "../core/course";
+import { COURSE_ANCHORS, COURSE_NODES, COURSE_ROOFS, COURSE_START, COURSE_FINISH, RECOVERY_WALLS, STREET, CITY_SOLIDS, newCourse, advanceCourse, courseLabel, restoreSafePosition, cameraClearFraction, cameraSafeRadius, type CourseState } from "../core/course";
 import { CreateBox } from "@babylonjs/core/Meshes/Builders/boxBuilder.pure";
 import { CreateCylinder } from "@babylonjs/core/Meshes/Builders/cylinderBuilder.pure";
 import { CreateLines } from "@babylonjs/core/Meshes/Builders/linesBuilder.pure";
@@ -100,6 +100,8 @@ export interface WorldFrame {
   fps: number;
   cameraAlpha: number;
   cameraBeta: number;
+  cameraRadius: number;
+  cameraPosition: Vec3Data;
   inputSource: SemanticActions["source"];
   velocity: Vec3Data;
   swing: SwingState;
@@ -197,10 +199,10 @@ export class GameWorld {
       new Vector3(0, 1.4, 0),
       this.scene,
     );
-    this.camera.minZ = 0.1;
+    this.camera.minZ = 0.05;
     this.camera.lowerBetaLimit = 0.55;
     this.camera.upperBetaLimit = 1.65;
-    this.camera.lowerRadiusLimit = 0.8;
+    this.camera.lowerRadiusLimit = 0.08;
     this.camera.upperRadiusLimit = 18;
     this.heroRoot = new TransformNode("webmaster-root", this.scene);
     this.applySettings(settings);
@@ -450,15 +452,7 @@ export class GameWorld {
         `city-mat-${index}`,
         colors[index % colors.length]!,
       );
-      this.skylineSolids.push({
-        id: building.name,
-        minX: x - width / 2,
-        maxX: x + width / 2,
-        minZ: z - width / 2,
-        maxZ: z + width / 2,
-        minY: -18,
-        maxY: height - 5,
-      });
+      this.skylineSolids.push(CITY_SOLIDS[index]!);
       const roof = CreateBox(
         `city-roof-${index}`,
         { width: width + 0.2, depth: width + 0.2, height: 0.2 },
@@ -793,7 +787,7 @@ export class GameWorld {
     if (this.rightArm) {
       // Two-segment arm reaches the unchanged gameplay wrist origin exactly.
       const d = Math.hypot(0.44, 0.71);
-      this.rightArm.rotation.x = web ? Math.atan2(-0.71,0.44) - Math.acos((0.55**2+d*d-0.52**2)/(2*0.55*d)) : this.gait.arms[1];
+      this.rightArm.rotation.x = web ? Math.atan2(-0.71,0.44) - Math.acos((0.55**2+d*d-0.52**2)/(2*0.55*d)) : this.traversal.surfaceId ? -2.5 : this.gait.arms[1];
       this.rightArm.rotation.z = 0;
       this.rig.elbows[1]!.rotation.x = web ? Math.acos((d*d-0.55**2-0.52**2)/(2*0.55*0.52)) : 0;
     }
@@ -913,10 +907,13 @@ export class GameWorld {
       Vector3.Lerp(this.camera.target, target, Math.min(1, delta * 10)),
     );
     const desiredRadius = this.traversal.surfaceId || this.motion.position.y < -1 ? 10.5 : this.skyline.active ? 16 : 10.5;
+    // Near street facades, a smoothed target may trail through a corner. Keep
+    // the target on the clear side of that wall before tracing the camera ray.
+    if (cameraClearFraction(target,this.camera.target,this.skylineSolids)<1) this.camera.target.copyFrom(target);
     const t = this.camera.target;
     const wanted = { x: t.x + desiredRadius*Math.cos(this.camera.alpha)*Math.sin(this.camera.beta),
       y: t.y + desiredRadius*Math.cos(this.camera.beta), z: t.z + desiredRadius*Math.sin(this.camera.alpha)*Math.sin(this.camera.beta) };
-    const freeRadius = Math.max(0.8, desiredRadius * cameraClearFraction(t,wanted,this.skylineSolids) - 0.15);
+    const freeRadius = cameraSafeRadius(t,wanted,desiredRadius,this.skylineSolids);
     this.camera.radius = freeRadius < this.camera.radius ? freeRadius : Math.min(freeRadius,this.camera.radius + delta*8);
     this.renderSwing();
     this.scene.render();
@@ -1131,7 +1128,7 @@ export class GameWorld {
       health: this.health,
       maxHealth: MAX_HEALTH,
       progress: this.progress,
-      progressLabel: this.training.active
+      progressLabel: this.motion.position.y < -1 || this.course.active ? courseLabel(this.course,this.motion.position.y < -1) : this.training.active
         ? TRAINING_LABELS[this.training.stage]!
         : this.skyline.active
           ? ROUTE_LABELS[this.skyline.stage]!
@@ -1141,6 +1138,8 @@ export class GameWorld {
       fps: this.fps,
       cameraAlpha: this.camera.alpha,
       cameraBeta: this.camera.beta,
+      cameraRadius: this.camera.radius,
+      cameraPosition: copyVec3(this.camera.position),
       inputSource: source,
       velocity: copyVec3(this.motion.velocity),
       swing: structuredClone(this.swing),
@@ -1299,7 +1298,7 @@ export class GameWorld {
   ): RunSavePayload {
     return {
       schemaVersion: 1,
-      ...(this.course.active ? { course: { version: 1 as const, next: this.course.next, completed: this.course.completed } } : {}),
+      ...(this.course.active || this.course.next > 0 || this.course.completed ? { course: { version: 1 as const, next: this.course.next, completed: this.course.completed, active: this.course.active } } : {}),
       ...(this.training.active
         ? {
             climb: {
@@ -1325,7 +1324,7 @@ export class GameWorld {
       position: copyVec3(this.motion.position),
       checkpoint: copyVec3(this.checkpoint),
       progress: this.progress,
-      progressLabel: this.training.active
+      progressLabel: this.motion.position.y < -1 || this.course.active ? courseLabel(this.course,this.motion.position.y < -1) : this.training.active
         ? TRAINING_LABELS[this.training.stage]!
         : this.skyline.active
           ? ROUTE_LABELS[this.skyline.stage]!
@@ -1396,14 +1395,14 @@ export class GameWorld {
   }
   replayCourse(): void {
     this.course = newCourse();
-    this.training = newTrainingRoute();
-    this.skyline = newSkyline();
+    // Replay only this activity. Preserve earned S2/S3 checkpoints/completion.
     this.checkpoint = copyVec3(COURSE_START);
     this.restart();
     this.camera.alpha = -Math.PI / 2;
   }
 
   replayTraining(): void {
+    this.course.active = false;
     this.training = {
       ...newTrainingRoute(),
       active: true,
@@ -1418,6 +1417,7 @@ export class GameWorld {
   }
 
   replaySkyline(): void {
+    this.course.active = false;
     this.training = newTrainingRoute();
     this.skyline = {
       ...newSkyline(),
@@ -1436,7 +1436,7 @@ export class GameWorld {
       health: this.health,
       maxHealth: MAX_HEALTH,
       progress: this.progress,
-      progressLabel: this.training.active
+      progressLabel: this.motion.position.y < -1 || this.course.active ? courseLabel(this.course,this.motion.position.y < -1) : this.training.active
         ? TRAINING_LABELS[this.training.stage]!
         : this.skyline.active
           ? ROUTE_LABELS[this.skyline.stage]!
@@ -1446,6 +1446,8 @@ export class GameWorld {
       fps: this.fps,
       cameraAlpha: this.camera.alpha,
       cameraBeta: this.camera.beta,
+      cameraRadius: this.camera.radius,
+      cameraPosition: copyVec3(this.camera.position),
       inputSource: this.latestActions?.source ?? "keyboard-mouse",
       velocity: copyVec3(this.motion.velocity),
       swing: structuredClone(this.swing),

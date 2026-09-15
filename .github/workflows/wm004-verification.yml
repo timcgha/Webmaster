@@ -12,7 +12,7 @@ concurrency:
 jobs:
   verify:
     runs-on: windows-2025
-    timeout-minutes: 40
+    timeout-minutes: 75
     defaults:
       run:
         shell: bash
@@ -65,22 +65,35 @@ jobs:
       - name: Install prescribed full Chromium
         run: pnpm exec playwright install chromium
       - name: Actual course, ground, hero and street-save browser journeys
+        id: new_rendered
+        env:
+          WM004_SUITE: new
         timeout-minutes: 25
         run: |
           set -o pipefail
-          pnpm exec playwright test -c playwright.wm004.config.ts e2e/wm004.spec.ts 2>&1 | tee evidence/wm-004/browser.log
+          pnpm exec playwright test -c playwright.wm004.config.ts e2e/wm004 2>&1 | tee evidence/wm-004/browser.log
       - name: Compiled preview, historical writers and real profile reopen
+        id: compiled
         if: ${{ !cancelled() && steps.build_gates.outcome == 'success' }}
         timeout-minutes: 6
         run: |
           set -o pipefail
           node scripts/wm004-compiled.mjs 2>&1 | tee evidence/wm-004/compiled.log
       - name: Same-machine exact merged WM003 comparison
+        id: performance
         if: ${{ !cancelled() && steps.build_gates.outcome == 'success' }}
         timeout-minutes: 8
         run: |
           set -o pipefail
           node scripts/wm004-performance.mjs 2>&1 | tee evidence/wm-004/performance.log
+      - name: Complete affected inherited S1-S3 rendered regressions
+        if: ${{ !cancelled() && steps.new_rendered.outcome == 'success' && steps.compiled.outcome == 'success' && steps.performance.outcome == 'success' }}
+        timeout-minutes: 35
+        env:
+          WM004_SUITE: inherited
+        run: |
+          set -o pipefail
+          pnpm exec playwright test -c playwright.wm004.config.ts e2e/wm001.spec.ts e2e/wm002.spec.ts e2e/wm003.spec.ts e2e/wm003-remediation.spec.ts 2>&1 | tee evidence/wm-004/inherited-browser.log
       - name: Recheck exact tracked source after execution
         if: always()
         run: node scripts/wm004-source-integrity.mjs

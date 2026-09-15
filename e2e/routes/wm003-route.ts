@@ -1,6 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-const out = "evidence/wm-003/captures";
+const out = process.env.WM_EVIDENCE_ROOT ? `${process.env.WM_EVIDENCE_ROOT}/wm003` : "evidence/wm-003/captures";
 export const state = (p: Page) =>
   p.evaluate(() => window.__WM_DEBUG__!.getState());
 export async function wait(p: Page, fn: (s: any) => boolean, timeout = 20000) {

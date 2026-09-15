@@ -1,10 +1,10 @@
-import { COURSE_ANCHORS, COURSE_NODES, COURSE_ROOFS, COURSE_START, RECOVERY_WALLS, STREET, advanceCourse, newCourse } from "../src/core/course";
+import { COURSE_ANCHORS, COURSE_NODES, COURSE_ROOFS, COURSE_START, RECOVERY_WALLS, STREET, CITY_SOLIDS, advanceCourse, newCourse } from "../src/core/course";
 import { ROOFS, advanceSkyline, newSkyline } from "../src/core/skyline";
 import { TRAINING_SOLIDS, SURFACES, newPullObjects, newTraversal, stepTraversal, type TraversalInput } from "../src/core/traversal";
 import { newSwing } from "../src/core/swing";
 import type { MotionState } from "../src/core/types";
 
-export const COURSE_SOLIDS = [...ROOFS,...TRAINING_SOLIDS,...COURSE_ROOFS,STREET];
+export const COURSE_SOLIDS = [...ROOFS,...TRAINING_SOLIDS,...COURSE_ROOFS,STREET,...CITY_SOLIDS];
 /** Ordinary authored course start, then only inputs through the real motion state machine. */
 export function driveCourse(profile: number[] = [1/60], omit = -1) {
   let motion:MotionState={position:{...COURSE_START},velocity:{x:0,y:0,z:0},grounded:true,facingYaw:0};

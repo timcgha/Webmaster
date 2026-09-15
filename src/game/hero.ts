@@ -40,7 +40,8 @@ function costume(scene: Scene, name: string, color: string, detail: "web" | "mas
     }
     c.restore();
   }
-  texture.update(); texture.anisotropicFilteringLevel = 4;
+  // Box face V increases from the visible top: keep Canvas eye/emblem artwork upright.
+  texture.update(false); texture.anisotropicFilteringLevel = 4;
   const material = new StandardMaterial(name, scene); material.diffuseTexture = texture;
   material.specularColor = new Color3(0.08,0.08,0.08);
   material.emissiveColor = new Color3(0.06,0.06,0.06);

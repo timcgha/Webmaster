@@ -25,23 +25,30 @@ export const STREET: Solid = {
   id: "recovery-street", minX: -48, maxX: 158, minZ: -90, maxZ: 198,
   minY: -20, maxY: -18,
 };
+/** Existing18city footprints and roof heights, now founded on the street. Shared
+ * by rendering, collision and topology verification; no decorative solid omitted. */
+export const CITY_SOLIDS: readonly Solid[] = Array.from({length:18},(_,i)=>{
+  const x=(i%2===0?-1:1)*(18+(i%4)*3.5),z=-16+(i%13)*4,h=5+((i*7)%14),w=3+(i%3);
+  return {id:`city-${i}`,minX:x-w/2,maxX:x+w/2,minZ:z-w/2,maxZ:z+w/2,minY:-18,maxY:h-5};
+});
 export const RECOVERY_WALLS: readonly Surface[] = [
   ...ROOFS, TRAINING_SOLIDS[1]!, ...COURSE_ROOFS,
 ].map((roof) => ({ ...roof, role: "CLIMBABLE_WALL", normal: { x: 0, y: 0, z: 1 }, topOut: true }));
 
-export interface CourseSave { version: 1; next: number; completed: boolean }
+export interface CourseSave { version: 1; next: number; completed: boolean; active?: boolean }
 export interface CourseState extends CourseSave {
   active: boolean; valid: boolean; released: boolean; completions: number;
 }
 export const newCourse = (save?: CourseSave): CourseState => ({
   version: 1, next: save?.completed ? 20 : Math.min(save?.next ?? 0, 19),
-  completed: save?.completed ?? false, active: !!save, valid: true,
+  completed: save?.completed ?? false, active: save ? save.active !== false : false, valid: true,
   released: true, completions: 0,
 });
 export function validCourseSave(value: unknown): value is CourseSave {
   if (!value || typeof value !== "object") return false;
   const s = value as Partial<CourseSave>;
   return s.version === 1 && Number.isInteger(s.next) && s.next! >= 0 && s.next! <= 20 &&
+    (s.active === undefined || typeof s.active === "boolean") &&
     typeof s.completed === "boolean" && (!s.completed || s.next === 20);
 }
 export function advanceCourse(
@@ -51,8 +58,11 @@ export function advanceCourse(
   if (distance(before.position, m.position) > 1.1) return { ...s, valid: false };
   if (!s.valid || s.completed) return s;
   if (!s.active && m.grounded && Math.abs(m.position.y) < 0.02 &&
-    Math.abs(m.position.x) < 4 && m.position.z > -46 && m.position.z < -37) s.active = true;
+    Math.cos(m.facingYaw) > 0.7 && Math.abs(m.position.x) < 4 && m.position.z > -46 && m.position.z < -37) s.active = true;
   if (!s.active) return s;
+  // A miss may break the web automatically. Ground recovery re-arms the next
+  // handoff without granting progress; final completion still needs a release.
+  if (s.next < 20 && m.grounded) s.released = true;
   if (oldWeb.web && !web.web && web.releases > oldWeb.releases && !m.grounded) s.released = true;
   if (web.web && web.web.anchorId !== oldWeb.web?.anchorId && !m.grounded && s.released &&
     web.web.anchorId === COURSE_ANCHORS[s.next]?.id) {
@@ -117,4 +127,8 @@ export function cameraClearFraction(from: Vec3Data, to: Vec3Data, solids: readon
     if (low <= high && high > 0 && low > 0.001) nearest = Math.min(nearest, low);
   }
   return nearest;
+}
+export function cameraSafeRadius(from:Vec3Data,to:Vec3Data,desired:number,solids:readonly Solid[]):number {
+  // A cosmetic minimum must never push the camera through the facade it hit.
+  return Math.max(0.08,desired*cameraClearFraction(from,to,solids)-0.15);
 }

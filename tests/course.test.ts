@@ -1,5 +1,5 @@
 import { describe,it,expect } from "vitest";
-import { COURSE_ANCHORS, RECOVERY_WALLS, restoreSafePosition, safeStaticPosition, bodyClear, cameraClearFraction, advanceCourse, newCourse, validCourseSave } from "../src/core/course";
+import { COURSE_ANCHORS, COURSE_START, COURSE_FINISH, STREET, CITY_SOLIDS, RECOVERY_WALLS, restoreSafePosition, safeStaticPosition, bodyClear, cameraClearFraction, cameraSafeRadius, advanceCourse, newCourse, validCourseSave } from "../src/core/course";
 import { newSwing, HERO_HEIGHT, HERO_RADIUS } from "../src/core/swing";
 import { newTraversal, newPullObjects, stepTraversal, SURFACES, safeTraversal, type TraversalInput } from "../src/core/traversal";
 import { gaitPose,newGait,newLegPose,HERO_RIG } from "../src/core/presentation";
@@ -34,14 +34,35 @@ describe("WM004 actual connected course and street recovery",()=>{
     }
     expect(finished).toBe(true);expect(m.position.y).toBe(wall.maxY);expect(m.position.z).toBeLessThan(wall.maxZ);
   });
-  it("all free street-grid regions connect to a climbable wall approach",()=>{
-    const key=(x:number,z:number)=>`${x},${z}`;const free=new Set<string>();
-    for(let x=-46;x<=156;x+=2)for(let z=-88;z<=196;z+=2)if(bodyClear({x,y:-18,z},COURSE_SOLIDS))free.add(key(x,z));
-    const seen=new Set<string>(),queue=[...free].slice(0,1);
-    for(let n=0;n<queue.length;n++){const k=queue[n]!;if(seen.has(k))continue;seen.add(k);const[x,z]=k.split(',').map(Number);
-      for(const[dx,dz]of[[2,0],[-2,0],[0,2],[0,-2]]){const next=key(x!+dx!,z!+dz!);if(free.has(next)&&!seen.has(next))queue.push(next);}}
-    expect(seen.size).toBe(free.size);expect(seen.size).toBeGreaterThan(9000);
-    for(const wall of RECOVERY_WALLS) expect([...seen].some(k=>{const[x,z]=k.split(',').map(Number);return Math.abs(x!-(wall.minX+wall.maxX)/2)<2.1&&z!>wall.maxZ&&z!<wall.maxZ+3;})).toBe(true);
+  it("every free street region, including narrow city alleys, connects to all marked wall approaches",()=>{
+    expect(CITY_SOLIDS).toHaveLength(18);expect(CITY_SOLIDS.every(b=>COURSE_SOLIDS.includes(b))).toBe(true);
+    // Exact rectangular cell decomposition of capsule-inflated footprints:
+    // occupancy is constant inside each cell, so narrow passages cannot be skipped.
+    const obstacles=COURSE_SOLIDS.filter(b=>b.maxY>STREET.maxY&&b.minY<STREET.maxY+HERO_HEIGHT);
+    const cuts=(axis:"X"|"Z")=>{
+      const low=STREET[`min${axis}`]+HERO_RADIUS,high=STREET[`max${axis}`]-HERO_RADIUS;
+      return [...new Set([low,high,...obstacles.flatMap(b=>[b[`min${axis}`]-HERO_RADIUS,b[`max${axis}`]+HERO_RADIUS]).filter(v=>v>low&&v<high)])].sort((a,b)=>a-b);
+    };
+    const xs=cuts("X"),zs=cuts("Z"),width=xs.length-1,depth=zs.length-1,free=new Set<number>();
+    for(let x=0;x<width;x++)for(let z=0;z<depth;z++){
+      const px=(xs[x]!+xs[x+1]!)/2,pz=(zs[z]!+zs[z+1]!)/2;
+      if(!obstacles.some(b=>px>b.minX-HERO_RADIUS&&px<b.maxX+HERO_RADIUS&&pz>b.minZ-HERO_RADIUS&&pz<b.maxZ+HERO_RADIUS))free.add(x*depth+z);
+    }
+    const seen=new Set<number>(),queue=[...free].slice(0,1);
+    for(let n=0;n<queue.length;n++){
+      const k=queue[n]!;if(seen.has(k))continue;seen.add(k);const x=Math.floor(k/depth),z=k%depth;
+      for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){
+        const nx=x+dx!,nz=z+dz!,next=nx*depth+nz;
+        if(nx>=0&&nx<width&&nz>=0&&nz<depth&&free.has(next)&&!seen.has(next))queue.push(next);
+      }
+    }
+    expect(seen.size).toBe(free.size);expect(seen.size).toBeGreaterThan(1000);
+    for(const wall of RECOVERY_WALLS){
+      const px=(wall.minX+wall.maxX)/2,pz=wall.maxZ+1;
+      expect(bodyClear({x:px,y:STREET.maxY,z:pz},COURSE_SOLIDS)).toBe(true);
+      const x=xs.findIndex((v,i)=>i<width&&px>=v&&px<=xs[i+1]!),z=zs.findIndex((v,i)=>i<depth&&pz>=v&&pz<=zs[i+1]!);
+      expect(seen.has(x*depth+z),wall.id).toBe(true);
+    }
   });
   it("keeps full-body top-out obstruction blocking and held-input eligibility",()=>{
     const wall=RECOVERY_WALLS[0]!,m:MotionState={position:{x:0,y:-10,z:wall.maxZ+.6},velocity:{x:0,y:0,z:0},grounded:false,facingYaw:Math.PI};
@@ -76,10 +97,29 @@ describe("WM004 read-only safe restoration and visual/camera invariants",()=>{
     expect(cameraClearFraction({x:0,y:-15,z:30},{x:0,y:-15,z:20},COURSE_SOLIDS)).toBeCloseTo(.58);
     expect(cameraClearFraction({x:30,y:-15,z:30},{x:30,y:-15,z:20},COURSE_SOLIDS)).toBe(1);
   });
+  it("keeps a close street camera outside a facade even below the old minimum radius",()=>{
+    const from={x:0,y:-15,z:24.48},to={x:0,y:-15,z:13.98};
+    const radius=cameraSafeRadius(from,to,10.5,COURSE_SOLIDS);
+    expect(radius).toBeCloseTo(.13);expect(from.z-radius).toBeGreaterThan(24.2);
+  });
   it("rejects forged progress, duplicate/fall/fixture/load shortcut finishes",()=>{
     for(const s of [{version:1,next:21,completed:false},{version:1,next:19,completed:true},{version:2,next:20,completed:true}])expect(validCourseSave(s)).toBe(false);
     const p:MotionState={position:{x:67,y:1,z:6},velocity:{x:0,y:0,z:0},grounded:true,facingYaw:0};
     const r=advanceCourse(newCourse(),{...p,position:{x:0,y:0,z:0}},p,newSwing(),newSwing());expect(r.valid).toBe(false);expect(r.completed).toBe(false);
     expect(newCourse({version:1,next:20,completed:false}).next).toBe(19);
+  });
+  it("re-arms an automatically broken web after street recovery without awarding a ring or finish",()=>{
+    const m:MotionState={position:{x:67,y:-18,z:181},velocity:{x:0,y:0,z:0},grounded:true,facingYaw:0};
+    const s={...newCourse({version:1,next:7,completed:false}),released:false};
+    expect(advanceCourse(s,m,m,newSwing(),newSwing())).toMatchObject({next:7,released:true,completed:false});
+    const finish={...m,position:{...COURSE_FINISH}};
+    expect(advanceCourse({...s,next:20},finish,finish,newSwing(),newSwing())).toMatchObject({next:20,released:false,completed:false});
+  });
+  it("activates the course only when facing its northward start and preserves inactive saved progress",()=>{
+    const m:MotionState={position:{...COURSE_START},velocity:{x:0,y:0,z:0},grounded:true,facingYaw:Math.PI};
+    expect(advanceCourse(newCourse(),m,m,newSwing(),newSwing()).active).toBe(false);
+    expect(advanceCourse(newCourse(),m,{...m,facingYaw:0},newSwing(),newSwing()).active).toBe(true);
+    expect(newCourse({version:1,next:7,completed:false,active:false})).toMatchObject({next:7,active:false});
+    expect(validCourseSave({version:1,next:7,completed:false,active:"false"})).toBe(false);
   });
 });
