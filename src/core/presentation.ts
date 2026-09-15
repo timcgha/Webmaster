@@ -52,6 +52,7 @@ export const newLegPose = (): LegPose => ({ blend: 0, angle: 0, phase: 0 });
 export function ceilingPresentationOffset(pitch: number, facingYaw: number): Vec3Data {
   const boundedPitch = Math.max(0, Math.min(Math.PI / 2, pitch));
   const away = Math.sin(boundedPitch) * HERO_PRESENTATION.capsuleHeight;
+  if (away === 0) return { x: 0, y: 0, z: 0 };
   return {
     x: -Math.sin(facingYaw) * away,
     y: (1 - Math.cos(boundedPitch)) * 2.6,
