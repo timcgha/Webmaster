@@ -1,0 +1,62 @@
+name: WM004 publish accepted isolated preview
+on:
+  push:
+    branches: [verification/wm004-evidence]
+    paths: [.github/workflows/wm004-publish-preview.yml]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact accepted source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: 504f6087beef67daf0a88e6de27a21a1b6b10a28
+          persist-credentials: false
+      - name: Checkout exact preserved Pages baseline
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: site
+          ref: 5a3a31585e4f22b313bc361d48626322bbebb389
+          fetch-depth: 1
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Reproduce exact isolated payload
+        working-directory: candidate
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          node scripts/wm004-build.mjs
+          node scripts/wm004-package.mjs
+          node scripts/wm004-source-integrity.mjs
+      - name: Add preview without changing existing Pages content
+        run: |
+          test "$(git -C site rev-parse HEAD)" = "5a3a31585e4f22b313bc361d48626322bbebb389"
+          test ! -e site/wm004-preview
+          mkdir site/wm004-preview
+          cp -a candidate/.wm004-payload/. site/wm004-preview/
+          git -C site add wm004-preview
+          test -n "$(git -C site diff --cached --name-only)"
+          test -z "$(git -C site diff --cached --name-only | grep -v '^wm004-preview/')"
+          git -C site config user.name WEBMASTER_PRODUCT_OWNER
+          git -C site config user.email webmaster-po@users.noreply.github.com
+          git -C site commit -m "WM-004 publish isolated sponsor preview"
+          git -C site push origin HEAD:gh-pages
+          printf 'commit=%s\ntree=%s\n' "$(git -C site rev-parse HEAD)" "$(git -C site rev-parse HEAD^{tree})" | tee publication.txt
+      - name: Retain publication receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm004-preview-publication-${{ github.run_id }}
+          path: |
+            candidate/evidence/wm-004/packaging.json
+            site/wm004-preview/wm-provenance.json
+            site/wm004-preview/wm-manifest.tsv
+            publication.txt
+          include-hidden-files: true
+          retention-days: 30
