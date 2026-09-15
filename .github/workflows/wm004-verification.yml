@@ -5,6 +5,7 @@ on:
     branches: [feat/wm004-ground-course-hero]
 permissions:
   contents: write
+  actions: read
 concurrency:
   group: wm004-verification
   cancel-in-progress: false
@@ -12,6 +13,8 @@ jobs:
   verify:
     runs-on: windows-2025
     timeout-minutes: 40
+    env:
+      MSYS_NO_PATHCONV: "1"
     defaults:
       run:
         shell: bash
@@ -47,6 +50,7 @@ jobs:
           set -o pipefail
           pnpm build 2>&1 | tee evidence/wm-004/build.log
           pnpm exec vite build --base=/Webmaster/wm004-preview/ --outDir=.wm004-pages --manifest 2>&1 | tee evidence/wm-004/pages-build.log
+          node --input-type=module -e "import fs from 'node:fs';import assert from 'node:assert/strict';assert.ok(fs.readFileSync('.wm004-pages/index.html','utf8').includes('/Webmaster/wm004-preview/assets/'));"
           pnpm audit --json > evidence/wm-004/audit-all.json
           pnpm audit --prod --json > evidence/wm-004/audit-production.json
           node scripts/wm004-source-integrity.mjs
@@ -78,6 +82,12 @@ jobs:
         run: |
           gh auth setup-git
           git clone --depth 1 --branch verification/wm004-evidence https://github.com/${{ github.repository }}.git ../wm004-evidence
+          previous="../wm004-evidence/evidence/wm-004/9654d000b453781e80dbb98241a6c0b791247ee8"
+          if ! test -f "$previous/install.log"; then
+            gh run download 34971349961 --repo "${{ github.repository }}" --name wm004-9654d000b453781e80dbb98241a6c0b791247ee8 --dir ../wm004-first-artifact
+            cp -r ../wm004-first-artifact/evidence/wm-004/. "$previous/"
+            cp -r ../wm004-first-artifact/.wm004-pages "$previous/rejected-pages-build-msys"
+          fi
           target="../wm004-evidence/evidence/wm-004/${GITHUB_SHA}"
           mkdir -p "$target"
           cp -r evidence/wm-004/. "$target/"
@@ -90,6 +100,6 @@ jobs:
           JS
           git -C ../wm004-evidence config user.name 'WEBMASTER_PRODUCT_OWNER'
           git -C ../wm004-evidence config user.email 'webmaster-po@users.noreply.github.com'
-          git -C ../wm004-evidence add "evidence/wm-004/${GITHUB_SHA}"
+          git -C ../wm004-evidence add -f evidence/wm-004
           git -C ../wm004-evidence commit -m "WM-004 retain source-bound run ${GITHUB_RUN_ID} evidence [skip ci]"
           git -C ../wm004-evidence push origin HEAD:verification/wm004-evidence
