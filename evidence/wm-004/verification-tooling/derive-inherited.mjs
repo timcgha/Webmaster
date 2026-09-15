@@ -14,7 +14,7 @@ const before=`    await hold(page, ["w", "Shift"], 1250);
 const after=`    // Real DOM input against observed state; no progress, position or clock writes.
     const practiceEvidence = await page.evaluate(async () => {
       const rows: any[] = []; let held = new Set<string>();
-      const keys = (next: string[]) => { const n = new Set(next);for (const k of held) if (!n.has(k)) window.dispatchEvent(new KeyboardEvent("keyup",{key:k,bubbles:true}));for (const k of n) if (!held.has(k)) window.dispatchEvent(new KeyboardEvent("keydown",{key:k,bubbles:true}));held=n; };
+      const keys = (next: string[]) => { const n = new Set(next);for (const k of held) if (!n.has(k)) window.dispatchEvent(new KeyboardEvent("keyup",{key:k,code:k==='Shift'?'ShiftLeft':'Key'+k.toUpperCase(),bubbles:true}));for (const k of n) if (!held.has(k)) window.dispatchEvent(new KeyboardEvent("keydown",{key:k,code:k==='Shift'?'ShiftLeft':'Key'+k.toUpperCase(),bubbles:true}));held=n; };
       const phases = [
         {keys:["w","Shift"],axis:"z",bound:2.5,sign:1},
         {keys:["w","d","Shift"],axis:"x",bound:4.5,sign:1},
@@ -28,6 +28,7 @@ const after=`    // Real DOM input against observed state; no progress, position
     expect(practiceEvidence.every((s: any)=>s.health===100&&s.grounded&&s.position.y===0)).toBe(true);
     expect(practiceEvidence.some((s: any)=>s.progress===1)).toBe(true);
     expect(practiceEvidence.some((s: any)=>s.progress===2)).toBe(true);`;
+edit('e2e/wm001.spec.ts', '    await page.evaluate(() => window.__WM_DEBUG__!.setFixturePosition({ x: 0, y: 0, z: -8 }, "route start only"));', '    await page.reload();\n    await expect(page.locator("#loading")).toHaveClass(/hidden/);\n    await newGameWithMouse(page, 3, "Normal");', 'Separate the collision fixture from the positive complete practice course; fresh ordinary New Game, no route fixture.');
 edit('e2e/wm001.spec.ts',before,after,'Replace wall-clock steering with bounded observed waypoint input; keep all three progress checkpoints, grounded completion, pause/camera/collision assertions.');
 edit('e2e/wm001.spec.ts',`    await setPad(page, { connected: false });
     const disconnectedAt = (await state(page)).position;
