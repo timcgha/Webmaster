@@ -1,0 +1,28 @@
+{
+  "source": "aef5f5ae4dac555d8efed6bbc6553b87a9a2a444",
+  "tree": "b3c41a9ad436b3eddf2a131045fd7457852933db",
+  "classification": "SELF_REVIEW verification-only derived harness; no tracked candidate changes",
+  "replacements": [
+    {
+      "file": "e2e/wm001.spec.ts",
+      "reason": "Replace wall-clock steering with bounded observed waypoint input; keep all three progress checkpoints, grounded completion, pause/camera/collision assertions.",
+      "before": "    await hold(page, [\"w\", \"Shift\"], 1250);\n    expect((await state(page)).progress).toBeGreaterThanOrEqual(1);\n    await hold(page, [\"w\", \"d\", \"Shift\"], 1350);\n    expect((await state(page)).progress).toBeGreaterThanOrEqual(2);\n    await hold(page, [\"a\", \"Shift\"], 1300);\n    await page.keyboard.down(\"w\");\n    await page.keyboard.down(\"Shift\");\n    await expect.poll(async () => (await state(page)).progress, { timeout: 4_000, intervals: [50] }).toBe(3);\n    await page.keyboard.up(\"Shift\");\n    await page.keyboard.up(\"w\");",
+      "after": "    // Real DOM input against observed state; no progress, position or clock writes.\n    const practiceEvidence = await page.evaluate(async () => {\n      const rows: any[] = []; let held = new Set<string>();\n      const keys = (next: string[]) => { const n = new Set(next);for (const k of held) if (!n.has(k)) window.dispatchEvent(new KeyboardEvent(\"keyup\",{key:k,bubbles:true}));for (const k of n) if (!held.has(k)) window.dispatchEvent(new KeyboardEvent(\"keydown\",{key:k,bubbles:true}));held=n; };\n      const phases = [\n        {keys:[\"w\",\"Shift\"],axis:\"z\",bound:2.5,sign:1},\n        {keys:[\"w\",\"d\",\"Shift\"],axis:\"x\",bound:4.5,sign:1},\n        {keys:[\"w\",\"Shift\"],axis:\"z\",bound:10,sign:1},\n        {keys:[\"a\",\"Shift\"],axis:\"x\",bound:-4,sign:-1},\n        {keys:[\"w\",\"Shift\"],axis:\"z\",bound:18,sign:1},\n      ];\n      try { for(const phase of phases){const start=performance.now();keys(phase.keys);for(;;){await new Promise<void>(r=>requestAnimationFrame(()=>r()));const s=window.__WM_DEBUG__!.getState() as any;rows.push({time:performance.now(),keys:phase.keys,position:s.position,progress:s.progress,grounded:s.grounded,health:s.health});if(s.position[phase.axis]*phase.sign>=phase.bound*phase.sign)break;if(performance.now()-start>10000)throw new Error(\"Practice input phase did not reach waypoint: \"+JSON.stringify({phase,s}));}keys([]);await new Promise(r=>setTimeout(r,300));} } finally {keys([]);}return rows;\n    });\n    await writeFile(captures+\"/practice-position-observed-input.json\",JSON.stringify(practiceEvidence,null,2));\n    expect(practiceEvidence.every((s: any)=>s.health===100&&s.grounded&&s.position.y===0)).toBe(true);\n    expect(practiceEvidence.some((s: any)=>s.progress===1)).toBe(true);\n    expect(practiceEvidence.some((s: any)=>s.progress===2)).toBe(true);",
+      "sha256": "a8c1a1e989aa2871f5fff57154c649ba84b360c5c4f1b9b8d321251a19db8f5d"
+    },
+    {
+      "file": "e2e/wm001.spec.ts",
+      "reason": "Observe disconnected lifecycle and existing bounded deceleration before requiring exact stationary position and neutral/fresh-input behavior; accepted input/motion bytes unchanged.",
+      "before": "    await setPad(page, { connected: false });\n    const disconnectedAt = (await state(page)).position;\n    await page.waitForTimeout(350);",
+      "after": "    await setPad(page, { connected: false });\n    const disconnectObserved = await state(page);\n    await expect.poll(async () => (await page.evaluate(() => window.__WM_DEBUG__!.getControllerStatus())).lifecycle,{timeout:1000}).toBe(\"CONTROLLER_DISCONNECTED\");\n    await expect.poll(async () => {const s=await state(page);return Math.hypot(s.velocity.x,s.velocity.z);},{timeout:1000,intervals:[25]}).toBe(0);\n    const disconnectedAt = (await state(page)).position;\n    expect(Math.hypot(disconnectedAt.x-disconnectObserved.position.x,disconnectedAt.z-disconnectObserved.position.z)).toBeLessThanOrEqual(0.5);\n    await writeFile(captures+\"/disconnect-stop-bound.json\",JSON.stringify({before:disconnectObserved,stopped:await state(page),maximumRemainingDistance:0.5,maximumWaitMs:1000,baselineInputAndMotionUnchanged:true},null,2));\n    await page.waitForTimeout(350);",
+      "sha256": "8249e99e5cb20077828f2930f7d50b7d206b6a6c94624938e43056608bbc0c69"
+    },
+    {
+      "file": "e2e/wm002.spec.ts",
+      "reason": "Use same prescribed full Chromium without legacy redundant Playwright recorder; all route/save/process-reopen assertions retained.",
+      "before": "    recordVideo: { dir: testInfo.outputPath(\"persistent-video\") },",
+      "after": "    channel: \"chromium\",",
+      "sha256": "f57f1baf55cabc4df798ab2fe51a7f0317d4aa60b3ad3196d76c5131cd71e907"
+    }
+  ]
+}

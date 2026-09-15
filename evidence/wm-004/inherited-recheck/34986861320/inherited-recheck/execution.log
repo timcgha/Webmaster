@@ -1,0 +1,158 @@
+
+Running 40 tests using 1 worker
+
+  x   1 [chromium] › .wm004-derived\e2e\wm001.spec.ts:166:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route (24.4s)
+  ok  2 [chromium] › .wm004-derived\e2e\wm001.spec.ts:276:3 › WM-001 rendered keyboard and mouse journey › recovers outside the bounded street, reduces health, and performs a clean zero-health retry (8.8s)
+  ok  3 [chromium] › .wm004-derived\e2e\wm001.spec.ts:290:3 › WM-001 rendered keyboard and mouse journey › explains and enforces safe-state saving while airborne (8.5s)
+  ok  4 [chromium] › .wm004-derived\e2e\wm001.spec.ts:311:3 › WM-001 rendered simulated Gamepad journey › uses gamepad alone for new game, movement, camera, pause, save, save-and-quit, Continue, and Load (19.2s)
+  ok  5 [chromium] › .wm004-derived\e2e\wm001.spec.ts:370:3 › WM-001 rendered simulated Gamepad journey › disconnect releases motion and reconnect requires neutral then fresh input (6.7s)
+  ok  6 [chromium] › .wm004-derived\e2e\wm001.spec.ts:397:3 › WM-001 rendered simulated Gamepad journey › shows PlayStation-style prompts without changing standard semantic actions (4.6s)
+  ok  7 [chromium] › .wm004-derived\e2e\wm001.spec.ts:405:3 › WM-001 rendered simulated Gamepad journey › operates persisted main and pause settings without mouse or typing (16.0s)
+  ok  8 [chromium] › .wm004-derived\e2e\wm001.spec.ts:442:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › makes exposure, release, ready, HUD status, and local copy diagnostics persistent (9.3s)
+  ok  9 [chromium] › .wm004-derived\e2e\wm001.spec.ts:477:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps keyboard available when the Gamepad API is unavailable (3.2s)
+  ok 10 [chromium] › .wm004-derived\e2e\wm001.spec.ts:491:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › rejects an unsupported mapping visibly while keyboard remains available (3.7s)
+  ok 11 [chromium] › .wm004-derived\e2e\wm001.spec.ts:503:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › selects active index 1 over idle index 0 and ignores noisy extra axes (5.4s)
+  ok 12 [chromium] › .wm004-derived\e2e\wm001.spec.ts:527:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › supports connection after load, disconnect cleanup, keyboard fallback, and deliberate replacement (7.5s)
+  ok 13 [chromium] › .wm004-derived\e2e\wm001.spec.ts:569:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › cleans up held movement on blur/focus and requires neutral then fresh input (6.1s)
+  ok 14 [chromium] › .wm004-derived\e2e\wm001.spec.ts:596:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps controller status and local diagnostics usable at a representative iPad landscape viewport (8.6s)
+  ok 15 [chromium] › .wm004-derived\e2e\wm001.spec.ts:616:1 › keeps occupied-slot bytes unchanged when replacement is cancelled (11.1s)
+  ok 16 [chromium] › .wm004-derived\e2e\wm001.spec.ts:633:1 › keeps the prior committed save and remains paused when Save & Quit write fails (9.2s)
+  ok 17 [chromium] › .wm004-derived\e2e\wm001.spec.ts:655:1 › loads only the prior commit after pointer verification fails, then permits a clean retry (11.8s)
+  ok 18 [chromium] › .wm004-derived\e2e\wm001.spec.ts:714:1 › renders storage-unavailable records explicitly and refuses destructive replacement (9.7s)
+  ok 19 [chromium] › .wm004-derived\e2e\wm001.spec.ts:746:1 › remains controllable under a second real-time CPU/frame profile (8.7s)
+  ok 20 [chromium] › .wm004-derived\e2e\wm001.spec.ts:771:1 › persists a Hard run after closing and reopening the same browser profile and exact origin (13.7s)
+  ok 21 [chromium] › .wm004-derived\e2e\wm001.spec.ts:821:1 › labels corrupt and incompatible save fixtures without hiding valid choices (5.8s)
+  x  22 [chromium] › .wm004-derived\e2e\wm002.spec.ts:126:1 › WM-002 keyboard continuous four-gap route, safe save and same-origin reopen (39.0s)
+  ok 23 [chromium] › .wm004-derived\e2e\wm002.spec.ts:349:1 › WM-002 simulated PlayStation controller-only complete route and safe save/load (29.0s)
+  ok 24 [chromium] › .wm004-derived\e2e\wm002.spec.ts:388:1 › WM-002 targeted anchor, unsafe save, pause, focus, fall recovery, invalid finish and replay cleanup (16.1s)
+  ok 25 [chromium] › .wm004-derived\e2e\wm002.spec.ts:454:1 › WM-002 LT disconnect clears web, reconnect needs neutral and diagnostics retain swing mapping (10.7s)
+  x  26 [chromium] › .wm004-derived\e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under near-30fps render schedule (1.7m)
+  x  27 [chromium] › .wm004-derived\e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under uneven render schedule (37.9s)
+  ok 28 [chromium] › .wm004-derived\e2e\wm002.spec.ts:544:1 › WM-002 repeated pause, replay, save and load keeps runtime resources bounded (28.9s)
+  ok 29 [chromium] › .wm004-derived\e2e\wm003-remediation.spec.ts:22:1 › WM003 R1 genuine roof2 checkpoint and manual save survive reload (23.1s)
+  ok 30 [chromium] › .wm004-derived\e2e\wm003-remediation.spec.ts:77:1 › WM003 R1 standing on dynamic step still disables both save actions (20.6s)
+  ok 31 [chromium] › .wm004-derived\e2e\wm003.spec.ts:20:1 › WM003 ordinary keyboard combined swing climb ceiling pull route (1.8m)
+  x  32 [chromium] › .wm004-derived\e2e\wm003.spec.ts:59:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback (1.2m)
+  ok 33 [chromium] › .wm004-derived\e2e\wm003.spec.ts:123:3 › WM003 loads exact historical WM-001 writer records without changing old generations (4.4s)
+  ok 34 [chromium] › .wm004-derived\e2e\wm003.spec.ts:123:3 › WM003 loads exact historical WM-002 writer records without changing old generations (2.5s)
+  ok 35 [chromium] › .wm004-derived\e2e\wm003.spec.ts:167:1 › WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen (1.0m)
+  ok 36 [chromium] › .wm004-derived\e2e\wm003.spec.ts:282:1 › WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web (44.8s)
+  ok 37 [chromium] › .wm004-derived\e2e\wm003.spec.ts:395:1 › WM003 RB and LB disconnect cleanup with neutral reconnect and keyboard fallback (8.9s)
+  ok 38 [chromium] › .wm004-derived\e2e\wm003.spec.ts:542:3 › WM003 complete route under near-30 rendered timing (33.7s)
+  ok 39 [chromium] › .wm004-derived\e2e\wm003.spec.ts:542:3 › WM003 complete route under uneven rendered timing (36.1s)
+  ok 40 [chromium] › .wm004-derived\e2e\wm003.spec.ts:599:1 › WM003 repeated replay pause save load clears transients and bounds resources (24.8s)
+
+
+  1) [chromium] › .wm004-derived\e2e\wm001.spec.ts:166:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route 
+
+    Error: page.evaluate: Error: Practice input phase did not reach waypoint: {"phase":{"keys":["w","Shift"],"axis":"z","bound":2.5,"sign":1},"s":{"active":true,"paused":false,"safe":true,"health":100,"maxHealth":100,"progress":0,"progressLabel":"Reach the glowing sky gate","position":{"x":0,"y":0,"z":-8},"grounded":true,"fps":25,"cameraAlpha":-1.5707963267948966,"cameraBeta":1.08,"cameraRadius":10.35,"cameraPosition":{"x":5.58944921683067e-16,"y":6.4282485691982085,"z":-17.128263301259206},"inputSource":"keyboard-mouse","velocity":{"x":0,"y":0,"z":0},"swing":{"phase":"GROUNDED_OR_FREE","web":null,"targetId":null,"held":false,"freshRequired":false,"phaseTime":0,"message":"Aim at a glowing ring. Walk toward the skyline arrows.","attachments":0,"releases":0,"collisions":0},"hand":{"x":0.56,"y":2.03,"z":-7.29},"skyline":{"active":false,"stage":0,"completed":false,"completions":0,"anchors":[],"released":false,"reattached":false,"leftRoof":false,"lastAnchor":null,"valid":false},"traversal":{"phase":"FREE_OR_GROUNDED","surfaceId":null,"targetId":null,"pullId":null,"webOrigin":null,"phaseTime":0,"freshClimb":false,"freshPull":false,"heldClimb":false,"heldPull":false,"message":"Released safely. Let go of controls, then press again.","cameraMode":"ground"},"training":{"active":false,"stage":0,"checkpoint":0,"completed":false,"completions":0,"valid":false,"swingAttached":false,"swingReleased":false,"wallStart":null,"vertical":0,"lateral":0,"ceilingStart":null,"ceilingDistance":0,"pulledDistance":0,"stepped":false},"pullObjects":[{"id":"route-step","role":"PULLABLE_LIGHT","position":{"x":0,"y":0.65,"z":-51},"initial":{"x":0,"y":0.65,"z":-51},"half":{"x":1.5,"y":0.65,"z":1.5},"speed":0},{"id":"limited-crate","role":"PULLABLE_LIMITED","position":{"x":4,"y":0.55,"z":-57},"initial":{"x":4,"y":0.55,"z":-57},"half":{"x":0.75,"y":0.55,"z":0.75},"speed":0},{"id":"heavy-crate","role":"TOO_HEAVY","position":{"x":4,"y":1,"z":-49},"initial":{"x":4,"y":1,"z":-49},"half":{"x":1,"y":1,"z":1},"speed":0},{"id":"ordinary-crate","role":"ORDINARY_SOLID","position":{"x":7,"y":0.9,"z":-55},"initial":{"x":7,"y":0.9,"z":-55},"half":{"x":0.9,"y":0.9,"z":0.9},"speed":0}],"legPose":{"blend":0,"phase":0,"angle":0},"gait":{"phase":0.4285039310848321,"weight":1.1383808308030403e-57,"hips":[3.186218610472386e-56,-5.336905618926855e-56],"knees":[5.342619753772353e-84,3.6194311028169507e-56],"arms":[-2.071042096807051e-56,3.468988652302456e-56],"lift":-3.906589282950972e-59},"course":{"version":1,"next":0,"completed":false,"active":false,"valid":false,"released":true,"completions":0},"legWorld":[{"hip":{"x":-0.2199999988079071,"y":1.4600000381469727,"z":-8},"tip":{"x":-0.2199999988079071,"y":-0.07999996185302738,"z":-8},"forwardDisplacement":0},{"hip":{"x":0.2199999988079071,"y":1.4600000381469727,"z":-8},"tip":{"x":0.2199999988079071,"y":-0.07999996185302738,"z":-8},"forwardDisplacement":0}],"surfaceCameraBlend":0,"heroPitch":0}}
+        at eval (eval at evaluate (:311:30), <anonymous>:58:58)
+        at async <anonymous>:337:30
+        at eval (eval at evaluate (:311:30), <anonymous>:58:58)
+        at async <anonymous>:337:30
+        at D:\a\Webmaster\Webmaster\candidate\.wm004-derived\e2e\wm001.spec.ts:240:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    .wm004-derived\test-results-wm004\inherited-recheck\wm001-WM-001-rendered-keyb-bc063-tes-the-real-practice-route-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: .wm004-derived\test-results-wm004\inherited-recheck\wm001-WM-001-rendered-keyb-bc063-tes-the-real-practice-route-chromium\error-context.md
+
+  2) [chromium] › .wm004-derived\e2e\wm002.spec.ts:126:1 › WM-002 keyboard continuous four-gap route, safe save and same-origin reopen 
+
+    TimeoutError: page.waitForFunction: Timeout 15000ms exceeded.
+
+      13 | }
+      14 | async function stage(page: Page, n: number) {
+    > 15 |   await page.waitForFunction(
+         |              ^
+      16 |     (n) => window.__WM_DEBUG__!.getState().skyline.stage === n,
+      17 |     n,
+      18 |     { timeout: 15000 },
+        at stage (D:\a\Webmaster\Webmaster\candidate\.wm004-derived\e2e\wm002.spec.ts:15:14)
+        at keyboardRoute (D:\a\Webmaster\Webmaster\candidate\.wm004-derived\e2e\wm002.spec.ts:112:9)
+        at D:\a\Webmaster\Webmaster\candidate\.wm004-derived\e2e\wm002.spec.ts:145:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    .wm004-derived\test-results-wm004\inherited-recheck\wm002-WM-002-keyboard-cont-42b31-save-and-same-origin-reopen-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    .wm004-derived\test-results-wm004\inherited-recheck\wm002-WM-002-keyboard-cont-42b31-save-and-same-origin-reopen-chromium\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: .wm004-derived\test-results-wm004\inherited-recheck\wm002-WM-002-keyboard-cont-42b31-save-and-same-origin-reopen-chromium\error-context.md
+
+  3) [chromium] › .wm004-derived\e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under near-30fps render schedule 
+
+    Test timeout of 100000ms exceeded.
+
+    Error: page.waitForFunction: Test timeout of 100000ms exceeded.
+
+      73 |   await page.keyboard.down("e");
+      74 |   await page.keyboard.press("Space");
+    > 75 |   await page.waitForFunction(() => !!window.__WM_DEBUG__!.getState().swing.web);
+         |              ^
+      76 |   if (captures) await shot(page, "keyboard-hand-origin-web");
+      77 |   await until(page, "z", 37);
+      78 |   await page.keyboard.up("e");
+        at keyboardRoute (D:\a\Webmaster\Webmaster\candidate\.wm004-derived\e2e\wm002.spec.ts:75:14)
+        at D:\a\Webmaster\Webmaster\candidate\.wm004-derived\e2e\wm002.spec.ts:525:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    .wm004-derived\test-results-wm004\inherited-recheck\wm002-WM-002-continuous-ke-9c8a0--near-30fps-render-schedule-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: .wm004-derived\test-results-wm004\inherited-recheck\wm002-WM-002-continuous-ke-9c8a0--near-30fps-render-schedule-chromium\error-context.md
+
+  4) [chromium] › .wm004-derived\e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under uneven render schedule 
+
+    TimeoutError: page.waitForFunction: Timeout 15000ms exceeded.
+
+      13 | }
+      14 | async function stage(page: Page, n: number) {
+    > 15 |   await page.waitForFunction(
+         |              ^
+      16 |     (n) => window.__WM_DEBUG__!.getState().skyline.stage === n,
+      17 |     n,
+      18 |     { timeout: 15000 },
+        at stage (D:\a\Webmaster\Webmaster\candidate\.wm004-derived\e2e\wm002.spec.ts:15:14)
+        at keyboardRoute (D:\a\Webmaster\Webmaster\candidate\.wm004-derived\e2e\wm002.spec.ts:112:9)
+        at D:\a\Webmaster\Webmaster\candidate\.wm004-derived\e2e\wm002.spec.ts:525:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    .wm004-derived\test-results-wm004\inherited-recheck\wm002-WM-002-continuous-ke-9e755-nder-uneven-render-schedule-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: .wm004-derived\test-results-wm004\inherited-recheck\wm002-WM-002-continuous-ke-9e755-nder-uneven-render-schedule-chromium\error-context.md
+
+  5) [chromium] › .wm004-derived\e2e\wm003.spec.ts:59:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback 
+
+    TimeoutError: page.waitForFunction: Timeout 20000ms exceeded.
+
+       at routes\wm003-route.ts:7
+
+       5 |   p.evaluate(() => window.__WM_DEBUG__!.getState());
+       6 | export async function wait(p: Page, fn: (s: any) => boolean, timeout = 20000) {
+    >  7 |   await p.waitForFunction(
+         |           ^
+       8 |     ({ body }) =>
+       9 |       new Function("s", `return (${body})(s)`)(window.__WM_DEBUG__!.getState()),
+      10 |     { body: fn.toString() },
+        at wait (D:\a\Webmaster\Webmaster\candidate\.wm004-derived\e2e\routes\wm003-route.ts:7:11)
+        at route (D:\a\Webmaster\Webmaster\candidate\.wm004-derived\e2e\routes\wm003-route.ts:346:9)
+        at D:\a\Webmaster\Webmaster\candidate\.wm004-derived\e2e\wm003.spec.ts:68:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    .wm004-derived\test-results-wm004\inherited-recheck\wm003-WM003-simulated-Play-7b400--load-and-keyboard-fallback-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: .wm004-derived\test-results-wm004\inherited-recheck\wm003-WM003-simulated-Play-7b400--load-and-keyboard-fallback-chromium\error-context.md
+
+  5 failed
+    [chromium] › .wm004-derived\e2e\wm001.spec.ts:166:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route 
+    [chromium] › .wm004-derived\e2e\wm002.spec.ts:126:1 › WM-002 keyboard continuous four-gap route, safe save and same-origin reopen 
+    [chromium] › .wm004-derived\e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under near-30fps render schedule 
+    [chromium] › .wm004-derived\e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under uneven render schedule 
+    [chromium] › .wm004-derived\e2e\wm003.spec.ts:59:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback 
+  35 passed (15.2m)
