@@ -1,0 +1,76 @@
+name: WM004 exact R1 bounded rendering diagnosis
+on:
+  push:
+    branches: [verification/wm004-evidence]
+    paths: ['.github/workflows/wm004-render-diagnostic.yml','evidence/wm-004/diagnostics/render-probe.mjs']
+permissions:
+  contents: write
+jobs:
+  render-cost:
+    runs-on: windows-2025
+    timeout-minutes: 12
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - run: git config --global core.autocrlf false
+        working-directory: ${{ github.workspace }}
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: 87ae3cda98221e3339aaf3a88610c93e3938ae28
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline
+          ref: 3962446ca00c6e1db6bd8b250335b24619a0aeab
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: diagnostic
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Exact locked installs and prescribed browser
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm --dir ../baseline install --frozen-lockfile
+          pnpm exec playwright install chromium
+      - name: One bounded unchanged-source render cost and CPU profile matrix
+        timeout-minutes: 7
+        run: |
+          mkdir -p .wm004-derived evidence/wm-004/render-diagnostic
+          cp ../diagnostic/evidence/wm-004/diagnostics/render-probe.mjs .wm004-derived/render-probe.mjs
+          node .wm004-derived/render-probe.mjs 2>&1 | tee evidence/wm-004/render-diagnostic/execution.log
+      - name: Verify tracked source unchanged
+        if: always()
+        run: node scripts/wm004-source-integrity.mjs
+      - name: Retain diagnostic outcomes and profiles
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm004-render-diagnostic-${{ github.run_id }}
+          path: candidate/evidence/wm-004/
+          retention-days: 30
+      - name: Preserve evidence without altering candidate or publication
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh auth setup-git
+          git clone --depth 1 --branch verification/wm004-evidence https://github.com/${{ github.repository }}.git ../archive
+          target="../archive/evidence/wm-004/diagnostics/${GITHUB_RUN_ID}"
+          mkdir -p "$target"
+          cp -r evidence/wm-004/render-diagnostic/. "$target/"
+          cp evidence/wm-004/source-integrity.json "$target/"
+          git -C ../archive config user.name 'WEBMASTER_PRODUCT_OWNER'
+          git -C ../archive config user.email 'webmaster-po@users.noreply.github.com'
+          git -C ../archive add -f evidence/wm-004/diagnostics
+          git -C ../archive commit -m "WM004 preserve bounded R1 render diagnosis ${GITHUB_RUN_ID} [skip ci]"
+          git -C ../archive push origin HEAD:verification/wm004-evidence
