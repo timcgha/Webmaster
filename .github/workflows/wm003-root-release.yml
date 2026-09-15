@@ -1,0 +1,151 @@
+name: WM-003 bounded public root save verification
+on:
+  push:
+    branches: [verification/wm003-root-release]
+permissions:
+  contents: read
+jobs:
+  public-root-save:
+    runs-on: windows-2025
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Preserve exact source bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - name: Checkout accepted frozen source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: f68bad52fd7b66a08fb889e87eb7268a0cecd76e
+          path: candidate
+          persist-credentials: false
+      - name: Exact Node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Locked install
+        timeout-minutes: 5
+        run: |
+          test "$(git rev-parse HEAD)" = f68bad52fd7b66a08fb889e87eb7268a0cecd76e
+          test "$(git rev-parse HEAD^{tree})" = f1c808a922c4cd7b96c87b519e72d1ed60d71a4c
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          git diff --exit-code
+      - name: Install prescribed Chromium
+        timeout-minutes: 5
+        run: pnpm exec playwright install chromium
+      - name: Verify public root legacy saves and browser reopen
+        timeout-minutes: 4
+        run: |
+          cat > .wm003-public-root.mjs <<'WM003_SCRIPT'
+          import { chromium, expect } from '@playwright/test';
+          import fs from 'node:fs';
+          import os from 'node:os';
+          import path from 'node:path';
+          import crypto from 'node:crypto';
+          import assert from 'node:assert/strict';
+          const root = 'https://timcgha.github.io/Webmaster/';
+          const expectedHead = 'f68bad52fd7b66a08fb889e87eb7268a0cecd76e';
+          const expectedTree = 'f1c808a922c4cd7b96c87b519e72d1ed60d71a4c';
+          fs.mkdirSync('release-browser-output', { recursive: true });
+          const report = { author: 'WEBMASTER_PRODUCT_OWNER', type: 'SELF-REVIEW_PUBLIC_ROOT_BROWSER_SAVE_VERIFICATION', sourceHead: expectedHead, sourceTree: expectedTree, url: root, physicalController: 'NOT_TESTED', fullRenderedSuite: 'NOT_RERUN', fpsAcceptance: 'NOT_AN_ABSOLUTE_SWIFTSHADER_GATE', scenarios: [] };
+          let context;
+          try {
+            const response = await fetch(root + 'deployment-provenance.json');
+            assert.equal(response.status, 200);
+            const provenance = await response.json();
+            assert.equal(provenance.sourceHead, expectedHead); assert.equal(provenance.sourceTree, expectedTree); assert.equal(provenance.base, '/Webmaster/');
+            assert.equal(provenance.compiledPayloadSha256, 'aea5bb5018317121a8f808f8975c5670997c8590031d79922b6f9bb01a2b57c0');
+            report.provenance = provenance;
+            const launch = profile => chromium.launchPersistentContext(profile, { headless: true, channel: 'chromium', viewport: { width: 1280, height: 720 } });
+            for (const name of ['WM-001', 'WM-002', 'new-WM-003']) {
+              const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'wm003-root-'));
+              const fixture = name.startsWith('new') ? null : JSON.parse(fs.readFileSync(`evidence/wm-003/legacy-saves/${name}.json`, 'utf8'));
+              const result = { name, errors: [], failedResponses: [], steps: [], result: 'RUNNING' };
+              report.scenarios.push(result);
+              const wire = page => {
+                page.on('pageerror', error => result.errors.push(String(error)));
+                page.on('response', response => { if (response.url().startsWith(root) && response.status() >= 400) result.failedResponses.push({ url: response.url(), status: response.status() }); });
+              };
+              context = await launch(profile);
+              report.browserVersion = context.browser()?.version() ?? 'persistent Chromium';
+              const page = context.pages()[0]; wire(page);
+              if (fixture) await page.addInitScript(stored => {
+                if (location.origin !== 'https://timcgha.github.io') return;
+                for (const [key, value] of Object.entries(stored)) localStorage.setItem(key, value);
+              }, fixture.stored);
+              assert.equal((await page.goto(root, { waitUntil: 'load', timeout: 60000 })).status(), 200);
+              await expect(page.locator('#loading')).toHaveClass(/hidden/, { timeout: 60000 });
+              await expect(page.getByRole('heading', { name: 'WEBMASTER', exact: true })).toBeVisible();
+              const original = fixture ? await page.evaluate(keys => Object.fromEntries(keys.map(key => [key, localStorage.getItem(key)])), Object.keys(fixture.stored)) : null;
+              if (fixture) {
+                assert.deepEqual(original, fixture.stored);
+                await expect(page.getByRole('button', { name: /^Continue/ })).toBeEnabled();
+                await page.getByRole('button', { name: /^Continue/ }).click();
+                result.steps.push('Historical writer bytes preserved on menu load; genuine Continue');
+              } else {
+                await page.getByRole('button', { name: /^New Game/ }).click();
+                await page.getByRole('button', { name: /^Slot 1/ }).click();
+                await page.getByRole('button', { name: /^Normal/ }).click();
+                result.steps.push('Genuine New Game / Slot 1 / Normal');
+              }
+              await expect(page.locator('#hud-layer')).not.toHaveClass(/hidden/);
+              await page.waitForTimeout(1500); // allow ordinary spawn to settle before capturing pause safety
+              result.playingHud = await page.locator('#hud-layer').innerText();
+              await page.keyboard.press('Escape');
+              await expect(page.getByRole('heading', { name: 'Paused', exact: true })).toBeVisible();
+              const save = page.getByRole('button', { name: /^Save Game/ });
+              await expect(save).toBeEnabled(); await save.click();
+              await expect(page.locator('#toast-layer')).toContainText('Save confirmed.');
+              const quit = page.getByRole('button', { name: /^Save & Quit/ });
+              await expect(quit).toBeEnabled(); await quit.click();
+              await expect(page.getByRole('heading', { name: 'WEBMASTER', exact: true })).toBeVisible();
+              result.steps.push('Safe Save Game and Save & Quit confirmed at public root');
+              const saved = await page.evaluate(() => Object.fromEntries(Object.keys(localStorage).sort().map(key => [key, localStorage.getItem(key)])));
+              assert(Object.keys(saved).some(key => /^webmaster\.save\.v1\.slot\d\.manual\.pointer$/.test(key)));
+              assert(!Object.keys(saved).some(key => key.startsWith('webmaster.wm003-preview.v1:')));
+              result.savedKeys = Object.keys(saved); result.savedStorageSha256 = crypto.createHash('sha256').update(JSON.stringify(saved)).digest('hex');
+              await page.screenshot({ path: `release-browser-output/${name}-saved.png` });
+              await context.close(); context = null;
+              // Reopen real Chromium profile from disk. No init script or injected storage on reopen.
+              context = await launch(profile);
+              const reopened = context.pages()[0]; wire(reopened);
+              await reopened.goto(root, { waitUntil: 'load', timeout: 60000 });
+              await expect(reopened.locator('#loading')).toHaveClass(/hidden/, { timeout: 60000 });
+              const persisted = await reopened.evaluate(() => Object.fromEntries(Object.keys(localStorage).sort().map(key => [key, localStorage.getItem(key)])));
+              assert.deepEqual(persisted, saved);
+              await expect(reopened.getByRole('button', { name: /^Continue/ })).toBeEnabled();
+              await reopened.getByRole('button', { name: /^Continue/ }).click();
+              await expect(reopened.locator('#hud-layer')).not.toHaveClass(/hidden/);
+              await expect(reopened.locator('[data-hud="run"]')).toContainText(`Slot ${fixture?.payload.slot ?? 1}`);
+              await reopened.screenshot({ path: `release-browser-output/${name}-reopened.png` });
+              result.steps.push('Browser profile closed/reopened from disk; exact saved bytes retained; Continue entered matching slot');
+              assert.deepEqual(result.errors, []); assert.deepEqual(result.failedResponses, []);
+              result.result = 'PASS';
+              await context.close(); context = null;
+            }
+            report.result = 'PASS';
+          } catch (error) {
+            report.result = 'FAIL'; report.error = String(error?.stack ?? error);
+            if (context) { try { const page = context.pages()[0]; report.failureBody = await page.locator('body').innerText(); await page.screenshot({ path: 'release-browser-output/failure.png' }); } catch {} }
+            process.exitCode = 1;
+          } finally {
+            await context?.close();
+            fs.writeFileSync('release-browser-output/report.json', JSON.stringify(report, null, 2) + '\n');
+            console.log('WM003_PUBLIC_ROOT_REPORT_BEGIN'); console.log(JSON.stringify(report)); console.log('WM003_PUBLIC_ROOT_REPORT_END');
+          }
+          WM003_SCRIPT
+          node .wm003-public-root.mjs
+      - name: Preserve complete browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm003-public-root-save
+          path: candidate/release-browser-output/
+          if-no-files-found: warn
+          retention-days: 7
