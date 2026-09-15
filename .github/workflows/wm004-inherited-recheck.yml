@@ -34,24 +34,7 @@ jobs:
         with:
           node-version: '24.19.0'
           package-manager-cache: false
-      - name: Recover retained R3 artifact without repeating passed gates
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh auth setup-git
-          gh run download 34983009905 --repo "${{ github.repository }}" --name wm004-aef5f5ae4dac555d8efed6bbc6553b87a9a2a444 --dir ../recovered
-          git clone --depth 1 --branch verification/wm004-evidence https://github.com/${{ github.repository }}.git ../retained
-          node ../tooling/evidence/wm-004/verification-tooling/archive-filter.mjs ../recovered ../retained/evidence/wm-004/aef5f5ae4dac555d8efed6bbc6553b87a9a2a444/recovered-artifact
-          cp -r ../recovered/.wm004-pages .wm004-pages
-          node scripts/wm004-package.mjs
-          mkdir -p ../retained/evidence/wm-004/aef5f5ae4dac555d8efed6bbc6553b87a9a2a444/prepared-pages
-          cp -r .wm004-payload/. ../retained/evidence/wm-004/aef5f5ae4dac555d8efed6bbc6553b87a9a2a444/prepared-pages/
-          node --input-type=module -e "import fs from 'node:fs';import assert from 'node:assert/strict';assert.deepEqual(JSON.parse(fs.readFileSync('evidence/wm-004/packaging.json')),JSON.parse(fs.readFileSync('../recovered/evidence/wm-004/packaging.json')));console.log('Recovered prepared payload matches original exact-source packaging');"
-          git -C ../retained config user.name WEBMASTER_PRODUCT_OWNER
-          git -C ../retained config user.email webmaster-po@users.noreply.github.com
-          git -C ../retained add -f evidence/wm-004/aef5f5ae4dac555d8efed6bbc6553b87a9a2a444
-          git -C ../retained commit -m "WM004 recover full R3 evidence and identical prepared payload [skip ci]"
-          git -C ../retained push origin HEAD:verification/wm004-evidence
+      # R3 artifact and exact payload already recovered at0ee492d; no repeated recovery.
       - name: Exact locked install and full Chromium
         run: |
           corepack enable
