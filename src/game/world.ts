@@ -79,7 +79,7 @@ import {
   newLegPose,
   swingLegPose,
   type LegPose,
-  newGait, gaitPose, type GaitPose,
+  newGait, gaitPose, ceilingPresentationOffset, type GaitPose,
 } from "../core/presentation";
 
 interface SolidBox {
@@ -903,8 +903,15 @@ export class GameWorld {
       this.traversal.cameraMode === "ceiling" ? Math.PI / 2 : 0;
     this.heroRoot.rotation.x +=
       (desiredPitch - this.heroRoot.rotation.x) * Math.min(1, delta * 8);
-    // Visual rotation about chest height keeps the unchanged upright collision capsule inside the surface bounds.
-    this.heroRoot.position.y += (1 - Math.cos(this.heroRoot.rotation.x)) * 2.6;
+    // Rotate the visual rig onto the ceiling while keeping its full authored
+    // extent on the playable side of the wall. Physics stays at motion.position.
+    const presentationOffset = ceilingPresentationOffset(
+      this.heroRoot.rotation.x,
+      this.motion.facingYaw,
+    );
+    this.heroRoot.position.x += presentationOffset.x;
+    this.heroRoot.position.y += presentationOffset.y;
+    this.heroRoot.position.z += presentationOffset.z;
     if (!this.paused)
       this.legPose = swingLegPose(this.legPose, this.motion, this.swing, delta);
     if (!this.paused) {

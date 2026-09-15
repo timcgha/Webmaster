@@ -45,6 +45,19 @@ export interface LegPose {
 }
 export const newLegPose = (): LegPose => ({ blend: 0, angle: 0, phase: 0 });
 
+
+/** Visual-only offset for pitching the upright rig onto a ceiling.
+ * The horizontal component moves away from the faced wall by the full authored
+ * hero height. Physics and traversal coordinates remain unchanged. */
+export function ceilingPresentationOffset(pitch: number, facingYaw: number): Vec3Data {
+  const boundedPitch = Math.max(0, Math.min(Math.PI / 2, pitch));
+  const away = Math.sin(boundedPitch) * HERO_PRESENTATION.capsuleHeight;
+  return {
+    x: -Math.sin(facingYaw) * away,
+    y: (1 - Math.cos(boundedPitch)) * 2.6,
+    z: -Math.cos(facingYaw) * away,
+  };
+}
 export const HERO_RIG = Object.freeze({
   hipHeight: 1.46, hipSeparation: 0.44, upperLeg: 0.66, lowerLeg: 0.66,
   hipJointRadius: 0.18, kneeJointRadius: 0.16,
