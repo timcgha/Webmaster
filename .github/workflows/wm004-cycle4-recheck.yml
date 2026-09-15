@@ -1,0 +1,69 @@
+name: WM004 cycle4 bounded visual and performance recheck
+on:
+  push:
+    branches: [verification/wm004-evidence]
+    paths: [.github/workflows/wm004-cycle4-recheck.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-2025
+    timeout-minutes: 35
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Preserve exact checkout bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: 1b877def5183de08f06efc3d1f774bd93f821728
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline
+          ref: 3962446ca00c6e1db6bd8b250335b24619a0aeab
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: tooling
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Locked installs and full Chromium
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm --dir ../baseline install --frozen-lockfile
+          pnpm exec playwright install chromium
+          cp ../tooling/evidence/wm-004/verification-tooling/cycle4-performance.mjs scripts/.wm004-cycle4-performance.mjs
+      - name: Exact source before recheck
+        run: node scripts/wm004-source-integrity.mjs
+      - name: Four-round same-machine exact-WM003 comparison
+        timeout-minutes: 14
+        run: node scripts/.wm004-cycle4-performance.mjs
+      - name: Keyboard and semantic-controller ceiling journeys
+        timeout-minutes: 12
+        env:
+          WM004_SUITE: cycle4-visual
+        run: pnpm exec playwright test -c playwright.wm004.config.ts e2e/wm003.spec.ts --grep "WM003 ordinary keyboard combined|WM003 simulated PlayStation complete"
+      - name: Exact source after recheck
+        if: always()
+        run: node scripts/wm004-source-integrity.mjs
+      - name: Retain bounded recheck
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm004-cycle4-recheck-${{ github.run_id }}
+          path: |
+            candidate/evidence/wm-004/
+            candidate/test-results-wm004/cycle4-visual/
+          include-hidden-files: true
+          retention-days: 30
