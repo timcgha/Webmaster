@@ -1,0 +1,49 @@
+{
+  "source": "aef5f5ae4dac555d8efed6bbc6553b87a9a2a444",
+  "tree": "b3c41a9ad436b3eddf2a131045fd7457852933db",
+  "classification": "SELF_REVIEW verification-only; candidate tracked source unchanged",
+  "changes": [
+    {
+      "file": "e2e/wm002.spec.ts",
+      "reason": "Reuse exact candidate test input helper, with real DOM key codes and actual browser frames.",
+      "before": "import { writeFile } from \"node:fs/promises\";",
+      "after": "import { mkdir, writeFile } from \"node:fs/promises\";\nimport {installCourseControls} from \"./routes/wm004-route\";",
+      "sha256": "cf0fabc73bc06c3da57c81d87bcd75cc994d1e557a08063654017d396c25ada5"
+    },
+    {
+      "file": "e2e/wm002.spec.ts",
+      "reason": "Replace delayed transport around jump/release/turn with observed real-frame keyboard inputs. Preserve every completion/validity/safe/save/reopen assertion and both actual scheduling profiles; add exact five-anchor and health assertions.",
+      "before": "  await look(page, 0, 170); // Raise aim using the ordinary mouse-look path.\n  await page.keyboard.down(\"Shift\");\n  await page.keyboard.down(\"w\");\n  await until(page, \"z\", 21);\n  await page.keyboard.down(\"e\");\n  await page.keyboard.press(\"Space\");\n  await page.waitForFunction(() => !!window.__WM_DEBUG__!.getState().swing.web);\n  if (captures) await shot(page, \"keyboard-hand-origin-web\");\n  await until(page, \"z\", 37);\n  await page.keyboard.up(\"e\");\n  if (captures) await shot(page, \"keyboard-release-momentum\");\n  await stage(page, 1);\n  if (captures) await shot(page, \"keyboard-first-landing\");\n  await until(page, \"z\", 53);\n  await page.keyboard.down(\"e\");\n  await page.keyboard.press(\"Space\");\n  await until(page, \"z\", 76.5);\n  await page.keyboard.up(\"e\");\n  await stage(page, 2);\n  await until(page, \"z\", 95);\n  await page.keyboard.down(\"e\");\n  await page.keyboard.press(\"Space\");\n  await until(page, \"z\", 122);\n  await page.keyboard.up(\"e\");\n  await until(page, \"z\", 123.2);\n  await page.keyboard.down(\"e\");\n  await page.waitForFunction(\n    () => window.__WM_DEBUG__!.getState().swing.web?.anchorId === \"ring-4\",\n  );\n  if (captures) await shot(page, \"keyboard-midair-reattachment\");\n  await until(page, \"z\", 152);\n  await page.keyboard.up(\"e\");\n  await stage(page, 3);\n  await until(page, \"z\", 166);\n  await page.keyboard.up(\"w\");\n  await page.waitForTimeout(600);\n  await look(page, Math.PI / 2 / 0.0035, 0); // Face the right-turn ring with mouse look.\n  await page.keyboard.down(\"w\");\n  await until(page, \"x\", 5);\n  await page.keyboard.down(\"e\");\n  await page.keyboard.press(\"Space\");\n  await until(page, \"x\", 20);\n  await page.keyboard.up(\"e\");\n  await stage(page, 4);\n  await page.keyboard.up(\"w\");\n  await page.keyboard.up(\"Shift\");\n  await page.waitForTimeout(850);\n",
+      "after": "  await installCourseControls(page,false);\n  const observed = await page.evaluate(async()=>{\n    const c=(window as any).__wm004Controls,rows:any[]=[];\n    const note=(label:string)=>rows.push({label,time:performance.now(),state:c.state()});\n    const jump=async()=>{c.keys('Shift','w','e','Space');await c.frame();c.keys('Shift','w','e');};\n    const fly=async(axis:string,end:number,id:string)=>{await c.until((s:any)=>s.swing.web?.anchorId===id,'real '+id);note('attached '+id);await c.at(axis,end);c.keys('Shift','w');note('released '+id);};\n    try{\n      await c.look(-Math.PI/2,1.65);c.keys('Shift','w');await c.at('z',21);await jump();await fly('z',37,'ring-1');await c.until((s:any)=>s.skyline.stage===1,'first landing');note('landing1');\n      await c.at('z',53);await jump();await fly('z',76.5,'ring-2');await c.until((s:any)=>s.skyline.stage===2,'second landing');note('landing2');\n      await c.at('z',95);await jump();await fly('z',122,'ring-3');await c.at('z',123.2);c.keys('Shift','w','e');await fly('z',152,'ring-4');await c.until((s:any)=>s.skyline.stage===3,'third landing');note('landing3');\n      await c.at('z',165.5);await c.rest(650);await c.look(Math.PI,1.65);c.keys('Shift','w');await c.at('x',5);await jump();await fly('x',20,'ring-5');await c.until((s:any)=>s.skyline.stage===4,'fourth landing');await c.at('x',34.5);await c.rest(850);note('finish');\n      return {method:'Fresh ordinary start, same four gaps, five exact anchors and midair reattachment; DOM keyboard/mouse on real RAF, no source-state/time writes. No screenshot transport while motion is held.',rows,inputs:c.events,anchors:c.anchors,finish:c.state()};\n    }finally{c.keys();}\n  });\n  expect(observed.anchors.map((x:any)=>x.expected)).toEqual(['ring-1','ring-2','ring-3','ring-4','ring-5']);\n  expect(observed.rows.every((x:any)=>x.state.health===100)).toBe(true);\n  await mkdir(root,{recursive:true});\n  await writeFile(root+'/real-frame-'+profile+'.json',JSON.stringify(observed,null,2));\n",
+      "sha256": "5f9756360102f1d188d462ab3899f4621f53c493810590bb93484644d8686402"
+    },
+    {
+      "file": "e2e/wm002.spec.ts",
+      "reason": "Name retained route input evidence per original timing profile.",
+      "before": "async function keyboardRoute(page: Page, captures = true) {",
+      "after": "async function keyboardRoute(page: Page, captures = true, profile = \"ordinary\") {",
+      "sha256": "8c06efe922ee09b585a1e87e222619a1a0fb1e1e04e53396e5bbc3b5576804cd"
+    },
+    {
+      "file": "e2e/wm002.spec.ts",
+      "reason": "Retain each timing profile separately.",
+      "before": "    await keyboardRoute(page, false);",
+      "after": "    await keyboardRoute(page, false, name);",
+      "sha256": "aee24e3b0829097df24b44dee27751bb94f530af9b1f0233f33bae6cdff5bfed"
+    },
+    {
+      "file": "e2e/routes/wm003-route.ts",
+      "reason": "Use semantic controller on real browser frames only for final crate/ledge jumps.",
+      "before": "import { mkdir, writeFile } from \"node:fs/promises\";",
+      "after": "import { mkdir, writeFile } from \"node:fs/promises\";\nimport {installCourseControls} from \"./wm004-route\";",
+      "sha256": "f7129e93a9cf20c3025215cb1f34e6248f3daa58ce40f4d1bb815fc2a28d3b6e"
+    },
+    {
+      "file": "e2e/routes/wm003-route.ts",
+      "reason": "Controller only: replace fixed-delay final two jumps with same semantic inputs tied to actual moved crate support. Entire preceding swing/wall/ceiling/pull route and all following save/load/keyboard-fallback assertions retained.",
+      "before": "  // Jump east onto the moved crate, then turn west for the higher ledge.\n  await controls.down(\"w\");",
+      "after": "  // The controller press helper waits across several transport round-trips;\n  // retained failure showed stepped=true but then ran off the crate toX-2.\n  // Observe the real support and stop at its center before the second jump.\n  if(prefix === \"controller\") {\n    await installCourseControls(p,true);\n    const crateEvidence=await p.evaluate(async()=>{\n      const c=(window as any).__wm004Controls,rows:any[]=[];\n      const note=(label:string)=>rows.push({label,time:performance.now(),state:c.state()});\n      try{\n        const crate=c.state().pullObjects.find((o:any)=>o.id==='route-step');note('actual moved crate');\n        c.keys('w');await c.at('x',crate.position.x-2.2);c.keys('w','Space');await c.frame();c.keys('w');\n        await c.at('x',crate.position.x-.3);c.keys();await c.until((s:any)=>s.grounded&&s.position.y>1.2&&s.position.y<1.4,'real crate support');await c.rest(450);note('supported on moved crate');\n        if(!c.state().training.stepped||c.state().safe)throw Error('Real dynamic support must earn step and still forbid save');\n        await c.look(0,1.1);c.keys('w');await c.at('x',crate.position.x-1.1,-1);c.keys('w','Space');await c.frame();c.keys('w');\n        await c.until((s:any)=>s.training.completed,'real gold ledge finish');await c.rest(650);note('earned gold ledge finish');\n        return {method:'Semantic Gamepad API only; actual browser-frame input, real moved crate support, jump and earned ledge; no position/progression/time writes.',rows,inputs:c.events};\n      }finally{c.keys();}\n    });\n    await writeFile(out+'/controller-crate-finish-frames.json',JSON.stringify(crateEvidence,null,2));\n    await shot(p,prefix+'-combined-finish');return;\n  }\n  // Jump east onto the moved crate, then turn west for the higher ledge.\n  await controls.down(\"w\");",
+      "sha256": "bf95c9f5bda6c12b0f13d3a16b64f147a6506c1fa45a3da01a6115aa51f3ca81"
+    }
+  ]
+}
