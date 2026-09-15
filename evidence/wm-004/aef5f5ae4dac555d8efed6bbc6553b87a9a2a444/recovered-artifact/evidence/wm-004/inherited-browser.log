@@ -1,0 +1,607 @@
+
+Running 40 tests using 1 worker
+
+  x   1 [chromium] › e2e\wm001.spec.ts:166:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route (21.9s)
+  ok  2 [chromium] › e2e\wm001.spec.ts:269:3 › WM-001 rendered keyboard and mouse journey › recovers outside the bounded street, reduces health, and performs a clean zero-health retry (8.9s)
+  ok  3 [chromium] › e2e\wm001.spec.ts:283:3 › WM-001 rendered keyboard and mouse journey › explains and enforces safe-state saving while airborne (8.3s)
+  ok  4 [chromium] › e2e\wm001.spec.ts:304:3 › WM-001 rendered simulated Gamepad journey › uses gamepad alone for new game, movement, camera, pause, save, save-and-quit, Continue, and Load (19.1s)
+  ok  5 [chromium] › e2e\wm001.spec.ts:363:3 › WM-001 rendered simulated Gamepad journey › disconnect releases motion and reconnect requires neutral then fresh input (6.6s)
+  ok  6 [chromium] › e2e\wm001.spec.ts:385:3 › WM-001 rendered simulated Gamepad journey › shows PlayStation-style prompts without changing standard semantic actions (4.5s)
+  ok  7 [chromium] › e2e\wm001.spec.ts:393:3 › WM-001 rendered simulated Gamepad journey › operates persisted main and pause settings without mouse or typing (16.1s)
+  ok  8 [chromium] › e2e\wm001.spec.ts:430:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › makes exposure, release, ready, HUD status, and local copy diagnostics persistent (8.6s)
+  ok  9 [chromium] › e2e\wm001.spec.ts:465:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps keyboard available when the Gamepad API is unavailable (3.6s)
+  ok 10 [chromium] › e2e\wm001.spec.ts:479:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › rejects an unsupported mapping visibly while keyboard remains available (3.5s)
+  ok 11 [chromium] › e2e\wm001.spec.ts:491:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › selects active index 1 over idle index 0 and ignores noisy extra axes (5.8s)
+  x  12 [chromium] › e2e\wm001.spec.ts:515:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › supports connection after load, disconnect cleanup, keyboard fallback, and deliberate replacement (5.3s)
+  ok 13 [chromium] › e2e\wm001.spec.ts:552:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › cleans up held movement on blur/focus and requires neutral then fresh input (6.7s)
+  ok 14 [chromium] › e2e\wm001.spec.ts:579:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps controller status and local diagnostics usable at a representative iPad landscape viewport (10.0s)
+  ok 15 [chromium] › e2e\wm001.spec.ts:599:1 › keeps occupied-slot bytes unchanged when replacement is cancelled (11.8s)
+  ok 16 [chromium] › e2e\wm001.spec.ts:616:1 › keeps the prior committed save and remains paused when Save & Quit write fails (9.4s)
+  ok 17 [chromium] › e2e\wm001.spec.ts:638:1 › loads only the prior commit after pointer verification fails, then permits a clean retry (12.0s)
+  ok 18 [chromium] › e2e\wm001.spec.ts:697:1 › renders storage-unavailable records explicitly and refuses destructive replacement (8.5s)
+  ok 19 [chromium] › e2e\wm001.spec.ts:729:1 › remains controllable under a second real-time CPU/frame profile (8.6s)
+[WebServer] node:internal/fs/watchers:323
+[WebServer]     const error = new UVException({
+[WebServer]                   ^
+[WebServer] 
+[WebServer] Error: EBUSY: resource busy or locked, watch 'D:\a\Webmaster\Webmaster\candidate\test-results-wm004\inherited\wm001-persists-a-Hard-run--79e1c-er-profile-and-exact-origin-chromium\persistent-profile\Default\Network\Cookies'
+[WebServer]     at FSWatcher.<computed> (node:internal/fs/watchers:323:19)
+[WebServer]     at Object.watch (node:fs:2609:36)
+[WebServer]     at createFsWatchInstance (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:10735:16)
+[WebServer]     at setFsWatchListener (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:10777:14)
+[WebServer]     at NodeFsHandler._watchWithNodeFs (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:10892:20)
+[WebServer]     at NodeFsHandler._handleFile (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:10936:24)
+[WebServer]     at NodeFsHandler._addToNodeFs (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:11110:26)
+[WebServer] Emitted 'error' event on FSWatcher instance at:
+[WebServer]     at FSWatcher._handleError (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:11912:146)
+[WebServer]     at NodeFsHandler._addToNodeFs (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:11115:18) {
+[WebServer]   errno: -4082,
+[WebServer]   syscall: 'watch',
+[WebServer]   code: 'EBUSY',
+[WebServer]   path: 'D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm004\\inherited\\wm001-persists-a-Hard-run--79e1c-er-profile-and-exact-origin-chromium\\persistent-profile\\Default\\Network\\Cookies',
+[WebServer]   filename: 'D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm004\\inherited\\wm001-persists-a-Hard-run--79e1c-er-profile-and-exact-origin-chromium\\persistent-profile\\Default\\Network\\Cookies'
+[WebServer] }
+[WebServer] 
+[WebServer] Node.js v24.19.0
+  x  20 [chromium] › e2e\wm001.spec.ts:754:1 › persists a Hard run after closing and reopening the same browser profile and exact origin (927ms)
+  x  21 [chromium] › e2e\wm001.spec.ts:804:1 › labels corrupt and incompatible save fixtures without hiding valid choices (446ms)
+  x  22 [chromium] › e2e\wm002.spec.ts:126:1 › WM-002 keyboard continuous four-gap route, safe save and same-origin reopen (813ms)
+  x  23 [chromium] › e2e\wm002.spec.ts:349:1 › WM-002 simulated PlayStation controller-only complete route and safe save/load (438ms)
+  x  24 [chromium] › e2e\wm002.spec.ts:388:1 › WM-002 targeted anchor, unsafe save, pause, focus, fall recovery, invalid finish and replay cleanup (413ms)
+  x  25 [chromium] › e2e\wm002.spec.ts:454:1 › WM-002 LT disconnect clears web, reconnect needs neutral and diagnostics retain swing mapping (444ms)
+  x  26 [chromium] › e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under near-30fps render schedule (443ms)
+  x  27 [chromium] › e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under uneven render schedule (471ms)
+  x  28 [chromium] › e2e\wm002.spec.ts:544:1 › WM-002 repeated pause, replay, save and load keeps runtime resources bounded (447ms)
+  x  29 [chromium] › e2e\wm003-remediation.spec.ts:22:1 › WM003 R1 genuine roof2 checkpoint and manual save survive reload (436ms)
+  x  30 [chromium] › e2e\wm003-remediation.spec.ts:77:1 › WM003 R1 standing on dynamic step still disables both save actions (838ms)
+  x  31 [chromium] › e2e\wm003.spec.ts:20:1 › WM003 ordinary keyboard combined swing climb ceiling pull route (446ms)
+  x  32 [chromium] › e2e\wm003.spec.ts:59:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback (444ms)
+  x  33 [chromium] › e2e\wm003.spec.ts:123:3 › WM003 loads exact historical WM-001 writer records without changing old generations (438ms)
+  x  34 [chromium] › e2e\wm003.spec.ts:123:3 › WM003 loads exact historical WM-002 writer records without changing old generations (955ms)
+  x  35 [chromium] › e2e\wm003.spec.ts:167:1 › WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen (987ms)
+  x  36 [chromium] › e2e\wm003.spec.ts:282:1 › WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web (432ms)
+  x  37 [chromium] › e2e\wm003.spec.ts:395:1 › WM003 RB and LB disconnect cleanup with neutral reconnect and keyboard fallback (442ms)
+  x  38 [chromium] › e2e\wm003.spec.ts:542:3 › WM003 complete route under near-30 rendered timing (437ms)
+  x  39 [chromium] › e2e\wm003.spec.ts:542:3 › WM003 complete route under uneven rendered timing (461ms)
+  x  40 [chromium] › e2e\wm003.spec.ts:599:1 › WM003 repeated replay pause save load clears transients and bounds resources (485ms)
+
+
+  1) [chromium] › e2e\wm001.spec.ts:166:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 3
+    Received: 2
+
+    Call Log:
+    - Timeout 4000ms exceeded while waiting on the predicate
+
+      244 |     await page.keyboard.down("w");
+      245 |     await page.keyboard.down("Shift");
+    > 246 |     await expect.poll(async () => (await state(page)).progress, { timeout: 4_000, intervals: [50] }).toBe(3);
+          |                                                                                                      ^
+      247 |     await page.keyboard.up("Shift");
+      248 |     await page.keyboard.up("w");
+      249 |     await page.waitForTimeout(100);
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm001.spec.ts:246:102
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm004\inherited\wm001-WM-001-rendered-keyb-bc063-tes-the-real-practice-route-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm004\inherited\wm001-WM-001-rendered-keyb-bc063-tes-the-real-practice-route-chromium\error-context.md
+
+  2) [chromium] › e2e\wm001.spec.ts:515:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › supports connection after load, disconnect cleanup, keyboard fallback, and deliberate replacement 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+        "x": -1.3777276490407724e-16,
+        "y": 0,
+    -   "z": -5.880000000000004,
+    +   "z": -5.855000000000004,
+      }
+
+      531 |     const disconnectedAt = (await state(page)).position;
+      532 |     await page.waitForTimeout(350);
+    > 533 |     expect((await state(page)).position).toEqual(disconnectedAt);
+          |                                          ^
+      534 |     await expect(page.locator(".controller-hud-card")).toContainText("Controller disconnected");
+      535 |
+      536 |     await hold(page, ["w"], 250);
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm001.spec.ts:533:42
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm004\inherited\wm001-WM-001-controller-re-b611f--and-deliberate-replacement-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm004\inherited\wm001-WM-001-controller-re-b611f--and-deliberate-replacement-chromium\error-context.md
+
+  3) [chromium] › e2e\wm001.spec.ts:754:1 › persists a Hard run after closing and reopening the same browser profile and exact origin 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+      23 |
+      24 | async function ready(page: Page): Promise<void> {
+    > 25 |   await page.goto("/?test=1");
+         |              ^
+      26 |   await expect(page.locator("#loading")).toHaveClass(/hidden/, { timeout: 30_000 });
+      27 |   await expect(page.getByRole("heading", { name: "WEBMASTER" })).toBeVisible();
+      28 | }
+        at ready (D:\a\Webmaster\Webmaster\candidate\e2e\wm001.spec.ts:25:14)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm001.spec.ts:765:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm004\inherited\wm001-persists-a-Hard-run--79e1c-er-profile-and-exact-origin-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm004\inherited\wm001-persists-a-Hard-run--79e1c-er-profile-and-exact-origin-chromium\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm004\inherited\wm001-persists-a-Hard-run--79e1c-er-profile-and-exact-origin-chromium\error-context.md
+
+  4) [chromium] › e2e\wm001.spec.ts:804:1 › labels corrupt and incompatible save fixtures without hiding valid choices 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+      23 |
+      24 | async function ready(page: Page): Promise<void> {
+    > 25 |   await page.goto("/?test=1");
+         |              ^
+      26 |   await expect(page.locator("#loading")).toHaveClass(/hidden/, { timeout: 30_000 });
+      27 |   await expect(page.getByRole("heading", { name: "WEBMASTER" })).toBeVisible();
+      28 | }
+        at ready (D:\a\Webmaster\Webmaster\candidate\e2e\wm001.spec.ts:25:14)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm001.spec.ts:809:9
+
+    Error Context: test-results-wm004\inherited\wm001-labels-corrupt-and-i-f1a70-ithout-hiding-valid-choices-chromium\error-context.md
+
+  5) [chromium] › e2e\wm002.spec.ts:126:1 › WM-002 keyboard continuous four-gap route, safe save and same-origin reopen 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+      23 | }
+      24 | async function start(page: Page) {
+    > 25 |   await page.goto("/?test=1");
+         |              ^
+      26 |   await expect(page.locator("#loading")).toHaveClass(/hidden/, {
+      27 |     timeout: 30000,
+      28 |   });
+        at start (D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:25:14)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:144:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm004\inherited\wm002-WM-002-keyboard-cont-42b31-save-and-same-origin-reopen-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm004\inherited\wm002-WM-002-keyboard-cont-42b31-save-and-same-origin-reopen-chromium\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm004\inherited\wm002-WM-002-keyboard-cont-42b31-save-and-same-origin-reopen-chromium\error-context.md
+
+  6) [chromium] › e2e\wm002.spec.ts:349:1 › WM-002 simulated PlayStation controller-only complete route and safe save/load 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+      259 | async function controllerStart(page: Page) {
+      260 |   await installPad(page);
+    > 261 |   await page.goto("/?test=1");
+          |              ^
+      262 |   await expect(page.locator("#loading")).toHaveClass(/hidden/, {
+      263 |     timeout: 30000,
+      264 |   });
+        at controllerStart (D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:261:14)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:353:3
+
+    Error Context: test-results-wm004\inherited\wm002-WM-002-simulated-Pla-7d5ed-te-route-and-safe-save-load-chromium\error-context.md
+
+  7) [chromium] › e2e\wm002.spec.ts:388:1 › WM-002 targeted anchor, unsafe save, pause, focus, fall recovery, invalid finish and replay cleanup 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+      23 | }
+      24 | async function start(page: Page) {
+    > 25 |   await page.goto("/?test=1");
+         |              ^
+      26 |   await expect(page.locator("#loading")).toHaveClass(/hidden/, {
+      27 |     timeout: 30000,
+      28 |   });
+        at start (D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:25:14)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:392:9
+
+    Error Context: test-results-wm004\inherited\wm002-WM-002-targeted-anch-56715-d-finish-and-replay-cleanup-chromium\error-context.md
+
+  8) [chromium] › e2e\wm002.spec.ts:454:1 › WM-002 LT disconnect clears web, reconnect needs neutral and diagnostics retain swing mapping 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+      259 | async function controllerStart(page: Page) {
+      260 |   await installPad(page);
+    > 261 |   await page.goto("/?test=1");
+          |              ^
+      262 |   await expect(page.locator("#loading")).toHaveClass(/hidden/, {
+      263 |     timeout: 30000,
+      264 |   });
+        at controllerStart (D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:261:14)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:458:3
+
+    Error Context: test-results-wm004\inherited\wm002-WM-002-LT-disconnect-d2e92-ostics-retain-swing-mapping-chromium\error-context.md
+
+  9) [chromium] › e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under near-30fps render schedule 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+      23 | }
+      24 | async function start(page: Page) {
+    > 25 |   await page.goto("/?test=1");
+         |              ^
+      26 |   await expect(page.locator("#loading")).toHaveClass(/hidden/, {
+      27 |     timeout: 30000,
+      28 |   });
+        at start (D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:25:14)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:524:11
+
+    Error Context: test-results-wm004\inherited\wm002-WM-002-continuous-ke-9c8a0--near-30fps-render-schedule-chromium\error-context.md
+
+  10) [chromium] › e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under uneven render schedule 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+      23 | }
+      24 | async function start(page: Page) {
+    > 25 |   await page.goto("/?test=1");
+         |              ^
+      26 |   await expect(page.locator("#loading")).toHaveClass(/hidden/, {
+      27 |     timeout: 30000,
+      28 |   });
+        at start (D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:25:14)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:524:11
+
+    Error Context: test-results-wm004\inherited\wm002-WM-002-continuous-ke-9e755-nder-uneven-render-schedule-chromium\error-context.md
+
+  11) [chromium] › e2e\wm002.spec.ts:544:1 › WM-002 repeated pause, replay, save and load keeps runtime resources bounded 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+      23 | }
+      24 | async function start(page: Page) {
+    > 25 |   await page.goto("/?test=1");
+         |              ^
+      26 |   await expect(page.locator("#loading")).toHaveClass(/hidden/, {
+      27 |     timeout: 30000,
+      28 |   });
+        at start (D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:25:14)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm002.spec.ts:547:9
+
+    Error Context: test-results-wm004\inherited\wm002-WM-002-repeated-paus-b4b42-s-runtime-resources-bounded-chromium\error-context.md
+
+  12) [chromium] › e2e\wm003-remediation.spec.ts:22:1 › WM003 R1 genuine roof2 checkpoint and manual save survive reload 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+       at routes\wm003-route.ts:81
+
+      79 | }
+      80 | export async function start(p: Page) {
+    > 81 |   await p.goto("/?test=1");
+         |           ^
+      82 |   await expect(p.locator("#loading")).toHaveClass(/hidden/);
+      83 |   await p.getByRole("button", { name: /New Game/ }).click();
+      84 |   await p.getByRole("button", { name: /Slot 1/ }).click();
+        at start (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:81:11)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003-remediation.spec.ts:27:9
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'getState')
+        at eval (eval at evaluate (:311:30), <anonymous>:1:27)
+        at UtilityScript.evaluate (<anonymous>:313:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:311:30), <anonymous>:1:27)
+        at UtilityScript.evaluate (<anonymous>:313:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at state (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:5:5)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003-remediation.spec.ts:8:78
+
+    Error Context: test-results-wm004\inherited\wm003-remediation-WM003-R1-f6af5--manual-save-survive-reload-chromium\error-context.md
+
+  13) [chromium] › e2e\wm003-remediation.spec.ts:77:1 › WM003 R1 standing on dynamic step still disables both save actions 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+       at routes\wm003-route.ts:81
+
+      79 | }
+      80 | export async function start(p: Page) {
+    > 81 |   await p.goto("/?test=1");
+         |           ^
+      82 |   await expect(p.locator("#loading")).toHaveClass(/hidden/);
+      83 |   await p.getByRole("button", { name: /New Game/ }).click();
+      84 |   await p.getByRole("button", { name: /Slot 1/ }).click();
+        at start (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:81:11)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003-remediation.spec.ts:79:9
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'getState')
+        at eval (eval at evaluate (:311:30), <anonymous>:1:27)
+        at UtilityScript.evaluate (<anonymous>:313:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:311:30), <anonymous>:1:27)
+        at UtilityScript.evaluate (<anonymous>:313:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at state (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:5:5)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003-remediation.spec.ts:8:78
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm004\inherited\wm003-remediation-WM003-R1-4fc11--disables-both-save-actions-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm004\inherited\wm003-remediation-WM003-R1-4fc11--disables-both-save-actions-chromium\error-context.md
+
+  14) [chromium] › e2e\wm003.spec.ts:20:1 › WM003 ordinary keyboard combined swing climb ceiling pull route 
+
+    Error: page.evaluate: Execution context was destroyed, most likely because of a navigation
+
+       at routes\wm003-route.ts:5
+
+      3 | const out = process.env.WM_EVIDENCE_ROOT ? `${process.env.WM_EVIDENCE_ROOT}/wm003` : "evidence/wm-003/captures";
+      4 | export const state = (p: Page) =>
+    > 5 |   p.evaluate(() => window.__WM_DEBUG__!.getState());
+        |     ^
+      6 | export async function wait(p: Page, fn: (s: any) => boolean, timeout = 20000) {
+      7 |   await p.waitForFunction(
+      8 |     ({ body }) =>
+        at state (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:5:5)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003.spec.ts:52:28
+
+    Error Context: test-results-wm004\inherited\wm003-WM003-ordinary-keybo-56c90-ng-climb-ceiling-pull-route-chromium\error-context.md
+
+  15) [chromium] › e2e\wm003.spec.ts:59:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback 
+
+    Error: page.evaluate: Execution context was destroyed, most likely because of a navigation
+
+       at routes\wm003-route.ts:5
+
+      3 | const out = process.env.WM_EVIDENCE_ROOT ? `${process.env.WM_EVIDENCE_ROOT}/wm003` : "evidence/wm-003/captures";
+      4 | export const state = (p: Page) =>
+    > 5 |   p.evaluate(() => window.__WM_DEBUG__!.getState());
+        |     ^
+      6 | export async function wait(p: Page, fn: (s: any) => boolean, timeout = 20000) {
+      7 |   await p.waitForFunction(
+      8 |     ({ body }) =>
+        at state (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:5:5)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003.spec.ts:115:28
+
+    Error Context: test-results-wm004\inherited\wm003-WM003-simulated-Play-7b400--load-and-keyboard-fallback-chromium\error-context.md
+
+  16) [chromium] › e2e\wm003.spec.ts:123:3 › WM003 loads exact historical WM-001 writer records without changing old generations 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+      131 |         localStorage.setItem(k, String(v));
+      132 |     }, fixture.stored);
+    > 133 |     await page.goto("/?test=1");
+          |                ^
+      134 |     await expect(page.locator("#loading")).toHaveClass(/hidden/);
+      135 |     await page.getByRole("button", { name: /Continue/ }).click();
+      136 |     const loaded = await state(page);
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003.spec.ts:133:16
+
+    Error Context: test-results-wm004\inherited\wm003-WM003-loads-exact-hi-f62f9-ut-changing-old-generations-chromium\error-context.md
+
+  17) [chromium] › e2e\wm003.spec.ts:123:3 › WM003 loads exact historical WM-002 writer records without changing old generations 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+      131 |         localStorage.setItem(k, String(v));
+      132 |     }, fixture.stored);
+    > 133 |     await page.goto("/?test=1");
+          |                ^
+      134 |     await expect(page.locator("#loading")).toHaveClass(/hidden/);
+      135 |     await page.getByRole("button", { name: /Continue/ }).click();
+      136 |     const loaded = await state(page);
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003.spec.ts:133:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm004\inherited\wm003-WM003-loads-exact-hi-16eaa-ut-changing-old-generations-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm004\inherited\wm003-WM003-loads-exact-hi-16eaa-ut-changing-old-generations-chromium\error-context.md
+
+  18) [chromium] › e2e\wm003.spec.ts:167:1 › WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+      188 |     await readFile("evidence/wm-003/legacy-saves/WM-002.json", "utf8"),
+      189 |   );
+    > 190 |   await page.goto("/?test=1");
+          |              ^
+      191 |   await expect(page.locator("#loading")).toHaveClass(/hidden/);
+      192 |   await page.evaluate((stored) => {
+      193 |     for (const [k, v] of Object.entries(stored))
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003.spec.ts:190:14
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm004\inherited\wm003-WM003-historical-WM0-c26f0-d-real-browser-close-reopen-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm004\inherited\wm003-WM003-historical-WM0-c26f0-d-real-browser-close-reopen-chromium\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm004\inherited\wm003-WM003-historical-WM0-c26f0-d-real-browser-close-reopen-chromium\error-context.md
+
+  19) [chromium] › e2e\wm003.spec.ts:282:1 › WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+       at routes\wm003-route.ts:81
+
+      79 | }
+      80 | export async function start(p: Page) {
+    > 81 |   await p.goto("/?test=1");
+         |           ^
+      82 |   await expect(p.locator("#loading")).toHaveClass(/hidden/);
+      83 |   await p.getByRole("button", { name: /New Game/ }).click();
+      84 |   await p.getByRole("button", { name: /Slot 1/ }).click();
+        at start (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:81:11)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003.spec.ts:286:9
+
+    Error Context: test-results-wm004\inherited\wm003-WM003-negative-lifec-fa287-vy-feedback-and-blocked-web-chromium\error-context.md
+
+  20) [chromium] › e2e\wm003.spec.ts:395:1 › WM003 RB and LB disconnect cleanup with neutral reconnect and keyboard fallback 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+       at routes\wm003-route.ts:174
+
+      172 | export async function controllerStart(p: Page) {
+      173 |   await installPad(p);
+    > 174 |   await p.goto("/?test=1");
+          |           ^
+      175 |   await expect(p.locator("#loading")).toHaveClass(/hidden/);
+      176 |   await padTap(p, 0);
+      177 |   await p.waitForFunction(
+        at controllerStart (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:174:11)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003.spec.ts:399:3
+
+    Error Context: test-results-wm004\inherited\wm003-WM003-RB-and-LB-disc-bfd8c-nnect-and-keyboard-fallback-chromium\error-context.md
+
+  21) [chromium] › e2e\wm003.spec.ts:542:3 › WM003 complete route under near-30 rendered timing ────
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+       at routes\wm003-route.ts:81
+
+      79 | }
+      80 | export async function start(p: Page) {
+    > 81 |   await p.goto("/?test=1");
+         |           ^
+      82 |   await expect(p.locator("#loading")).toHaveClass(/hidden/);
+      83 |   await p.getByRole("button", { name: /New Game/ }).click();
+      84 |   await p.getByRole("button", { name: /Slot 1/ }).click();
+        at start (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:81:11)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003.spec.ts:570:11
+
+    Error Context: test-results-wm004\inherited\wm003-WM003-complete-route-under-near-30-rendered-timing-chromium\error-context.md
+
+  22) [chromium] › e2e\wm003.spec.ts:542:3 › WM003 complete route under uneven rendered timing ─────
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+       at routes\wm003-route.ts:81
+
+      79 | }
+      80 | export async function start(p: Page) {
+    > 81 |   await p.goto("/?test=1");
+         |           ^
+      82 |   await expect(p.locator("#loading")).toHaveClass(/hidden/);
+      83 |   await p.getByRole("button", { name: /New Game/ }).click();
+      84 |   await p.getByRole("button", { name: /Slot 1/ }).click();
+        at start (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:81:11)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003.spec.ts:570:11
+
+    Error Context: test-results-wm004\inherited\wm003-WM003-complete-route-under-uneven-rendered-timing-chromium\error-context.md
+
+  23) [chromium] › e2e\wm003.spec.ts:599:1 › WM003 repeated replay pause save load clears transients and bounds resources 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/?test=1
+    Call log:
+      - navigating to "http://127.0.0.1:4173/?test=1", waiting until "load"
+
+
+       at routes\wm003-route.ts:81
+
+      79 | }
+      80 | export async function start(p: Page) {
+    > 81 |   await p.goto("/?test=1");
+         |           ^
+      82 |   await expect(p.locator("#loading")).toHaveClass(/hidden/);
+      83 |   await p.getByRole("button", { name: /New Game/ }).click();
+      84 |   await p.getByRole("button", { name: /Slot 1/ }).click();
+        at start (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:81:11)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003.spec.ts:604:9
+
+    Error Context: test-results-wm004\inherited\wm003-WM003-repeated-repla-fc15b-sients-and-bounds-resources-chromium\error-context.md
+
+  23 failed
+    [chromium] › e2e\wm001.spec.ts:166:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route 
+    [chromium] › e2e\wm001.spec.ts:515:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › supports connection after load, disconnect cleanup, keyboard fallback, and deliberate replacement 
+    [chromium] › e2e\wm001.spec.ts:754:1 › persists a Hard run after closing and reopening the same browser profile and exact origin 
+    [chromium] › e2e\wm001.spec.ts:804:1 › labels corrupt and incompatible save fixtures without hiding valid choices 
+    [chromium] › e2e\wm002.spec.ts:126:1 › WM-002 keyboard continuous four-gap route, safe save and same-origin reopen 
+    [chromium] › e2e\wm002.spec.ts:349:1 › WM-002 simulated PlayStation controller-only complete route and safe save/load 
+    [chromium] › e2e\wm002.spec.ts:388:1 › WM-002 targeted anchor, unsafe save, pause, focus, fall recovery, invalid finish and replay cleanup 
+    [chromium] › e2e\wm002.spec.ts:454:1 › WM-002 LT disconnect clears web, reconnect needs neutral and diagnostics retain swing mapping 
+    [chromium] › e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under near-30fps render schedule 
+    [chromium] › e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under uneven render schedule 
+    [chromium] › e2e\wm002.spec.ts:544:1 › WM-002 repeated pause, replay, save and load keeps runtime resources bounded 
+    [chromium] › e2e\wm003-remediation.spec.ts:22:1 › WM003 R1 genuine roof2 checkpoint and manual save survive reload 
+    [chromium] › e2e\wm003-remediation.spec.ts:77:1 › WM003 R1 standing on dynamic step still disables both save actions 
+    [chromium] › e2e\wm003.spec.ts:20:1 › WM003 ordinary keyboard combined swing climb ceiling pull route 
+    [chromium] › e2e\wm003.spec.ts:59:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback 
+    [chromium] › e2e\wm003.spec.ts:123:3 › WM003 loads exact historical WM-001 writer records without changing old generations 
+    [chromium] › e2e\wm003.spec.ts:123:3 › WM003 loads exact historical WM-002 writer records without changing old generations 
+    [chromium] › e2e\wm003.spec.ts:167:1 › WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen 
+    [chromium] › e2e\wm003.spec.ts:282:1 › WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web 
+    [chromium] › e2e\wm003.spec.ts:395:1 › WM003 RB and LB disconnect cleanup with neutral reconnect and keyboard fallback 
+    [chromium] › e2e\wm003.spec.ts:542:3 › WM003 complete route under near-30 rendered timing ──────
+    [chromium] › e2e\wm003.spec.ts:542:3 › WM003 complete route under uneven rendered timing ───────
+    [chromium] › e2e\wm003.spec.ts:599:1 › WM003 repeated replay pause save load clears transients and bounds resources 
+  17 passed (3.9m)
