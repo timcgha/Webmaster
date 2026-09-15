@@ -1,0 +1,100 @@
+name: WM004 frozen R3 artifact recovery and inherited verification
+on:
+  push:
+    branches: [verification/wm004-evidence]
+    paths: [.github/workflows/wm004-inherited-recheck.yml]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify:
+    runs-on: windows-2025
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Preserve checkout bytes and support evidence paths
+        working-directory: ${{ github.workspace }}
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: aef5f5ae4dac555d8efed6bbc6553b87a9a2a444
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: tooling
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Recover retained R3 artifact without repeating passed gates
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh auth setup-git
+          gh run download 34983009905 --repo "${{ github.repository }}" --name wm004-aef5f5ae4dac555d8efed6bbc6553b87a9a2a444 --dir ../recovered
+          git clone --depth 1 --branch verification/wm004-evidence https://github.com/${{ github.repository }}.git ../retained
+          node ../tooling/evidence/wm-004/verification-tooling/archive-filter.mjs ../recovered ../retained/evidence/wm-004/aef5f5ae4dac555d8efed6bbc6553b87a9a2a444/recovered-artifact
+          cp -r ../recovered/.wm004-pages .wm004-pages
+          node scripts/wm004-package.mjs
+          mkdir -p ../retained/evidence/wm-004/aef5f5ae4dac555d8efed6bbc6553b87a9a2a444/prepared-pages
+          cp -r .wm004-payload/. ../retained/evidence/wm-004/aef5f5ae4dac555d8efed6bbc6553b87a9a2a444/prepared-pages/
+          node --input-type=module -e "import fs from 'node:fs';import assert from 'node:assert/strict';assert.deepEqual(JSON.parse(fs.readFileSync('evidence/wm-004/packaging.json')),JSON.parse(fs.readFileSync('../recovered/evidence/wm-004/packaging.json')));console.log('Recovered prepared payload matches original exact-source packaging');"
+          git -C ../retained config user.name WEBMASTER_PRODUCT_OWNER
+          git -C ../retained config user.email webmaster-po@users.noreply.github.com
+          git -C ../retained add -f evidence/wm-004/aef5f5ae4dac555d8efed6bbc6553b87a9a2a444
+          git -C ../retained commit -m "WM004 recover full R3 evidence and identical prepared payload [skip ci]"
+          git -C ../retained push origin HEAD:verification/wm004-evidence
+      - name: Exact locked install and full Chromium
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install chromium
+      - name: Prepare attributable derived verification; preserve438source bytes
+        run: |
+          node ../tooling/evidence/wm-004/verification-tooling/derive-inherited.mjs
+          node scripts/wm004-source-integrity.mjs
+      - name: Complete40inherited rendered checks
+        timeout-minutes: 35
+        env:
+          WM004_SUITE: inherited-recheck
+        run: |
+          set -o pipefail
+          pnpm exec playwright test -c .wm004-derived/config.ts wm001.spec.ts wm002.spec.ts wm003.spec.ts wm003-remediation.spec.ts 2>&1 | tee evidence/wm-004/inherited-recheck/execution.log
+      - name: Recheck all438tracked source bytes
+        if: always()
+        run: node scripts/wm004-source-integrity.mjs
+      - name: Retain verification outputs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm004-inherited-recheck-${{ github.run_id }}
+          path: |
+            candidate/evidence/wm-004/
+            candidate/.wm004-derived/test-results-wm004/
+          include-hidden-files: true
+          retention-days: 30
+      - name: Archive only evidence and excluded profile hash manifest
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh auth setup-git
+          git clone --depth 1 --branch verification/wm004-evidence https://github.com/${{ github.repository }}.git ../final-evidence
+          target="../final-evidence/evidence/wm-004/inherited-recheck/${GITHUB_RUN_ID}"
+          mkdir -p "$target"
+          cp -r evidence/wm-004/. "$target/"
+          if test -d .wm004-derived/test-results-wm004; then node ../tooling/evidence/wm-004/verification-tooling/archive-filter.mjs .wm004-derived/test-results-wm004 "$target/browser-output"; fi
+          git -C ../final-evidence config user.name WEBMASTER_PRODUCT_OWNER
+          git -C ../final-evidence config user.email webmaster-po@users.noreply.github.com
+          git -C ../final-evidence add -f evidence/wm-004/inherited-recheck
+          git -C ../final-evidence commit -m "WM004 retain frozen R3 inherited verification ${GITHUB_RUN_ID} [skip ci]"
+          git -C ../final-evidence push origin HEAD:verification/wm004-evidence
