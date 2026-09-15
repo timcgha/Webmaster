@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
+const captures = process.env.WM_EVIDENCE_ROOT ? `${process.env.WM_EVIDENCE_ROOT}/wm001` : "evidence/wm-001/captures";
 
 declare global {
   interface Window {
@@ -164,7 +165,7 @@ async function activatePad(page: Page, index = 0): Promise<void> {
 test.describe("WM-001 rendered keyboard and mouse journey", () => {
   test("moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route", async ({ page, browserName }) => {
     await ready(page);
-    await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-main-1280x720.png` });
+    await page.screenshot({ path: `${captures}/${browserName}-main-1280x720.png` });
     await newGameWithMouse(page, 1, "Normal");
     const start = await state(page);
     await hold(page, ["w", "Shift"], 850);
@@ -225,7 +226,7 @@ test.describe("WM-001 rendered keyboard and mouse journey", () => {
     await page.locator("body").dispatchEvent("mouseup", { clientX: startX - 900, clientY: startY, button: 0, bubbles: true });
     await page.waitForTimeout(150);
     expect((await state(page)).cameraAlpha).toBeCloseTo(Math.PI / 2, 1);
-    await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-hero-front-ordinary-camera.png` });
+    await page.screenshot({ path: `${captures}/${browserName}-hero-front-ordinary-camera.png` });
     await page.keyboard.press("r");
     await page.waitForTimeout(100);
 
@@ -248,7 +249,7 @@ test.describe("WM-001 rendered keyboard and mouse journey", () => {
     await page.waitForTimeout(100);
     expect((await state(page)).progress).toBe(3);
     expect((await state(page)).grounded).toBe(true);
-    await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-route-complete.png` });
+    await page.screenshot({ path: `${captures}/${browserName}-route-complete.png` });
 
     await page.keyboard.down("w");
     await page.waitForTimeout(180);
@@ -265,18 +266,18 @@ test.describe("WM-001 rendered keyboard and mouse journey", () => {
     expect((await state(page)).position.z).not.toBe(pausePosition.z);
   });
 
-  test("recovers from a fall, reduces health, and performs a clean zero-health retry", async ({ page, browserName }) => {
+  test("recovers outside the bounded street, reduces health, and performs a clean zero-health retry", async ({ page, browserName }) => {
     await ready(page);
     await newGameWithMouse(page, 2, "Easy");
     for (let fall = 0; fall < 3; fall += 1) {
-      await page.evaluate((index) => window.__WM_DEBUG__!.setFixturePosition({ x: 18, y: -11, z: 0 }, `fall setup ${index + 1}/4`), fall);
+      await page.evaluate((index) => window.__WM_DEBUG__!.setFixturePosition({ x: 18, y: -31, z: 0 }, `negative out-of-bounds setup ${index + 1}/4`), fall);
       await page.waitForTimeout(800);
     }
     expect((await state(page)).health).toBe(25);
-    await page.evaluate(() => window.__WM_DEBUG__!.setFixturePosition({ x: 18, y: -11, z: 0 }, "fall setup 4/4"));
+    await page.evaluate(() => window.__WM_DEBUG__!.setFixturePosition({ x: 18, y: -31, z: 0 }, "negative out-of-bounds setup 4/4"));
     await page.waitForTimeout(800);
     expect((await state(page)).health).toBe(100);
-    await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-recovery-fixture-labelled.png` });
+    await page.screenshot({ path: `${captures}/${browserName}-recovery-fixture-labelled.png` });
   });
 
   test("explains and enforces safe-state saving while airborne", async ({ page, browserName }) => {
@@ -293,7 +294,7 @@ test.describe("WM-001 rendered keyboard and mouse journey", () => {
       await expect(button).toContainText("Unavailable while climbing, on a ceiling, pulling, swinging, airborne, landing or recovering");
     }
     await expect(page.getByRole("button", { name: /^Resume/ })).toBeEnabled();
-    await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-airborne-safe-save-disabled.png` });
+    await page.screenshot({ path: `${captures}/${browserName}-airborne-safe-save-disabled.png` });
   });
 });
 
@@ -356,7 +357,7 @@ test.describe("WM-001 rendered simulated Gamepad journey", () => {
     await expect(page.getByRole("heading", { name: "Load a run" })).toBeVisible();
     await tapPad(page, 0);
     await expect(page.locator("#input-overlay")).toBeVisible();
-    await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-simulated-xbox-route.png` });
+    await page.screenshot({ path: `${captures}/${browserName}-simulated-xbox-route.png` });
   });
 
   test("disconnect releases motion and reconnect requires neutral then fresh input", async ({ page }) => {
@@ -451,14 +452,14 @@ test.describe("WM-001 controller remediation lifecycle (simulated Gamepad API)",
       selectedDevice: { index: 0 },
     });
     expect(await page.evaluate(() => Object.fromEntries(Object.entries(localStorage)))).toEqual(storageBefore);
-    await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-controller-diagnostics.png` });
+    await page.screenshot({ path: `${captures}/${browserName}-controller-diagnostics.png` });
 
     await page.getByRole("button", { name: /^Back/ }).click();
     await expect(page.getByRole("heading", { name: "WEBMASTER" })).toBeVisible();
     await newGameWithMouse(page);
     await expect(page.locator("#input-overlay")).toBeVisible();
     await expect(page.locator(".controller-hud-card")).toContainText("Controller ready: Xbox controller");
-    await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-controller-ready-hud.png` });
+    await page.screenshot({ path: `${captures}/${browserName}-controller-ready-hud.png` });
   });
 
   test("keeps keyboard available when the Gamepad API is unavailable", async ({ page }) => {
@@ -589,7 +590,7 @@ test.describe("WM-001 controller remediation lifecycle (simulated Gamepad API)",
     await expectInViewport(page, ".menu-panel");
     await expect(page.locator("[data-controller-diagnostics]")).toContainText('"mapping": "standard"');
     await page.screenshot({
-      path: `evidence/wm-001/captures/${browserName}-controller-diagnostics-1194x834-representative-ipad-layout-not-safari.png`,
+      path: `${captures}/${browserName}-controller-diagnostics-1194x834-representative-ipad-layout-not-safari.png`,
       fullPage: true,
     });
   });
@@ -609,7 +610,7 @@ test("keeps occupied-slot bytes unchanged when replacement is cancelled", async 
   await page.getByRole("button", { name: /^Cancel/ }).click();
   await expect(page.getByRole("heading", { name: "Choose difficulty" })).toBeVisible();
   expect(await saveBytes(page)).toEqual(before);
-  await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-overwrite-cancel-preserves-slot.png` });
+  await page.screenshot({ path: `${captures}/${browserName}-overwrite-cancel-preserves-slot.png` });
 });
 
 test("keeps the prior committed save and remains paused when Save & Quit write fails", async ({ page, browserName }) => {
@@ -631,7 +632,7 @@ test("keeps the prior committed save and remains paused when Save & Quit write f
   await expect(page.getByRole("heading", { name: "Paused" })).toBeVisible();
   await expect(page.locator("#toast-layer")).toContainText("Saving is unavailable");
   expect(await saveBytes(page)).toEqual(before);
-  await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-failed-save-stays-paused.png` });
+  await page.screenshot({ path: `${captures}/${browserName}-failed-save-stays-paused.png` });
 });
 
 test("loads only the prior commit after pointer verification fails, then permits a clean retry", async ({ page }) => {
@@ -722,7 +723,7 @@ test("renders storage-unavailable records explicitly and refuses destructive rep
   await page.getByRole("button", { name: /Replace and start/ }).click();
   await expect(page.getByRole("heading", { name: "Choose a save slot" })).toBeVisible();
   await expect(page.locator("#toast-layer")).toContainText("Existing data was restored");
-  await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-storage-unavailable-explicit.png` });
+  await page.screenshot({ path: `${captures}/${browserName}-storage-unavailable-explicit.png` });
 });
 
 test("remains controllable under a second real-time CPU/frame profile", async ({ page, context, browserName }, testInfo) => {
@@ -742,7 +743,7 @@ test("remains controllable under a second real-time CPU/frame profile", async ({
   expect((await state(page)).position.y).toBeGreaterThan(0.1);
   await page.waitForTimeout(1_000);
   expect((await state(page)).grounded).toBe(true);
-  await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-second-timing-profile.png` });
+  await page.screenshot({ path: `${captures}/${browserName}-second-timing-profile.png` });
   await writeFile(
     testInfo.outputPath("second-timing-profile.json"),
     JSON.stringify({ engine: "Chromium CDP", cpuThrottlingRate: 2, start: before.position, finish: after.position }, null, 2),
@@ -755,6 +756,7 @@ test("persists a Hard run after closing and reopening the same browser profile a
   const userDataDir = testInfo.outputPath("persistent-profile");
   const persistentOptions = {
     headless: true,
+      ...(process.env.WM_BROWSER_CHANNEL ? {channel:process.env.WM_BROWSER_CHANNEL} : {}),
     viewport: { width: 1280, height: 720 },
     ...(process.env.WM_CHROMIUM_PATH ? { executablePath: process.env.WM_CHROMIUM_PATH } : {}),
   };
@@ -795,7 +797,7 @@ test("persists a Hard run after closing and reopening the same browser profile a
   expect(restored).toMatchObject({ health: 100, progress: 1, progressLabel: "Reach the golden sun pad", grounded: true });
   expect(await page.evaluate(() => window.__WM_DEBUG__!.getCurrentRun())).toEqual({ slot: 3, difficulty: "Hard" });
   expect(await activeSavePayload(page, 3, "manual")).toEqual(savedPayload);
-  await page.screenshot({ path: "evidence/wm-001/captures/chromium-persistent-reopen.png" });
+  await page.screenshot({ path: `${captures}/chromium-persistent-reopen.png` });
   await context.close();
 });
 
@@ -808,7 +810,7 @@ test("labels corrupt and incompatible save fixtures without hiding valid choices
   await page.getByRole("button", { name: /^Load/ }).click();
   await expect(page.getByRole("button", { name: /Slot 1 • Manual/ })).toContainText("damaged");
   await expect(page.getByRole("button", { name: /Slot 2 • Checkpoint/ })).toContainText("incompatible");
-  await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-invalid-save-fixtures.png` });
+  await page.screenshot({ path: `${captures}/${browserName}-invalid-save-fixtures.png` });
 });
 
 test("keeps the rendered HUD and menus usable at 1920x1080 and representative iPad landscape", async ({ page, browserName }) => {
@@ -822,14 +824,14 @@ test("keeps the rendered HUD and menus usable at 1920x1080 and representative iP
   expect(samples.samples.length).toBeGreaterThanOrEqual(1);
   expect(samples.minimum).toBeGreaterThanOrEqual(30);
   const suffix = browserName === "chromium" ? "1920x1080" : "1194x834-ipad-landscape";
-  await page.screenshot({ path: `evidence/wm-001/captures/${browserName}-${suffix}.png` });
+  await page.screenshot({ path: `${captures}/${browserName}-${suffix}.png` });
   if (browserName === "chromium") {
     await page.setViewportSize({ width: 1194, height: 834 });
     for (const selector of [".objective-card", ".health-card", "#input-overlay"]) await expectInViewport(page, selector);
-    await page.screenshot({ path: "evidence/wm-001/captures/chromium-1194x834-representative-ipad-layout-not-safari.png" });
+    await page.screenshot({ path: `${captures}/chromium-1194x834-representative-ipad-layout-not-safari.png` });
   }
   await writeFile(
-    `evidence/wm-001/captures/${browserName}-performance-samples.json`,
+    `${captures}/${browserName}-performance-samples.json`,
     JSON.stringify({ viewport: browserName === "chromium" ? [1920, 1080] : [1194, 834], samples, limitation: "Headless Linux software-rendering observation; not a physical Windows or iPad measurement." }, null, 2),
   );
 });

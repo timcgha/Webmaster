@@ -12,6 +12,7 @@ export interface RunSavePayload {
   schemaVersion: 1;
   skyline?: import("./skyline").SkylineSave;
   climb?: import("./traversal").ClimbSave;
+  course?: import("./course").CourseSave;
   slot: SlotId;
   difficulty: Difficulty;
   health: number;

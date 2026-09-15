@@ -2,6 +2,7 @@ import "./styles.css";
 import { InputManager, type ControllerStatus } from "./core/actions";
 import { SaveStore, saveStorageKeyForTests } from "./core/save";
 import { SettingsStore } from "./core/settings";
+import { courseLabel } from "./core/course";
 import type {
   Difficulty,
   GameSettings,
@@ -502,6 +503,11 @@ class WebmasterApp {
           detail: "Connection status and local diagnostics",
           action: () => this.openControllerDetails("pause"),
         },
+        {
+          label: "Replay 20-ring course",
+          detail: "Start on the far practice roof; separate course progress restarts",
+          action: () => { world.replayCourse(); this.resume(); },
+        },
       ],
       `SLOT ${this.currentRun?.slot ?? "—"} • ${this.currentRun?.difficulty ?? "—"}`,
     );
@@ -734,6 +740,7 @@ class WebmasterApp {
       <section class="hud-card run-card">
         <span data-hud="run"></span>
         <small data-hud="position"></small>
+        <small data-hud="course"></small>
       </section>
       <section class="hud-card controller-hud-card" data-controller-status-card role="status" aria-live="polite">
         <span class="hud-kicker">CONTROLLER</span>
@@ -755,8 +762,11 @@ class WebmasterApp {
       <p id="fixture-badge" class="fixture-badge hidden"></p>
       `;
     }
+    hudLayer.querySelector<HTMLElement>("[data-hud='course']")!.textContent = courseLabel(frame.course, frame.position.y < -1);
     hudLayer.querySelector<HTMLElement>("[data-hud='practice']")!.textContent =
-      frame.training.active
+      frame.position.y < -1 ? "STREET RECOVERY" : frame.course.active
+        ? `20-RING COURSE ${frame.course.next} / 20`
+        : frame.training.active
         ? `CLIMB & PULL ${Math.min(frame.training.stage + 1, 6)} / 6`
         : frame.skyline.active
           ? `SKYLINE ${Math.min(frame.skyline.stage + 1, 4)} / 4`

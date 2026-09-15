@@ -2,7 +2,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { start, state, wait, look } from "./routes/wm003-route";
 
-const output = "evidence/wm-003/remediation-r1/captures";
+const output = process.env.WM_EVIDENCE_ROOT ? `${process.env.WM_EVIDENCE_ROOT}/wm003-repairs` : "evidence/wm-003/remediation-r1/captures";
 test.afterEach(async ({ page }, info) => {
   if (info.status !== info.expectedStatus)
     await writeFile(info.outputPath("last-state.json"), JSON.stringify(await state(page), null, 2));
