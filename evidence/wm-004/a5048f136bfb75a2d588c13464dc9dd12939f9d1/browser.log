@@ -1,0 +1,153 @@
+[WebServer] $ vite "--host" "127.0.0.1" "--port" "4173"
+
+Running 4 tests using 1 worker
+
+  x  1 [chromium] › e2e\wm004.spec.ts:75:32 › WM004 complete twenty-ring course and ground recovery keyboard-mouse (1.6m)
+  x  2 [chromium] › e2e\wm004.spec.ts:75:32 › WM004 complete twenty-ring course and ground recovery semantic-controller (2.1m)
+  x  3 [chromium] › e2e\wm004.spec.ts:85:1 › WM004 hero front rear side idle walking and movement transitions (4.0m)
+[WebServer] node:internal/fs/watchers:323
+[WebServer]     const error = new UVException({
+[WebServer]                   ^
+[WebServer] 
+[WebServer] Error: EBUSY: resource busy or locked, watch 'D:\a\Webmaster\Webmaster\candidate\test-results-wm004\wm004-WM004-street-safe-sa-dfd29-es-position-and-generations-chromium\video.webm'
+[WebServer]     at FSWatcher.<computed> (node:internal/fs/watchers:323:19)
+[WebServer]     at Object.watch (node:fs:2609:36)
+[WebServer]     at createFsWatchInstance (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:10735:16)
+[WebServer]     at setFsWatchListener (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:10777:14)
+[WebServer]     at NodeFsHandler._watchWithNodeFs (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:10892:20)
+[WebServer]     at NodeFsHandler._handleFile (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:10936:24)
+[WebServer]     at NodeFsHandler._addToNodeFs (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:11110:26)
+[WebServer] Emitted 'error' event on FSWatcher instance at:
+[WebServer]     at FSWatcher._handleError (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:11912:146)
+[WebServer]     at NodeFsHandler._addToNodeFs (file:///D:/a/Webmaster/Webmaster/candidate/node_modules/.pnpm/vite@8.3.0_@types+node@22.20.2/node_modules/vite/dist/node/chunks/node.js:11115:18) {
+[WebServer]   errno: -4082,
+[WebServer]   syscall: 'watch',
+[WebServer]   code: 'EBUSY',
+[WebServer]   path: 'D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm004\\wm004-WM004-street-safe-sa-dfd29-es-position-and-generations-chromium\\video.webm',
+[WebServer]   filename: 'D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm004\\wm004-WM004-street-safe-sa-dfd29-es-position-and-generations-chromium\\video.webm'
+[WebServer] }
+[WebServer] 
+[WebServer] Node.js v24.19.0
+  x  4 [chromium] › e2e\wm004.spec.ts:99:1 › WM004 street safe save reopen Continue preserves position and generations (3.8m)
+
+
+  1) [chromium] › e2e\wm004.spec.ts:75:32 › WM004 complete twenty-ring course and ground recovery keyboard-mouse 
+
+    TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.
+
+       6 | type Controls=ReturnType<typeof keyboard>;
+       7 | async function until(p:Page,body:(s:any,a:any)=>boolean,args:unknown=null,timeout=30000){
+    >  8 |   await p.waitForFunction(({body,args})=>new Function("s","a",`return (${body})(s,a)`)(window.__WM_DEBUG__!.getState(),args),{body:body.toString(),args},{timeout});
+         |           ^
+       9 | }
+      10 | const at=(p:Page,axis:"x"|"z",target:number,sign=1)=>until(p,(s,a)=>a.sign*(s.position[a.axis]-a.target)>=0,{axis,target,sign});
+      11 | async function shot(p:Page,name:string){await mkdir(out,{recursive:true});await p.screenshot({path:`${out}/${name}.png`});}
+        at until (D:\a\Webmaster\Webmaster\candidate\e2e\wm004.spec.ts:8:11)
+        at fullCourse (D:\a\Webmaster\Webmaster\candidate\e2e\wm004.spec.ts:35:9)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm004.spec.ts:80:79
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm004\wm004-WM004-complete-twent-b0548-und-recovery-keyboard-mouse-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results-wm004\wm004-WM004-complete-twent-b0548-und-recovery-keyboard-mouse-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm004\wm004-WM004-complete-twent-b0548-und-recovery-keyboard-mouse-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results-wm004\wm004-WM004-complete-twent-b0548-und-recovery-keyboard-mouse-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results-wm004\wm004-WM004-complete-twent-b0548-und-recovery-keyboard-mouse-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e\wm004.spec.ts:75:32 › WM004 complete twenty-ring course and ground recovery semantic-controller 
+
+    TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.
+
+       6 | type Controls=ReturnType<typeof keyboard>;
+       7 | async function until(p:Page,body:(s:any,a:any)=>boolean,args:unknown=null,timeout=30000){
+    >  8 |   await p.waitForFunction(({body,args})=>new Function("s","a",`return (${body})(s,a)`)(window.__WM_DEBUG__!.getState(),args),{body:body.toString(),args},{timeout});
+         |           ^
+       9 | }
+      10 | const at=(p:Page,axis:"x"|"z",target:number,sign=1)=>until(p,(s,a)=>a.sign*(s.position[a.axis]-a.target)>=0,{axis,target,sign});
+      11 | async function shot(p:Page,name:string){await mkdir(out,{recursive:true});await p.screenshot({path:`${out}/${name}.png`});}
+        at until (D:\a\Webmaster\Webmaster\candidate\e2e\wm004.spec.ts:8:11)
+        at fullCourse (D:\a\Webmaster\Webmaster\candidate\e2e\wm004.spec.ts:35:9)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm004.spec.ts:80:79
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm004\wm004-WM004-complete-twent-16a4d-ecovery-semantic-controller-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results-wm004\wm004-WM004-complete-twent-16a4d-ecovery-semantic-controller-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm004\wm004-WM004-complete-twent-16a4d-ecovery-semantic-controller-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results-wm004\wm004-WM004-complete-twent-16a4d-ecovery-semantic-controller-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results-wm004\wm004-WM004-complete-twent-16a4d-ecovery-semantic-controller-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e\wm004.spec.ts:85:1 › WM004 hero front rear side idle walking and movement transitions 
+
+    Test timeout of 120000ms exceeded.
+
+    Tearing down "context" exceeded the test timeout of 120000ms.
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm004\wm004-WM004-hero-front-rea-7522f-ng-and-movement-transitions-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm004\wm004-WM004-hero-front-rea-7522f-ng-and-movement-transitions-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results-wm004\wm004-WM004-hero-front-rea-7522f-ng-and-movement-transitions-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results-wm004\wm004-WM004-hero-front-rea-7522f-ng-and-movement-transitions-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › e2e\wm004.spec.ts:99:1 › WM004 street safe save reopen Continue preserves position and generations 
+
+    Test timeout of 120000ms exceeded.
+
+    Error: browserContext.newPage: Target page, context or browser has been closed
+
+      103 |   await page.keyboard.press("Escape");await page.getByRole("button",{name:/Save & Quit/}).click();
+      104 |   await expect(page.getByRole("heading",{name:"WEBMASTER",exact:true})).toBeVisible();
+    > 105 |   const stored=await page.evaluate(()=>({...localStorage}));const origin=page.url();await page.close();const reopened=await context.newPage();await reopened.goto(origin);
+          |                                                                                                                                     ^
+      106 |   await reopened.getByRole("button",{name:/Continue/}).click();await until(reopened,s=>s.safe);
+      107 |   const loaded=await state(reopened);expect(loaded.position).toEqual(street.position);expect(loaded.velocity).toEqual({x:0,y:0,z:0});
+      108 |   expect(await reopened.evaluate(()=>({...localStorage}))).toEqual(stored);
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm004.spec.ts:105:133
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results-wm004\wm004-WM004-street-safe-sa-dfd29-es-position-and-generations-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm004\wm004-WM004-street-safe-sa-dfd29-es-position-and-generations-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results-wm004\wm004-WM004-street-safe-sa-dfd29-es-position-and-generations-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results-wm004\wm004-WM004-street-safe-sa-dfd29-es-position-and-generations-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    [chromium] › e2e\wm004.spec.ts:75:32 › WM004 complete twenty-ring course and ground recovery keyboard-mouse 
+    [chromium] › e2e\wm004.spec.ts:75:32 › WM004 complete twenty-ring course and ground recovery semantic-controller 
+    [chromium] › e2e\wm004.spec.ts:85:1 › WM004 hero front rear side idle walking and movement transitions 
+    [chromium] › e2e\wm004.spec.ts:99:1 › WM004 street safe save reopen Continue preserves position and generations 
