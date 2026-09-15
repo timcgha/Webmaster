@@ -1,0 +1,78 @@
+diff --git a/e2e/wm003.spec.ts b/e2e/wm003.spec.ts
+index 8323ee5..9cba198 100644
+--- a/e2e/wm003.spec.ts
++++ b/e2e/wm003.spec.ts
+@@ -480,7 +480,12 @@ test("WM003 original eyes palette body lattice and actual backward forward swing
+   await wait(page, (s) => !!s.swing.web);
+   await page.keyboard.up("w");
+   await page.keyboard.up("Shift");
+-  await look(page, 0, 1.15);
++  // A single ordinary drag gets the side view before the initial trailing phase passes.
++  const beforeOrbit=await state(page),dx=beforeOrbit.cameraAlpha/.0035,dy=(1.15-beforeOrbit.cameraBeta)/.0035;
++  await page.locator('#game-canvas').dispatchEvent('mousedown',{clientX:600,clientY:380,button:0,buttons:1,bubbles:true});
++  await page.locator('body').dispatchEvent('mousemove',{clientX:600+dx,clientY:380+dy,buttons:1,bubbles:true});
++  await page.locator('body').dispatchEvent('mouseup',{clientX:600+dx,clientY:380+dy,button:0,bubbles:true});
++  await page.waitForTimeout(50);
+   await page.keyboard.down("a");
+   await wait(
+     page,
+diff --git a/scripts/run-wm003-browser.py b/scripts/run-wm003-browser.py
+index bb181e5..5bccb2a 100644
+--- a/scripts/run-wm003-browser.py
++++ b/scripts/run-wm003-browser.py
+@@ -11,7 +11,15 @@ assert hashlib.sha256(binary.read_bytes()).hexdigest()=='ded93a9c9a53a1ae040f081
+ env=os.environ.copy();env.update(WM_CHROMIUM_PATH=str(binary),PLAYWRIGHT_BROWSERS_PATH=str(temp),WM_MEASUREMENT_OUTPUT='evidence/wm-003',WM_MEASUREMENT_LABEL='candidate')
+ cmd=['node','--experimental-strip-types','scripts/wm003-built-smoke.mjs'] if sys.argv[1:]==['--built'] else ['pnpm','exec','playwright','test',*(sys.argv[1:] or ['e2e/wm003.spec.ts']),'--project=chromium','--workers=1','--reporter=list']
+ log=temp/'command.log';started=datetime.datetime.now(datetime.timezone.utc).isoformat()
+-with log.open('w') as f:p=subprocess.run(cmd,cwd=source,env=env,stdout=f,stderr=subprocess.STDOUT)
++build_cmd=None
++with log.open('w') as f:
++ if sys.argv[1:]==['--built']:
++  dist=temp/'dist';assert not dist.exists();env['WM_DIST_ROOT']=str(dist)
++  build_cmd=['pnpm','exec','vite','build','--base=/Webmaster/',f'--outDir={dist}','--emptyOutDir']
++  f.write(json.dumps({'freshOutput':str(dist),'existedBeforeBuild':False,'buildCommand':build_cmd})+'\n');f.flush()
++  p=subprocess.run(build_cmd,cwd=source,env=env,stdout=f,stderr=subprocess.STDOUT)
++  if p.returncode==0:p=subprocess.run(cmd,cwd=source,env=env,stdout=f,stderr=subprocess.STDOUT)
++ else:p=subprocess.run(cmd,cwd=source,env=env,stdout=f,stderr=subprocess.STDOUT)
+ out=source/'evidence/wm-003/attempts';out.mkdir(parents=True,exist_ok=True);stamp=str(len(list(out.glob('*.log')))+1)
+-shutil.copy2(log,out/f'browser-{stamp}.log');(out/f'browser-{stamp}.json').write_text(json.dumps({'author':'WEBMASTER_IMPLEMENTER','started':started,'command':cmd,'exit':p.returncode,'browser':'CFT153.0.8010.12','recorder':'system ffmpeg6.1.1, compatibility path shim; not vendor1011 bytes'},indent=2))
++shutil.copy2(log,out/f'browser-{stamp}.log');(out/f'browser-{stamp}.json').write_text(json.dumps({'author':'WEBMASTER_IMPLEMENTER','started':started,'command':cmd,'buildCommand':build_cmd,'exit':p.returncode,'browser':'CFT153.0.8010.12','recorder':'system ffmpeg6.1.1, compatibility path shim; not vendor1011 bytes'},indent=2))
+ print(log.read_text());shutil.rmtree(temp);sys.exit(p.returncode)
+diff --git a/scripts/wm003-built-smoke.mjs b/scripts/wm003-built-smoke.mjs
+index ef47d87..910c956 100644
+--- a/scripts/wm003-built-smoke.mjs
++++ b/scripts/wm003-built-smoke.mjs
+@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
+ import { chromium } from "@playwright/test";
+ import { route } from "../e2e/routes/wm003-route.ts";
+ 
+-const root = resolve("dist");
++const root = resolve(process.env.WM_DIST_ROOT || "dist");
+ const output = "evidence/wm-003";
+ await mkdir(output, { recursive: true });
+ const identity = {
+@@ -53,9 +53,24 @@ assert(
+   !html.includes("/src/"),
+   "Compiled HTML cannot contain development source entry",
+ );
++const viteGraph = JSON.parse(await readFile(join(root, ".vite/manifest.json"), "utf8"));
++const visited = new Set(), reachable = new Set(["index.html", ".vite/manifest.json"]);
++function visit(key) {
++  if (visited.has(key)) return;
++  const item = viteGraph[key];
++  assert(item, `Missing manifest entry ${key}`);
++  visited.add(key); reachable.add(item.file);
++  for (const file of [...(item.css || []), ...(item.assets || [])]) reachable.add(file);
++  for (const dependency of [...(item.imports || []), ...(item.dynamicImports || [])]) visit(dependency);
++}
++visit("index.html");
++assert.deepEqual(files.map(f => f.path).sort(), [...reachable].sort(), "Build must contain exactly the reachable entry graph plus Vite manifest; no stale chunks");
++assert(files.every(f => f.path === "index.html" || f.path === ".vite/manifest.json" || /^assets\/[^/]+\.(js|css|wasm)$/.test(f.path)), "Deployment input excludes repository/source/test/environment files");
+ const manifest = {
+   ...identity,
+   base: "/Webmaster/",
++  outputDirectory: root,
++  reachableGraph: { root: "index.html", entryFile: viteGraph["index.html"].file, entries: visited.size, reachableFiles: reachable.size, unusedFiles: [], result: "PASS" },
+   files,
+   rawBytes: files.reduce((sum, f) => sum + f.bytes, 0),
+   gzipBytes: files.reduce((sum, f) => sum + f.gzipBytes, 0),

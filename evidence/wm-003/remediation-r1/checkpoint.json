@@ -1,0 +1,59 @@
+{
+  "author": "WEBMASTER_IMPLEMENTER",
+  "runtime": "/root/webmaster_implementer_wm003_recovery",
+  "observedAt": "2026-09-14T05:35:19.688683+00:00",
+  "assignment": "WM-003-REMEDIATION-R1-RECOVERY",
+  "cycle": 1,
+  "status": "SOURCE_REPAIRS_COMPLETE_VERIFICATION_IN_PROGRESS_NOT_FROZEN_OR_ACCEPTED",
+  "startingHead": "cb2a0411f6bc5f9c43022f7d4d8003084939ab3f",
+  "findings": [
+    "F-WM003-QA-01",
+    "F-WM003-QA-02",
+    "F-WM003-QA-03"
+  ],
+  "changes": {
+    "safeSave": "Dynamic-object restriction now requires top contact and overlap on both horizontal axes, using the same footprint as grounding.",
+    "attachment": "Wall selection validates full swept body volume before contact mutation; existing LOS/facing/range checks retained.",
+    "surfaceSpeed": "Combined wall/ceiling input axes are divided only by max(1,length), retaining partial analog input proportionality and cardinal speeds."
+  },
+  "checks": [
+    {
+      "command": "pnpm install --frozen-lockfile",
+      "result": "PASS",
+      "packages": 47,
+      "lockfileChanged": false
+    },
+    {
+      "command": "pnpm test",
+      "result": "PASS",
+      "tests": 172,
+      "files": 7,
+      "newRegressionTests": 24
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "attempt": 1,
+      "result": "FAIL",
+      "details": "Unused objectSolid import after moving support check, and tuple array inferred possibly undefined in new test. Both repaired."
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "attempt": 2,
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit && pnpm exec vite build --outDir /tmp/wm003-r1-production --emptyOutDir && pnpm exec vite build --base=/Webmaster/ --outDir /tmp/wm003-r1-pages --emptyOutDir",
+      "result": "PASS",
+      "warning": "Existing >500kB chunk warning remains."
+    }
+  ],
+  "pending": [
+    "Corrected-candidate full Chromium regression, targeted roof2/dynamic-save browser checks, compiled runtime smoke, performance comparison, security audits, source/artifact manifests, final freeze, independent QA."
+  ],
+  "limitations": [
+    "Browser runtime recovery underway by parent.",
+    "Historical Q1 new-route near30 minimum28FPS remains NOT_MET, cause unresolved.",
+    "Physical controllers/Windows/iPad performance and sponsor play-feel remain NOT_VERIFIED."
+  ],
+  "historyPreserved": "Q1 rejected candidate remains in Git with independent148/148 units and42/42 browser pass; three boundary failures require this cycle. No repeat implementation or new change ID."
+}

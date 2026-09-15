@@ -2,10 +2,26 @@ import "./styles.css";
 import { InputManager, type ControllerStatus } from "./core/actions";
 import { SaveStore, saveStorageKeyForTests } from "./core/save";
 import { SettingsStore } from "./core/settings";
-import type { Difficulty, GameSettings, RunSavePayload, SemanticActions, SlotId, Vec3Data } from "./core/types";
+import type {
+  Difficulty,
+  GameSettings,
+  RunSavePayload,
+  SemanticActions,
+  SlotId,
+  Vec3Data,
+} from "./core/types";
 import { GameWorld, type WorldFrame } from "./game/world";
 
-type Screen = "main" | "slots" | "difficulty" | "overwrite" | "load" | "settings" | "controller" | "play" | "pause";
+type Screen =
+  | "main"
+  | "slots"
+  | "difficulty"
+  | "overwrite"
+  | "load"
+  | "settings"
+  | "controller"
+  | "play"
+  | "pause";
 
 interface MenuItem {
   label: string;
@@ -93,7 +109,10 @@ class WebmasterApp {
     } else if (this.screen !== "main" || this.menuItems.length > 0) {
       this.handleMenuInput(actions);
     }
-    if (this.screen === "controller" && timestamp >= this.nextControllerDiagnosticsRefresh) {
+    if (
+      this.screen === "controller" &&
+      timestamp >= this.nextControllerDiagnosticsRefresh
+    ) {
       this.nextControllerDiagnosticsRefresh = timestamp + 250;
       this.refreshControllerUi();
     }
@@ -130,7 +149,9 @@ class WebmasterApp {
   }
 
   private updateSelection(): void {
-    const buttons = Array.from(menuLayer.querySelectorAll<HTMLButtonElement>("[data-menu-item]"));
+    const buttons = Array.from(
+      menuLayer.querySelectorAll<HTMLButtonElement>("[data-menu-item]"),
+    );
     buttons.forEach((button, index) => {
       const selected = index === this.selectedIndex;
       button.classList.toggle("selected", selected);
@@ -139,9 +160,17 @@ class WebmasterApp {
     });
   }
 
-  private renderPanel(title: string, subtitle: string, items: MenuItem[], eyebrow = "WEBMASTER PRACTICE NETWORK"): void {
+  private renderPanel(
+    title: string,
+    subtitle: string,
+    items: MenuItem[],
+    eyebrow = "WEBMASTER PRACTICE NETWORK",
+  ): void {
     this.menuItems = items;
-    this.selectedIndex = Math.max(0, items.findIndex((item) => !item.disabled));
+    this.selectedIndex = Math.max(
+      0,
+      items.findIndex((item) => !item.disabled),
+    );
     menuLayer.classList.remove("hidden");
     hudLayer.classList.add("hidden");
     menuLayer.replaceChildren();
@@ -194,16 +223,39 @@ class WebmasterApp {
       "WEBMASTER",
       "Fast feet. Brave heart. A whole skyline to protect.",
       [
-        { label: "New Game", detail: "Choose a slot and difficulty", action: () => this.renderSlots() },
+        {
+          label: "New Game",
+          detail: "Choose a slot and difficulty",
+          action: () => this.renderSlots(),
+        },
         {
           label: "Continue",
-          detail: newest ? `Slot ${newest.slot} • ${newest.payload.difficulty} • ${newest.payload.progressLabel}` : "No saved run yet",
+          detail: newest
+            ? `Slot ${newest.slot} • ${newest.payload.difficulty} • ${newest.payload.progressLabel}`
+            : "No saved run yet",
           disabled: !newest,
-          action: () => newest && this.loadRun(newest.payload, `Continued slot ${newest.slot} ${newest.kind}`),
+          action: () =>
+            newest &&
+            this.loadRun(
+              newest.payload,
+              `Continued slot ${newest.slot} ${newest.kind}`,
+            ),
         },
-        { label: "Load", detail: "Choose a manual save or checkpoint", action: () => this.renderLoad() },
-        { label: "Settings", detail: "Camera and display", action: () => this.openSettings("main") },
-        { label: "Controller Details", detail: "Connection status and local diagnostics", action: () => this.openControllerDetails("main") },
+        {
+          label: "Load",
+          detail: "Choose a manual save or checkpoint",
+          action: () => this.renderLoad(),
+        },
+        {
+          label: "Settings",
+          detail: "Camera and display",
+          action: () => this.openSettings("main"),
+        },
+        {
+          label: "Controller Details",
+          detail: "Connection status and local diagnostics",
+          action: () => this.openControllerDetails("main"),
+        },
       ],
     );
   }
@@ -214,7 +266,12 @@ class WebmasterApp {
       .filter((payload): payload is RunSavePayload => Boolean(payload))
       .sort((a, b) => b.updatedAt - a.updatedAt)[0];
     if (newest) return `${newest.difficulty} • ${newest.progressLabel}`;
-    const warning = records.manual.status !== "empty" ? records.manual.message : records.checkpoint.status !== "empty" ? records.checkpoint.message : "Empty";
+    const warning =
+      records.manual.status !== "empty"
+        ? records.manual.message
+        : records.checkpoint.status !== "empty"
+          ? records.checkpoint.message
+          : "Empty";
     return warning;
   }
 
@@ -242,11 +299,19 @@ class WebmasterApp {
       "Movement stays equally responsive. Later enemies will become faster, tougher, and stronger.",
       (["Easy", "Normal", "Hard"] as const).map((difficulty) => ({
         label: difficulty,
-        detail: difficulty === "Easy" ? "Gentle adventure" : difficulty === "Normal" ? "Balanced hero challenge" : "Bolder battles later",
+        detail:
+          difficulty === "Easy"
+            ? "Gentle adventure"
+            : difficulty === "Normal"
+              ? "Balanced hero challenge"
+              : "Bolder battles later",
         action: () => {
           this.selectedDifficulty = difficulty;
           const records = saveStore.inspectSlot(this.selectedSlot);
-          const occupied = [records.manual.status, records.checkpoint.status].some((status) => status !== "empty");
+          const occupied = [
+            records.manual.status,
+            records.checkpoint.status,
+          ].some((status) => status !== "empty");
           if (occupied) this.renderOverwrite();
           else this.startNewGame();
         },
@@ -261,8 +326,16 @@ class WebmasterApp {
       `Replace slot ${this.selectedSlot}?`,
       "This starts a new run. Choose Cancel to keep every existing record unchanged.",
       [
-        { label: "Replace and start", detail: `${this.selectedDifficulty} difficulty`, action: () => this.startNewGame() },
-        { label: "Cancel", detail: "Keep this slot unchanged", action: () => this.renderDifficulty() },
+        {
+          label: "Replace and start",
+          detail: `${this.selectedDifficulty} difficulty`,
+          action: () => this.startNewGame(),
+        },
+        {
+          label: "Cancel",
+          detail: "Keep this slot unchanged",
+          action: () => this.renderDifficulty(),
+        },
       ],
       "CONFIRM OVERWRITE",
     );
@@ -287,16 +360,24 @@ class WebmasterApp {
 
   private startNewGame(): void {
     const payload = this.newPayload();
-    const result = saveStore.replaceWithNewCheckpoint(this.selectedSlot, payload);
+    const result = saveStore.replaceWithNewCheckpoint(
+      this.selectedSlot,
+      payload,
+    );
     if (!result.ok) {
       this.toast(result.message, true);
       this.renderSlots();
       return;
     }
-    this.currentRun = { slot: this.selectedSlot, difficulty: this.selectedDifficulty };
+    this.currentRun = {
+      slot: this.selectedSlot,
+      difficulty: this.selectedDifficulty,
+    };
     world.start(payload);
     this.enterPlay();
-    this.toast(`Slot ${this.selectedSlot} started on ${this.selectedDifficulty}`);
+    this.toast(
+      `Slot ${this.selectedSlot} started on ${this.selectedDifficulty}`,
+    );
   }
 
   private renderLoad(): void {
@@ -312,14 +393,25 @@ class WebmasterApp {
             ? `${record.payload.difficulty} • ${record.payload.progressLabel}`
             : record.message,
           disabled: !record.payload,
-          action: () => record.payload && this.loadRun(record.payload, `Loaded slot ${slot} ${kind}`),
+          action: () =>
+            record.payload &&
+            this.loadRun(record.payload, `Loaded slot ${slot} ${kind}`),
         });
       }
     }
     if (!items.some((item) => !item.disabled)) {
-      items.push({ label: "Back", detail: "No valid saves are available", action: () => this.renderMain() });
+      items.push({
+        label: "Back",
+        detail: "No valid saves are available",
+        action: () => this.renderMain(),
+      });
     }
-    this.renderPanel("Load a run", "Manual saves and rolling checkpoints are kept separately.", items, "LOCAL SAVES");
+    this.renderPanel(
+      "Load a run",
+      "Manual saves and rolling checkpoints are kept separately.",
+      items,
+      "LOCAL SAVES",
+    );
   }
 
   private loadRun(payload: RunSavePayload, message: string): void {
@@ -349,18 +441,67 @@ class WebmasterApp {
     this.screen = "pause";
     const safeDetail = this.pauseSafeAtEntry
       ? "Grounded safe position ready"
-      : "Unavailable while swinging, airborne, landing or recovering — resume to reach safe ground";
+      : "Unavailable while climbing, on a ceiling, pulling, swinging, airborne, landing or recovering — resume to reach safe ground";
     this.renderPanel(
       "Paused",
       "The city and all held inputs are frozen. Resume requires fresh input.",
       [
-        { label: "Resume", detail: "Return to practice", action: () => this.resume() },
-        { label: "Save Game", detail: safeDetail, disabled: !this.pauseSafeAtEntry, action: () => this.saveManual(false) },
-        { label: "Save & Quit", detail: safeDetail, disabled: !this.pauseSafeAtEntry, action: () => this.saveManual(true) },
-        ...(this.latestFrame.skyline.active ? [{ label: "Replay skyline route", detail: "Return to the first ring; keep earned completion", action: () => { world.replaySkyline(); this.resume(); } }] : []),
-        { label: "Restart at checkpoint", detail: "Full health, current progress", action: () => this.restart() },
-        { label: "Settings", detail: "Camera and display", action: () => this.openSettings("pause") },
-        { label: "Controller Details", detail: "Connection status and local diagnostics", action: () => this.openControllerDetails("pause") },
+        {
+          label: "Resume",
+          detail: "Return to practice",
+          action: () => this.resume(),
+        },
+        {
+          label: "Save Game",
+          detail: safeDetail,
+          disabled: !this.pauseSafeAtEntry,
+          action: () => this.saveManual(false),
+        },
+        {
+          label: "Save & Quit",
+          detail: safeDetail,
+          disabled: !this.pauseSafeAtEntry,
+          action: () => this.saveManual(true),
+        },
+        ...(this.latestFrame.training.active
+          ? [
+              {
+                label: "Replay Climb & Pull",
+                detail: "Return to the south ring; keep earned completion",
+                action: () => {
+                  world.replayTraining();
+                  this.resume();
+                },
+              },
+            ]
+          : []),
+        ...(this.latestFrame.skyline.active
+          ? [
+              {
+                label: "Replay skyline route",
+                detail: "Return to the first ring; keep earned completion",
+                action: () => {
+                  world.replaySkyline();
+                  this.resume();
+                },
+              },
+            ]
+          : []),
+        {
+          label: "Restart at checkpoint",
+          detail: "Full health, current progress",
+          action: () => this.restart(),
+        },
+        {
+          label: "Settings",
+          detail: "Camera and display",
+          action: () => this.openSettings("pause"),
+        },
+        {
+          label: "Controller Details",
+          detail: "Connection status and local diagnostics",
+          action: () => this.openControllerDetails("pause"),
+        },
       ],
       `SLOT ${this.currentRun?.slot ?? "—"} • ${this.currentRun?.difficulty ?? "—"}`,
     );
@@ -385,7 +526,10 @@ class WebmasterApp {
       this.toast("Reach safe ground before saving.", true);
       return;
     }
-    const payload = world.snapshot(this.currentRun.slot, this.currentRun.difficulty);
+    const payload = world.snapshot(
+      this.currentRun.slot,
+      this.currentRun.difficulty,
+    );
     const result = saveStore.write(this.currentRun.slot, "manual", payload);
     this.toast(result.message, !result.ok);
     if (result.ok && quit) this.renderMain();
@@ -419,7 +563,11 @@ class WebmasterApp {
           detail: "Balances clarity and frame rate",
           action: () => this.adjustSetting(2, 1),
         },
-        { label: "Controller Details", detail: "Connection status and local diagnostics", action: () => this.openControllerDetails("settings") },
+        {
+          label: "Controller Details",
+          detail: "Connection status and local diagnostics",
+          action: () => this.openControllerDetails("settings"),
+        },
         { label: "Done", detail: "Return", action: () => this.closeSettings() },
       ],
       "ACCESSIBLE CAMERA & DISPLAY",
@@ -427,22 +575,30 @@ class WebmasterApp {
   }
 
   private adjustSelectedSetting(direction: -1 | 1): void {
-    if (this.selectedIndex <= 2) this.adjustSetting(this.selectedIndex, direction);
+    if (this.selectedIndex <= 2)
+      this.adjustSetting(this.selectedIndex, direction);
   }
 
   private adjustSetting(index: number, direction: -1 | 1): void {
     if (index === 0) {
-      const next = Math.round((this.settings.cameraSensitivity + direction * 0.1) * 10) / 10;
+      const next =
+        Math.round((this.settings.cameraSensitivity + direction * 0.1) * 10) /
+        10;
       this.settings.cameraSensitivity = Math.max(0.5, Math.min(2, next));
     } else if (index === 1) this.settings.invertY = !this.settings.invertY;
-    else if (index === 2) this.settings.adaptiveQuality = !this.settings.adaptiveQuality;
+    else if (index === 2)
+      this.settings.adaptiveQuality = !this.settings.adaptiveQuality;
     const persisted = settingsStore.write(this.settings);
     world.applySettings(this.settings);
     const selected = this.selectedIndex;
     this.renderSettings();
     this.selectedIndex = selected;
     this.updateSelection();
-    if (!persisted) this.toast("Settings could not be stored, but this session was updated.", true);
+    if (!persisted)
+      this.toast(
+        "Settings could not be stored, but this session was updated.",
+        true,
+      );
   }
 
   private closeSettings(): void {
@@ -462,7 +618,11 @@ class WebmasterApp {
       "Controller Details",
       "Everything shown here stays in this browser. Nothing is sent or saved.",
       [
-        { label: "Copy Diagnostics", detail: "Copy a small controller report for troubleshooting", action: () => void this.copyControllerDiagnostics() },
+        {
+          label: "Copy Diagnostics",
+          detail: "Copy a small controller report for troubleshooting",
+          action: () => void this.copyControllerDiagnostics(),
+        },
         {
           label: "Forget active controller",
           detail: "Return to controller detection without changing your game",
@@ -470,10 +630,16 @@ class WebmasterApp {
             this.input.forgetActiveController();
             this.controllerStatus = this.input.controllerStatus();
             this.refreshControllerUi();
-            this.toast("Controller cleared — press a button on the controller you want to use");
+            this.toast(
+              "Controller cleared — press a button on the controller you want to use",
+            );
           },
         },
-        { label: "Back", detail: "Return", action: () => this.closeControllerDetails() },
+        {
+          label: "Back",
+          detail: "Return",
+          action: () => this.closeControllerDetails(),
+        },
       ],
       "LOCAL CONTROLLER DIAGNOSTICS",
     );
@@ -489,7 +655,8 @@ class WebmasterApp {
   private async copyControllerDiagnostics(): Promise<void> {
     const diagnostics = this.input.controllerDiagnosticsText();
     try {
-      if (!navigator.clipboard?.writeText) throw new Error("Clipboard API unavailable");
+      if (!navigator.clipboard?.writeText)
+        throw new Error("Clipboard API unavailable");
       await navigator.clipboard.writeText(diagnostics);
       this.toast("Controller diagnostics copied");
     } catch {
@@ -501,13 +668,19 @@ class WebmasterApp {
       fallback.select();
       const copied = document.execCommand("copy");
       fallback.remove();
-      this.toast(copied ? "Controller diagnostics copied" : "Copy unavailable — select the diagnostics text below", !copied);
+      this.toast(
+        copied
+          ? "Controller diagnostics copied"
+          : "Copy unavailable — select the diagnostics text below",
+        !copied,
+      );
     }
   }
 
   private closeControllerDetails(): void {
     if (this.returnFromControllerDetails === "pause") this.renderPause();
-    else if (this.returnFromControllerDetails === "settings") this.renderSettings();
+    else if (this.returnFromControllerDetails === "settings")
+      this.renderSettings();
     else this.renderMain();
   }
 
@@ -522,14 +695,21 @@ class WebmasterApp {
 
   onProgress(_progress: number, label: string): void {
     if (!this.currentRun) return;
-    const payload = world.snapshot(this.currentRun.slot, this.currentRun.difficulty);
+    const payload = world.snapshot(
+      this.currentRun.slot,
+      this.currentRun.difficulty,
+    );
     const result = saveStore.write(this.currentRun.slot, "checkpoint", payload);
     this.toast(result.ok ? `Checkpoint: ${label}` : result.message, !result.ok);
   }
 
   onRecovery(health: number, fullRetry: boolean): void {
     this.input.releaseHeldActions();
-    this.toast(fullRetry ? "Hero recovered — full-health retry" : `Safe recovery — ${health} health remaining`);
+    this.toast(
+      fullRetry
+        ? "Hero recovered — full-health retry"
+        : `Safe recovery — ${health} health remaining`,
+    );
   }
 
   onFrame(frame: WorldFrame): void {
@@ -565,27 +745,79 @@ class WebmasterApp {
         <strong>Jump</strong> Space / A / ✕
         <strong>Run</strong> Shift / RT / R2
         <strong>Swing</strong> Hold E / LT / L2, release to let go
+        <strong>Climb</strong> Hold C / RB / R1
+        <strong>Pull</strong> Hold Q / LB / L1
         <strong>Recenter</strong> R / RS
         <strong>Pause</strong> Esc / Menu / Options
       </section>
       <section class="hud-card swing-card" aria-label="Swing status"><span class="hud-kicker" data-hud="swing-prompt"></span><strong data-hud="swing-state"></strong><small data-hud="swing-message"></small></section>
+      <section class="hud-card traversal-card" aria-label="Climb and Pull status"><strong data-hud="traversal-state"></strong><small data-hud="traversal-message"></small></section>
       <p id="fixture-badge" class="fixture-badge hidden"></p>
       `;
     }
-    hudLayer.querySelector<HTMLElement>("[data-hud='practice']")!.textContent = frame.skyline.active ? `SKYLINE ${Math.min(frame.skyline.stage + 1, 4)} / 4` : `PRACTICE ${Math.min(frame.progress + 1, 3)} / 3`;
-    hudLayer.querySelector<HTMLElement>("[data-hud='swing-state']")!.textContent = frame.swing.web ? `Attached to ${frame.swing.web.anchorId.replace("ring-", "ring ")}` : frame.swing.targetId ? "Ring in reach" : "Find a glowing ring";
-    hudLayer.querySelector<HTMLElement>("[data-hud='swing-message']")!.textContent = frame.swing.message;
-    hudLayer.querySelector<HTMLElement>("[data-hud='swing-prompt']")!.textContent = `SWING: Hold E / ${this.input.controllerStatus().family === "playstation" ? "L2" : "LT"} • release to let go`;
-    hudLayer.querySelector<HTMLElement>(".swing-card")!.classList.toggle("hidden", !frame.skyline.active && frame.position.z < 16);
-    hudLayer.querySelector<HTMLElement>("[data-hud='objective']")!.textContent = frame.progressLabel;
+    hudLayer.querySelector<HTMLElement>("[data-hud='practice']")!.textContent =
+      frame.training.active
+        ? `CLIMB & PULL ${Math.min(frame.training.stage + 1, 6)} / 6`
+        : frame.skyline.active
+          ? `SKYLINE ${Math.min(frame.skyline.stage + 1, 4)} / 4`
+          : `PRACTICE ${Math.min(frame.progress + 1, 3)} / 3`;
+    hudLayer.querySelector<HTMLElement>(
+      "[data-hud='swing-state']",
+    )!.textContent = frame.swing.web
+      ? `Attached to ${frame.swing.web.anchorId.replace("ring-", "ring ")}`
+      : frame.swing.targetId
+        ? "Ring in reach"
+        : "Find a glowing ring";
+    hudLayer.querySelector<HTMLElement>(
+      "[data-hud='swing-message']",
+    )!.textContent = frame.swing.message;
+    hudLayer.querySelector<HTMLElement>(
+      "[data-hud='swing-prompt']",
+    )!.textContent =
+      `SWING: Hold E / ${this.input.controllerStatus().family === "playstation" ? "L2" : "LT"} • release to let go`;
+    hudLayer.querySelector<HTMLElement>(".swing-card")!.style.top = frame
+      .training.active
+      ? "190px"
+      : "";
+    hudLayer
+      .querySelector<HTMLElement>(".swing-card")!
+      .classList.toggle(
+        "hidden",
+        (frame.training.active && frame.training.stage > 0) ||
+          (!frame.skyline.active &&
+            !frame.training.active &&
+            frame.position.z < 16),
+      );
+    hudLayer.querySelector<HTMLElement>(
+      "[data-hud='traversal-state']",
+    )!.textContent =
+      `CLIMB C / ${this.input.controllerStatus().family === "playstation" ? "R1" : "RB"} • PULL Q / ${this.input.controllerStatus().family === "playstation" ? "L1" : "LB"}`;
+    hudLayer.querySelector<HTMLElement>(
+      "[data-hud='traversal-message']",
+    )!.textContent = frame.traversal.message;
+    hudLayer
+      .querySelector<HTMLElement>(".traversal-card")!
+      .classList.toggle(
+        "hidden",
+        !frame.training.active && frame.position.z > -10,
+      );
+    hudLayer.querySelector<HTMLElement>("[data-hud='objective']")!.textContent =
+      frame.progressLabel;
     const healthCard = hudLayer.querySelector<HTMLElement>(".health-card")!;
     healthCard.setAttribute("aria-label", `Health ${healthPercent} percent`);
-    hudLayer.querySelector<HTMLElement>("[data-hud='health-bar']")!.style.width = `${healthPercent}%`;
-    hudLayer.querySelector<HTMLElement>("[data-hud='health']")!.textContent = `${frame.health} / ${frame.maxHealth}`;
-    hudLayer.querySelector<HTMLElement>("[data-hud='run']")!.textContent = `Slot ${run?.slot ?? "—"} • ${run?.difficulty ?? "—"}`;
-    hudLayer.querySelector<HTMLElement>("[data-hud='position']")!.textContent = `${Math.round(frame.position.x)}, ${Math.round(frame.position.y)}, ${Math.round(frame.position.z)} • ${frame.fps} FPS`;
+    hudLayer.querySelector<HTMLElement>(
+      "[data-hud='health-bar']",
+    )!.style.width = `${healthPercent}%`;
+    hudLayer.querySelector<HTMLElement>("[data-hud='health']")!.textContent =
+      `${frame.health} / ${frame.maxHealth}`;
+    hudLayer.querySelector<HTMLElement>("[data-hud='run']")!.textContent =
+      `Slot ${run?.slot ?? "—"} • ${run?.difficulty ?? "—"}`;
+    hudLayer.querySelector<HTMLElement>("[data-hud='position']")!.textContent =
+      `${Math.round(frame.position.x)}, ${Math.round(frame.position.y)}, ${Math.round(frame.position.z)} • ${frame.fps} FPS`;
     const fixtureBadge = hudLayer.querySelector<HTMLElement>("#fixture-badge")!;
-    fixtureBadge.textContent = this.fixtureLabel ? `TEST FIXTURE: ${this.fixtureLabel}` : "";
+    fixtureBadge.textContent = this.fixtureLabel
+      ? `TEST FIXTURE: ${this.fixtureLabel}`
+      : "";
     fixtureBadge.classList.toggle("hidden", !this.fixtureLabel);
   }
 
@@ -593,17 +825,33 @@ class WebmasterApp {
     if (!this.input || !this.controllerStatus) return;
     const status = this.input.controllerStatus();
     this.controllerStatus = status;
-    document.querySelectorAll<HTMLElement>("[data-controller-status-card]").forEach((card) => {
-      card.dataset.controllerState = status.lifecycle;
-      card.classList.toggle("controller-ready", status.lifecycle === "CONTROLLER_READY");
-      card.classList.toggle("controller-warning", status.lifecycle === "CONTROLLER_UNSUPPORTED" || status.lifecycle === "GAMEPAD_API_UNAVAILABLE");
-      card.querySelector<HTMLElement>("[data-controller-status-message]")!.textContent = status.message;
-    });
-    document.querySelectorAll<HTMLElement>("[data-control-prompt]").forEach((prompt) => {
-      prompt.textContent = `${this.input.promptText()}  •  Keyboard: arrows + Enter / Esc`;
-    });
-    const diagnostics = document.querySelector<HTMLElement>("[data-controller-diagnostics]");
-    if (diagnostics) diagnostics.textContent = this.input.controllerDiagnosticsText();
+    document
+      .querySelectorAll<HTMLElement>("[data-controller-status-card]")
+      .forEach((card) => {
+        card.dataset.controllerState = status.lifecycle;
+        card.classList.toggle(
+          "controller-ready",
+          status.lifecycle === "CONTROLLER_READY",
+        );
+        card.classList.toggle(
+          "controller-warning",
+          status.lifecycle === "CONTROLLER_UNSUPPORTED" ||
+            status.lifecycle === "GAMEPAD_API_UNAVAILABLE",
+        );
+        card.querySelector<HTMLElement>(
+          "[data-controller-status-message]",
+        )!.textContent = status.message;
+      });
+    document
+      .querySelectorAll<HTMLElement>("[data-control-prompt]")
+      .forEach((prompt) => {
+        prompt.textContent = `${this.input.promptText()}  •  Keyboard: arrows + Enter / Esc`;
+      });
+    const diagnostics = document.querySelector<HTMLElement>(
+      "[data-controller-diagnostics]",
+    );
+    if (diagnostics)
+      diagnostics.textContent = this.input.controllerDiagnosticsText();
   }
 
   private toast(message: string, error = false): void {
@@ -654,7 +902,8 @@ if (new URLSearchParams(location.search).has("test")) {
     getState: () => world.stateForTests(),
     getScreen: () => app!.getScreen(),
     getCurrentRun: () => app!.getCurrentRun(),
-    setFixturePosition: (position, label) => app!.setFixturePosition(position, label),
+    setFixturePosition: (position, label) =>
+      app!.setFixturePosition(position, label),
     performance: () => world.performanceSummary(),
     saveKey: saveStorageKeyForTests,
     getInputDebug: () => app!.getInputDebug(),

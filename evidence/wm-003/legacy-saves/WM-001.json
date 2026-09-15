@@ -1,0 +1,74 @@
+{
+  "author": "WEBMASTER_PRODUCT_OWNER",
+  "purpose": "Synthetic supported saved-record fixture serialized by exact historical product writer for future compatibility tests; NOT human save data and NOT gameplay-completion evidence",
+  "product": "WM-001",
+  "source_head": "209466106a7f7d9d4bd13ad7ac3f86f278edd905",
+  "source_tree": "e45ef30ebac813a2180fa2202c55a1a339eb099b",
+  "sources": [
+    {
+      "path": "src/core/actions.ts",
+      "sha256": "866bcb59a557a3271fff8fc6f0e2f17c3ba1ba23c3394294b8ee404a803c3d59",
+      "blob": "6f418dc37e869d600647a0b060504b3dc0b17021"
+    },
+    {
+      "path": "src/core/motion.ts",
+      "sha256": "f6120cbbd483000323e7470aa11f1291530b47bb2ce63fe6e192351b9aca3006",
+      "blob": "dd9c6c2e554f25687f9970aaf34ea11ae8aa4e81"
+    },
+    {
+      "path": "src/core/save.ts",
+      "sha256": "c5f267b7a1069a0ef0075404f360bedf4cf58c248c24a6095ed0a7c224fa6405",
+      "blob": "b9d9446506ac37a2b099875b6665219767b7fb38"
+    },
+    {
+      "path": "src/core/settings.ts",
+      "sha256": "743c3733e8e797e2990459f5cb6b28ded05e10d4823add390aa327966bb30ba1",
+      "blob": "ac9d9933500d28c3b8902016bdad40891a16f341"
+    },
+    {
+      "path": "src/core/types.ts",
+      "sha256": "f2bef6b8fe3d5be18b20ce404f17874ae61ddbd5a02f73d26e11f10e4f8d10e6",
+      "blob": "d71a6c2a9a44f63db527b6b0b796bfc014deff79"
+    }
+  ],
+  "transpiler": "Node v24.19.0 stripTypeScriptTypes transform",
+  "method": "Exact git-show TypeScript type erasure plus relative ESM import extension resolution only; unchanged SaveStore behavior writes manual and checkpoint envelopes into in-memory StorageLike",
+  "payload": {
+    "schemaVersion": 1,
+    "slot": 2,
+    "difficulty": "Hard",
+    "health": 75,
+    "maxHealth": 100,
+    "position": {
+      "x": 2,
+      "y": 0,
+      "z": 4
+    },
+    "checkpoint": {
+      "x": 2,
+      "y": 0,
+      "z": 4
+    },
+    "progress": 1,
+    "progressLabel": "Reach the golden sun pad",
+    "costumeId": "skyline-teal",
+    "completion": false,
+    "updatedAt": 1700000000000
+  },
+  "manual": {
+    "ok": true,
+    "committedGeneration": "a",
+    "message": "Save confirmed."
+  },
+  "checkpoint": {
+    "ok": true,
+    "committedGeneration": "a",
+    "message": "Save confirmed."
+  },
+  "stored": {
+    "webmaster.save.v1.slot2.manual.a": "{\"format\":\"webmaster-save\",\"schemaVersion\":1,\"generation\":1,\"checksum\":\"25b5d69b\",\"payload\":{\"schemaVersion\":1,\"slot\":2,\"difficulty\":\"Hard\",\"health\":75,\"maxHealth\":100,\"position\":{\"x\":2,\"y\":0,\"z\":4},\"checkpoint\":{\"x\":2,\"y\":0,\"z\":4},\"progress\":1,\"progressLabel\":\"Reach the golden sun pad\",\"costumeId\":\"skyline-teal\",\"completion\":false,\"updatedAt\":1700000000000}}",
+    "webmaster.save.v1.slot2.manual.pointer": "a",
+    "webmaster.save.v1.slot2.checkpoint.a": "{\"format\":\"webmaster-save\",\"schemaVersion\":1,\"generation\":1,\"checksum\":\"94e58040\",\"payload\":{\"schemaVersion\":1,\"slot\":2,\"difficulty\":\"Hard\",\"health\":75,\"maxHealth\":100,\"position\":{\"x\":2,\"y\":0,\"z\":4},\"checkpoint\":{\"x\":2,\"y\":0,\"z\":4},\"progress\":1,\"progressLabel\":\"Reach the golden sun pad\",\"costumeId\":\"skyline-teal\",\"completion\":false,\"updatedAt\":1699999999000}}",
+    "webmaster.save.v1.slot2.checkpoint.pointer": "a"
+  }
+}

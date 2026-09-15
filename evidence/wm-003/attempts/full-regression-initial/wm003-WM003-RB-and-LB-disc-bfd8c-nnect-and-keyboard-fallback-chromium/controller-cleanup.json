@@ -1,0 +1,177 @@
+{
+  "classification": "Synthetic controller, negative placement only",
+  "diagnostics": "{\n  \"format\": \"webmaster-controller-diagnostics\",\n  \"version\": 1,\n  \"gamepadApiAvailable\": true,\n  \"enumeratedDeviceCount\": 1,\n  \"lifecycle\": \"CONTROLLER_READY\",\n  \"selectedDevice\": {\n    \"index\": 0,\n    \"id\": \"DualSense Wireless Controller\"\n  },\n  \"devices\": [\n    {\n      \"index\": 0,\n      \"id\": \"DualSense Wireless Controller\",\n      \"mapping\": \"standard\",\n      \"supported\": true,\n      \"axisCount\": 4,\n      \"buttonCount\": 17,\n      \"relevantAxes\": [\n        0,\n        0,\n        0,\n        0\n      ],\n      \"pressedRelevantButtons\": [\n        \"pull web\"\n      ],\n      \"selected\": true\n    }\n  ]\n}",
+  "state": {
+    "active": true,
+    "paused": false,
+    "safe": true,
+    "health": 100,
+    "maxHealth": 100,
+    "progress": 0,
+    "progressLabel": "Reach the glowing sky gate",
+    "position": {
+      "x": -7.296669823284866,
+      "y": 0,
+      "z": -50.996129800246536
+    },
+    "grounded": true,
+    "fps": 51,
+    "cameraAlpha": 3.143703673205104,
+    "cameraBeta": 1.4474999999999996,
+    "inputSource": "keyboard-mouse",
+    "velocity": {
+      "x": 1.4999888589945964,
+      "y": 0,
+      "z": 0
+    },
+    "swing": {
+      "phase": "GROUNDED_OR_FREE",
+      "web": null,
+      "targetId": null,
+      "held": false,
+      "freshRequired": false,
+      "phaseTime": 0,
+      "message": "Aim at a glowing ring. Walk toward the skyline arrows.",
+      "attachments": 0,
+      "releases": 0,
+      "collisions": 0
+    },
+    "hand": {
+      "x": -6.585489235201097,
+      "y": 2.03,
+      "z": -51.55462972964028
+    },
+    "skyline": {
+      "active": false,
+      "stage": 0,
+      "completed": false,
+      "completions": 0,
+      "anchors": [],
+      "released": false,
+      "reattached": false,
+      "leftRoof": false,
+      "lastAnchor": null,
+      "valid": false
+    },
+    "traversal": {
+      "phase": "PULL_TARGET_AVAILABLE",
+      "surfaceId": null,
+      "targetId": "route-step",
+      "pullId": null,
+      "webOrigin": null,
+      "phaseTime": 0,
+      "freshClimb": false,
+      "freshPull": false,
+      "heldClimb": false,
+      "heldPull": false,
+      "message": "Pull released.",
+      "cameraMode": "ground"
+    },
+    "training": {
+      "active": false,
+      "stage": 0,
+      "checkpoint": 0,
+      "completed": false,
+      "completions": 0,
+      "valid": false,
+      "swingAttached": false,
+      "swingReleased": false,
+      "wallStart": null,
+      "vertical": 0,
+      "lateral": 0,
+      "ceilingStart": null,
+      "ceilingDistance": 0,
+      "pulledDistance": 0,
+      "stepped": false
+    },
+    "pullObjects": [
+      {
+        "id": "route-step",
+        "role": "PULLABLE_LIGHT",
+        "position": {
+          "x": -0.09000000000000001,
+          "y": 0.65,
+          "z": -51
+        },
+        "initial": {
+          "x": 0,
+          "y": 0.65,
+          "z": -51
+        },
+        "half": {
+          "x": 1.5,
+          "y": 0.65,
+          "z": 1.5
+        },
+        "speed": 0
+      },
+      {
+        "id": "limited-crate",
+        "role": "PULLABLE_LIMITED",
+        "position": {
+          "x": 4,
+          "y": 0.55,
+          "z": -57
+        },
+        "initial": {
+          "x": 4,
+          "y": 0.55,
+          "z": -57
+        },
+        "half": {
+          "x": 0.75,
+          "y": 0.55,
+          "z": 0.75
+        },
+        "speed": 0
+      },
+      {
+        "id": "heavy-crate",
+        "role": "TOO_HEAVY",
+        "position": {
+          "x": 4,
+          "y": 1,
+          "z": -49
+        },
+        "initial": {
+          "x": 4,
+          "y": 1,
+          "z": -49
+        },
+        "half": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "speed": 0
+      },
+      {
+        "id": "ordinary-crate",
+        "role": "ORDINARY_SOLID",
+        "position": {
+          "x": 7,
+          "y": 0.9,
+          "z": -55
+        },
+        "initial": {
+          "x": 7,
+          "y": 0.9,
+          "z": -55
+        },
+        "half": {
+          "x": 0.9,
+          "y": 0.9,
+          "z": 0.9
+        },
+        "speed": 0
+      }
+    ],
+    "legPose": {
+      "blend": 0,
+      "phase": 0,
+      "angle": 0
+    },
+    "surfaceCameraBlend": 7.130030411569758e-14,
+    "heroPitch": 0
+  }
+}

@@ -1,4 +1,5 @@
 import { validSkylineSave } from "./skyline";
+import { validClimbSave } from "./traversal";
 import type { RunSavePayload, SaveKind, SlotId } from "./types";
 
 export const SAVE_VERSION = 1 as const;
@@ -30,7 +31,13 @@ interface PendingEnvelope {
   checksum: string;
 }
 
-export type ReadStatus = "loaded" | "recovered" | "empty" | "corrupt" | "incompatible" | "unavailable";
+export type ReadStatus =
+  | "loaded"
+  | "recovered"
+  | "empty"
+  | "corrupt"
+  | "incompatible"
+  | "unavailable";
 
 export interface ReadResult {
   status: ReadStatus;
@@ -64,7 +71,9 @@ function pendingChecksum(
   previous: GenerationKey | null,
   previousGeneration: number | null,
 ): string {
-  return fnv1a(`${target}:${targetGeneration}:${previous ?? "none"}:${previousGeneration ?? "none"}`);
+  return fnv1a(
+    `${target}:${targetGeneration}:${previous ?? "none"}:${previousGeneration ?? "none"}`,
+  );
 }
 
 function baseKey(slot: SlotId, kind: SaveKind): string {
@@ -77,8 +86,11 @@ function isPayload(value: unknown): value is RunSavePayload {
   return (
     item.schemaVersion === SAVE_VERSION &&
     (item.skyline === undefined || validSkylineSave(item.skyline)) &&
+    (item.climb === undefined || validClimbSave(item.climb)) &&
     (item.slot === 1 || item.slot === 2 || item.slot === 3) &&
-    (item.difficulty === "Easy" || item.difficulty === "Normal" || item.difficulty === "Hard") &&
+    (item.difficulty === "Easy" ||
+      item.difficulty === "Normal" ||
+      item.difficulty === "Hard") &&
     typeof item.health === "number" &&
     typeof item.maxHealth === "number" &&
     typeof item.progress === "number" &&
@@ -94,16 +106,29 @@ function isPayload(value: unknown): value is RunSavePayload {
 function isVec(value: unknown): boolean {
   if (!value || typeof value !== "object") return false;
   const point = value as Record<string, unknown>;
-  return [point.x, point.y, point.z].every((part) => typeof part === "number" && Number.isFinite(part));
+  return [point.x, point.y, point.z].every(
+    (part) => typeof part === "number" && Number.isFinite(part),
+  );
 }
 
-function decode(raw: string | null): { envelope?: SaveEnvelope; status: "valid" | "empty" | "corrupt" | "incompatible" } {
+function decode(raw: string | null): {
+  envelope?: SaveEnvelope;
+  status: "valid" | "empty" | "corrupt" | "incompatible";
+} {
   if (raw === null) return { status: "empty" };
   try {
     const parsed = JSON.parse(raw) as Partial<SaveEnvelope>;
-    if (parsed.format !== "webmaster-save" || parsed.schemaVersion !== SAVE_VERSION) return { status: "incompatible" };
-    if (!Number.isInteger(parsed.generation) || !isPayload(parsed.payload)) return { status: "corrupt" };
-    const expected = envelopeChecksum(parsed.generation as number, parsed.payload);
+    if (
+      parsed.format !== "webmaster-save" ||
+      parsed.schemaVersion !== SAVE_VERSION
+    )
+      return { status: "incompatible" };
+    if (!Number.isInteger(parsed.generation) || !isPayload(parsed.payload))
+      return { status: "corrupt" };
+    const expected = envelopeChecksum(
+      parsed.generation as number,
+      parsed.payload,
+    );
     if (parsed.checksum !== expected) return { status: "corrupt" };
     return { status: "valid", envelope: parsed as SaveEnvelope };
   } catch {
@@ -111,23 +136,30 @@ function decode(raw: string | null): { envelope?: SaveEnvelope; status: "valid" 
   }
 }
 
-function decodePending(
-  raw: string | null,
-): { envelope?: PendingEnvelope; status: "valid" | "empty" | "corrupt" | "incompatible" } {
+function decodePending(raw: string | null): {
+  envelope?: PendingEnvelope;
+  status: "valid" | "empty" | "corrupt" | "incompatible";
+} {
   if (raw === null) return { status: "empty" };
   try {
     const parsed = JSON.parse(raw) as Partial<PendingEnvelope>;
-    if (parsed.format !== "webmaster-save-pending" || parsed.schemaVersion !== SAVE_VERSION) {
+    if (
+      parsed.format !== "webmaster-save-pending" ||
+      parsed.schemaVersion !== SAVE_VERSION
+    ) {
       return { status: "incompatible" };
     }
     if (
       (parsed.target !== "a" && parsed.target !== "b") ||
       !Number.isInteger(parsed.targetGeneration) ||
       (parsed.targetGeneration as number) < 1 ||
-      (parsed.previous !== null && parsed.previous !== "a" && parsed.previous !== "b") ||
+      (parsed.previous !== null &&
+        parsed.previous !== "a" &&
+        parsed.previous !== "b") ||
       (parsed.previous === null
         ? parsed.previousGeneration !== null
-        : !Number.isInteger(parsed.previousGeneration) || (parsed.previousGeneration as number) < 1) ||
+        : !Number.isInteger(parsed.previousGeneration) ||
+          (parsed.previousGeneration as number) < 1) ||
       parsed.target === parsed.previous
     ) {
       return { status: "corrupt" };
@@ -147,17 +179,31 @@ function decodePending(
 
 type DecodedGenerations = Record<GenerationKey, ReturnType<typeof decode>>;
 
-function unreadableResult(decoded: DecodedGenerations, message?: string): ReadResult {
+function unreadableResult(
+  decoded: DecodedGenerations,
+  message?: string,
+): ReadResult {
   const statuses = [decoded.a.status, decoded.b.status];
-  if (statuses.every((status) => status === "empty")) return { status: "empty", message: message ?? "Empty" };
+  if (statuses.every((status) => status === "empty"))
+    return { status: "empty", message: message ?? "Empty" };
   if (statuses.includes("incompatible")) {
-    return { status: "incompatible", message: "This save was created by an incompatible version." };
+    return {
+      status: "incompatible",
+      message: "This save was created by an incompatible version.",
+    };
   }
-  return { status: "corrupt", message: message ?? "This save is damaged. The other slots are unchanged." };
+  return {
+    status: "corrupt",
+    message: message ?? "This save is damaged. The other slots are unchanged.",
+  };
 }
 
-function newestValidGeneration(decoded: DecodedGenerations): GenerationKey | null {
-  const valid = (["a", "b"] as const).filter((generation) => decoded[generation].status === "valid");
+function newestValidGeneration(
+  decoded: DecodedGenerations,
+): GenerationKey | null {
+  const valid = (["a", "b"] as const).filter(
+    (generation) => decoded[generation].status === "valid",
+  );
   if (valid.length === 0) return null;
   if (valid.length === 1) return valid[0]!;
   const generationA = decoded.a.envelope!.generation;
@@ -173,36 +219,54 @@ function resolveRead(
   pending: ReturnType<typeof decodePending>,
 ): ReadResult {
   if (pending.status === "incompatible") {
-    return { status: "incompatible", message: "This save transaction was created by an incompatible version." };
+    return {
+      status: "incompatible",
+      message: "This save transaction was created by an incompatible version.",
+    };
   }
   if (pending.status === "corrupt") {
-    return { status: "corrupt", message: "This save has a damaged transaction marker and was not loaded." };
+    return {
+      status: "corrupt",
+      message: "This save has a damaged transaction marker and was not loaded.",
+    };
   }
   if (pending.envelope) {
     const previous = pending.envelope.previous;
     if (previous === null) {
       const other: GenerationKey = pending.envelope.target === "a" ? "b" : "a";
       if (decoded[other].status === "empty") {
-        return { status: "empty", message: "An incomplete first save was ignored." };
+        return {
+          status: "empty",
+          message: "An incomplete first save was ignored.",
+        };
       }
-      return unreadableResult(decoded, "An incomplete save could not be recovered safely.");
+      return unreadableResult(
+        decoded,
+        "An incomplete save could not be recovered safely.",
+      );
     }
     const previousRecord = decoded[previous];
     if (
       previousRecord.status === "valid" &&
-      previousRecord.envelope!.generation === pending.envelope.previousGeneration
+      previousRecord.envelope!.generation ===
+        pending.envelope.previousGeneration
     ) {
       return {
         status: "recovered",
         payload: structuredClone(previousRecord.envelope!.payload),
         generation: previous,
-        message: "Recovered the previous committed save; an incomplete save was ignored.",
+        message:
+          "Recovered the previous committed save; an incomplete save was ignored.",
       };
     }
-    return unreadableResult(decoded, "The previous committed save could not be recovered safely.");
+    return unreadableResult(
+      decoded,
+      "The previous committed save could not be recovered safely.",
+    );
   }
 
-  const active: GenerationKey | null = pointer === "a" || pointer === "b" ? pointer : null;
+  const active: GenerationKey | null =
+    pointer === "a" || pointer === "b" ? pointer : null;
   if (active && decoded[active].status === "valid") {
     return {
       status: "loaded",
@@ -211,7 +275,11 @@ function resolveRead(
       message: `${kind === "manual" ? "Manual save" : "Checkpoint"} ready.`,
     };
   }
-  const fallback = active ? (active === "a" ? "b" : "a") : newestValidGeneration(decoded);
+  const fallback = active
+    ? active === "a"
+      ? "b"
+      : "a"
+    : newestValidGeneration(decoded);
   if (fallback && decoded[fallback].status === "valid") {
     return {
       status: "recovered",
@@ -240,7 +308,10 @@ export class SaveStore {
       rawB = this.storage.getItem(`${base}.b`);
       rawPending = this.storage.getItem(`${base}.pending`);
     } catch {
-      return { status: "unavailable", message: "Local storage is unavailable in this browser context." };
+      return {
+        status: "unavailable",
+        message: "Local storage is unavailable in this browser context.",
+      };
     }
     const decoded = { a: decode(rawA), b: decode(rawB) };
     return resolveRead(kind, pointer, decoded, decodePending(rawPending));
@@ -257,12 +328,22 @@ export class SaveStore {
       const pending = decodePending(this.storage.getItem(`${base}.pending`));
       const current = resolveRead(kind, pointer, decoded, pending);
       if (!current.payload && current.status !== "empty") {
-        return { ok: false, message: "Saving stopped because the existing transaction could not be recovered safely." };
+        return {
+          ok: false,
+          message:
+            "Saving stopped because the existing transaction could not be recovered safely.",
+        };
       }
       const active = current.generation ?? null;
-      const currentGeneration = active ? decoded[active].envelope?.generation : undefined;
+      const currentGeneration = active
+        ? decoded[active].envelope?.generation
+        : undefined;
       if (active && !currentGeneration) {
-        return { ok: false, message: "Saving stopped because the existing generation could not be verified." };
+        return {
+          ok: false,
+          message:
+            "Saving stopped because the existing generation could not be verified.",
+        };
       }
       const nextGeneration = (currentGeneration ?? 0) + 1;
       const inactive: GenerationKey = active === "a" ? "b" : "a";
@@ -273,16 +354,32 @@ export class SaveStore {
         targetGeneration: nextGeneration,
         previous: active,
         previousGeneration: currentGeneration ?? null,
-        checksum: pendingChecksum(inactive, nextGeneration, active, currentGeneration ?? null),
+        checksum: pendingChecksum(
+          inactive,
+          nextGeneration,
+          active,
+          currentGeneration ?? null,
+        ),
       };
       const serializedIntent = JSON.stringify(intent);
       this.storage.setItem(`${base}.pending`, serializedIntent);
       const intentReadback = this.storage.getItem(`${base}.pending`);
       const verifiedIntent = decodePending(intentReadback);
-      if (verifiedIntent.status !== "valid" || JSON.stringify(verifiedIntent.envelope) !== serializedIntent) {
-        return { ok: false, message: "Save preparation failed. Your previous save is still active." };
+      if (
+        verifiedIntent.status !== "valid" ||
+        JSON.stringify(verifiedIntent.envelope) !== serializedIntent
+      ) {
+        return {
+          ok: false,
+          message:
+            "Save preparation failed. Your previous save is still active.",
+        };
       }
-      const normalized = structuredClone({ ...payload, slot, schemaVersion: SAVE_VERSION });
+      const normalized = structuredClone({
+        ...payload,
+        slot,
+        schemaVersion: SAVE_VERSION,
+      });
       const envelope: SaveEnvelope = {
         format: "webmaster-save",
         schemaVersion: SAVE_VERSION,
@@ -294,40 +391,69 @@ export class SaveStore {
       this.storage.setItem(`${base}.${inactive}`, serialized);
       const readback = this.storage.getItem(`${base}.${inactive}`);
       const verified = decode(readback);
-      if (verified.status !== "valid" || JSON.stringify(verified.envelope) !== serialized) {
-        return { ok: false, message: "Save verification failed. Your previous save is still active." };
+      if (
+        verified.status !== "valid" ||
+        JSON.stringify(verified.envelope) !== serialized
+      ) {
+        return {
+          ok: false,
+          message:
+            "Save verification failed. Your previous save is still active.",
+        };
       }
       this.storage.setItem(`${base}.pointer`, inactive);
       if (this.storage.getItem(`${base}.pointer`) !== inactive) {
-        return { ok: false, message: "Save commit failed. Your previous save is still active." };
+        return {
+          ok: false,
+          message: "Save commit failed. Your previous save is still active.",
+        };
       }
       this.storage.removeItem(`${base}.pending`);
-      return { ok: true, committedGeneration: inactive, message: "Save confirmed." };
+      return {
+        ok: true,
+        committedGeneration: inactive,
+        message: "Save confirmed.",
+      };
     } catch {
-      return { ok: false, message: "Saving is unavailable. Your previous save was preserved." };
+      return {
+        ok: false,
+        message: "Saving is unavailable. Your previous save was preserved.",
+      };
     }
   }
 
   newest(): { slot: SlotId; kind: SaveKind; payload: RunSavePayload } | null {
-    const candidates: Array<{ slot: SlotId; kind: SaveKind; payload: RunSavePayload }> = [];
+    const candidates: Array<{
+      slot: SlotId;
+      kind: SaveKind;
+      payload: RunSavePayload;
+    }> = [];
     for (const slot of [1, 2, 3] as const) {
       for (const kind of ["manual", "checkpoint"] as const) {
         const result = this.read(slot, kind);
-        if (result.payload) candidates.push({ slot, kind, payload: result.payload });
+        if (result.payload)
+          candidates.push({ slot, kind, payload: result.payload });
       }
     }
-    return candidates.sort((a, b) => b.payload.updatedAt - a.payload.updatedAt)[0] ?? null;
+    return (
+      candidates.sort((a, b) => b.payload.updatedAt - a.payload.updatedAt)[0] ??
+      null
+    );
   }
 
   clearSlot(slot: SlotId): WriteResult {
     try {
       for (const kind of ["manual", "checkpoint"] as const) {
         const base = baseKey(slot, kind);
-        for (const suffix of ["a", "b", "pointer", "pending"]) this.storage.removeItem(`${base}.${suffix}`);
+        for (const suffix of ["a", "b", "pointer", "pending"])
+          this.storage.removeItem(`${base}.${suffix}`);
       }
       return { ok: true, message: `Slot ${slot} cleared.` };
     } catch {
-      return { ok: false, message: "Could not replace this slot. Existing data was preserved." };
+      return {
+        ok: false,
+        message: "Could not replace this slot. Existing data was preserved.",
+      };
     }
   }
 
@@ -351,7 +477,11 @@ export class SaveStore {
         this.storage.removeItem(`${baseKey(slot, "manual")}.${suffix}`);
       }
       return checkpoint.committedGeneration
-        ? { ok: true, committedGeneration: checkpoint.committedGeneration, message: `New game committed to slot ${slot}.` }
+        ? {
+            ok: true,
+            committedGeneration: checkpoint.committedGeneration,
+            message: `New game committed to slot ${slot}.`,
+          }
         : { ok: true, message: `New game committed to slot ${slot}.` };
     } catch {
       try {
@@ -360,14 +490,24 @@ export class SaveStore {
           else this.storage.setItem(key, value);
         }
       } catch {
-        return { ok: false, message: "Storage failed during replacement. Stop using this slot and reload before trying again." };
+        return {
+          ok: false,
+          message:
+            "Storage failed during replacement. Stop using this slot and reload before trying again.",
+        };
       }
-      return { ok: false, message: "Could not replace this slot. Existing data was restored." };
+      return {
+        ok: false,
+        message: "Could not replace this slot. Existing data was restored.",
+      };
     }
   }
 
   inspectSlot(slot: SlotId): { manual: ReadResult; checkpoint: ReadResult } {
-    return { manual: this.read(slot, "manual"), checkpoint: this.read(slot, "checkpoint") };
+    return {
+      manual: this.read(slot, "manual"),
+      checkpoint: this.read(slot, "checkpoint"),
+    };
   }
 }
 
@@ -375,5 +515,4 @@ export const saveStorageKeyForTests = (
   slot: SlotId,
   kind: SaveKind,
   suffix: "a" | "b" | "pointer" | "pending",
-): string =>
-  `${baseKey(slot, kind)}.${suffix}`;
+): string => `${baseKey(slot, kind)}.${suffix}`;

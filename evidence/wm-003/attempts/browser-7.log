@@ -1,0 +1,51 @@
+[WebServer] (node:38) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ vite --host 127.0.0.1 --port 4173
+[WebServer] (node:53) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:92) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › e2e/wm003.spec.ts:48:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback (52.3s)
+
+
+  1) [chromium] › e2e/wm003.spec.ts:48:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback 
+
+    Error: expect(received).toBeLessThan(expected)
+
+    Expected: < 0.04
+    Received:   0.045261915514986706
+
+      18 |   return{down:async k=>{held.add(k);await update();},up:async k=>{held.delete(k);await update();},press:async k=>{held.add(k);await update();await p.waitForTimeout(75);held.delete(k);await update();},look:async(alpha,beta)=>{
+      19 |     for(let n=0;n<250;n++){const s=await state(p),dx=s.cameraAlpha-alpha,dy=beta===undefined?0:beta-s.cameraBeta;if(Math.abs(dx)<.012&&Math.abs(dy)<.012)break;await update(Math.abs(dx)<.012?0:Math.sign(dx)*.35,Math.abs(dy)<.012?0:Math.sign(dy)*.35);await p.waitForTimeout(25);}
+    > 20 |     await update();await p.waitForTimeout(150);const s=await state(p);expect(Math.abs(s.cameraAlpha-alpha)).toBeLessThan(.04);if(beta!==undefined)expect(Math.abs(s.cameraBeta-beta)).toBeLessThan(.04);
+         |                                                                                                                                                                                       ^
+      21 |   }};
+      22 | }
+      23 | async function stop(p:Page,controls=keyboard(p)){for(const k of ['w','a','s','d','Shift','c','q','e'])await controls.up(k);await p.waitForTimeout(350);}
+        at Object.look (/workspace/scratch/bb63ed1d5d6d/wm003-implementation/e2e/wm003.spec.ts:20:183)
+        at route (/workspace/scratch/bb63ed1d5d6d/wm003-implementation/e2e/wm003.spec.ts:40:3)
+        at /workspace/scratch/bb63ed1d5d6d/wm003-implementation/e2e/wm003.spec.ts:48:282
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/wm003-WM003-simulated-Play-7b400--load-and-keyboard-fallback-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/wm003-WM003-simulated-Play-7b400--load-and-keyboard-fallback-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/wm003-WM003-simulated-Play-7b400--load-and-keyboard-fallback-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/wm003-WM003-simulated-Play-7b400--load-and-keyboard-fallback-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/wm003-WM003-simulated-Play-7b400--load-and-keyboard-fallback-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › e2e/wm003.spec.ts:48:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback 

@@ -1,0 +1,20 @@
+{
+  "author": "WEBMASTER_PRODUCT_OWNER",
+  "purpose": "Same-runtime merged WM-002 baseline; supplementary parent evidence, not independent QA",
+  "head": "6ae9d2ea23f212be31709e76ff5a3302c96cc3b4",
+  "tree": "37053c069a9e839f8f9a42a85a8bc3554795c089",
+  "browser_sha256": "ded93a9c9a53a1ae040f08124badcca95c938e9d5015ff340c3b5538c41bf39e",
+  "command": [
+    "pnpm",
+    "exec",
+    "playwright",
+    "test",
+    "e2e/wm002-performance.spec.ts",
+    "--project=chromium",
+    "--workers=1",
+    "--reporter=list"
+  ],
+  "started_at": "2026-09-12T16:11:44.384380+00:00",
+  "exit_code": 0,
+  "source_status": ""
+}

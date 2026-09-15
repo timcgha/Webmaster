@@ -58,7 +58,7 @@ describe("standard Gamepad semantic mapping", () => {
   });
 
   it("ignores unused extra axes and buttons when deciding mapped neutrality", () => {
-    expect(mapStandardGamepad(pad("Xbox", { axes: [0, 0, 0, 0, -1, 0.72], values: { 5: 0.4 }, buttonCount: 20 })).neutral).toBe(true);
+    expect(mapStandardGamepad(pad("Xbox", { axes: [0, 0, 0, 0, -1, 0.72], values: { 8: 0.4 }, buttonCount: 20 })).neutral).toBe(true);
   });
 });
 
