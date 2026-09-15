@@ -1,0 +1,31 @@
+name: WM004 verify public isolated preview
+on:
+  push:
+    branches: [verification/wm004-evidence]
+    paths: [.github/workflows/wm004-public-verify.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Verify public root and exact WM004 preview
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 8 --retry-delay 5 --retry-all-errors https://timcgha.github.io/Webmaster/ -o root.html
+          curl --fail --location --retry 8 --retry-delay 5 --retry-all-errors https://timcgha.github.io/Webmaster/wm004-preview/ -o preview.html
+          curl --fail --location --retry 8 --retry-delay 5 --retry-all-errors https://timcgha.github.io/Webmaster/wm004-preview/wm-provenance.json -o provenance.json
+          curl --fail --location --retry 8 --retry-delay 5 --retry-all-errors https://timcgha.github.io/Webmaster/wm004-preview/preview-storage.mjs -o preview-storage.mjs
+          grep -q '/Webmaster/assets/' root.html
+          grep -q './preview.mjs' preview.html
+          grep -q 'webmaster.wm004-preview.v1:' preview-storage.mjs
+          node - <<'JS'
+          const fs=require('fs');const p=JSON.parse(fs.readFileSync('provenance.json','utf8'));
+          if(p.source!=='504f6087beef67daf0a88e6de27a21a1b6b10a28')throw Error('source');
+          if(p.tree!=='886b56ac767ffb95c6b8bb3dff6cfe41ff2847be')throw Error('tree');
+          if(p.payloadSha256!=='d0ab1b1b96b867c8af63e33f06cac2f8feb7c5b855c8ce1ac3c3b255c56e774b')throw Error('payload');
+          if(p.saveNamespace!=='webmaster.wm004-preview.v1:')throw Error('namespace');
+          if(p.mergeOrRootRelease!==false)throw Error('classification');
+          console.log(JSON.stringify(p));
+          JS
