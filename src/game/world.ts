@@ -905,13 +905,15 @@ export class GameWorld {
       (desiredPitch - this.heroRoot.rotation.x) * Math.min(1, delta * 8);
     // Rotate the visual rig onto the ceiling while keeping its full authored
     // extent on the playable side of the wall. Physics stays at motion.position.
-    const presentationOffset = ceilingPresentationOffset(
-      this.heroRoot.rotation.x,
-      this.motion.facingYaw,
-    );
-    this.heroRoot.position.x += presentationOffset.x;
-    this.heroRoot.position.y += presentationOffset.y;
-    this.heroRoot.position.z += presentationOffset.z;
+    if (this.heroRoot.rotation.x !== 0) {
+      const presentationOffset = ceilingPresentationOffset(
+        this.heroRoot.rotation.x,
+        this.motion.facingYaw,
+      );
+      this.heroRoot.position.x += presentationOffset.x;
+      this.heroRoot.position.y += presentationOffset.y;
+      this.heroRoot.position.z += presentationOffset.z;
+    }
     if (!this.paused)
       this.legPose = swingLegPose(this.legPose, this.motion, this.swing, delta);
     if (!this.paused) {
