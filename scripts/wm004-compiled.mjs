@@ -26,7 +26,7 @@ const server=http.createServer((req,res)=>{try{const pathname=decodeURIComponent
   const mime={'.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.html':'text/html','.json':'application/json','.wasm':'application/wasm'};
   res.setHeader('Content-Type',mime[path.extname(file)]??'application/octet-stream');res.end(fs.readFileSync(file));}catch{res.writeHead(404);res.end();}});
 await new Promise(resolve=>server.listen(4177,'127.0.0.1',resolve));
-const results=[];
+const results=[],failures=[];
 const nativeState=p=>p.evaluate(()=>{const n=window.__wm4Native;return Object.fromEntries(Array.from({length:n.length},(_,i)=>{const k=n.key(i);return[k,n.getItem(k)];}));});
 try{for(const fixture of[...old,{name:'new-street',stored:{}}]){
   const profile=path.resolve(`.wm004-profiles/${fixture.name}`);fs.rmSync(profile,{recursive:true,force:true});
@@ -63,11 +63,14 @@ try{for(const fixture of[...old,{name:'new-street',stored:{}}]){
     await ctx.close();ctx=await chromium.launchPersistentContext(profile,opts);await ctx.addInitScript(()=>{window.__wm4Native=window.localStorage;});page=await ctx.newPage();page.on('pageerror',e=>errors.push(String(e)));
     await page.goto(url);await page.locator('#loading.hidden').waitFor({state:'attached',timeout:45000});assert.deepEqual(await nativeState(page),saved);
     await page.getByRole('button',{name:/Continue/}).click();await page.waitForFunction(()=>window.__WM_DEBUG__.getState().safe);
-    const reopened=await page.evaluate(()=>window.__WM_DEBUG__.getState());assert.deepEqual(reopened.position,loaded.position);assert.deepEqual(reopened.velocity,{x:0,y:0,z:0});assert.equal(reopened.swing.web,null);assert.equal(reopened.traversal.surfaceId,null);assert.equal(reopened.traversal.pullId,null);assert.deepEqual(await nativeState(page),saved);assert.deepEqual(errors,[]);
+    const reopened=await page.evaluate(()=>window.__WM_DEBUG__.getState());assert.deepEqual(reopened.position,loaded.position);assert.ok(Object.values(reopened.velocity).every(v=>v===0),"Every velocity component must be exactly zero (either sign)");assert.equal(reopened.swing.web,null);assert.equal(reopened.traversal.surfaceId,null);assert.equal(reopened.traversal.pullId,null);assert.deepEqual(await nativeState(page),saved);assert.deepEqual(errors,[]);
     assert.equal(reopened.training.checkpoint,loaded.training.checkpoint);assert.equal(reopened.training.completed,loaded.training.completed);
     assert.equal(reopened.skyline.stage,loaded.skyline.stage);assert.equal(reopened.skyline.completed,loaded.skyline.completed);
     if(fixture.name==='WM-003')assert.equal(reopened.course.active,true);
     await page.screenshot({path:`${reportDir}/${fixture.name}-reopened.png`});results.push({fixture:fixture.name,status:'PASS',method:'Compiled isolated preview; genuine menu actions; exact old writer fixture; WM003 Replay 20-ring preserves earned S2/S3 progress; Save Game/Save & Quit; Chromium process closes and reopens same persistent profile without reinjection; identical stored generations and preserved root/WM003 keys',historicalLoaded,loaded,reopened,errors});
+  }catch(error){
+    failures.push({fixture:fixture.name,error:String(error),state:await page.evaluate(()=>window.__WM_DEBUG__?.getState()).catch(()=>null),errors});
+    await page.screenshot({path:`${reportDir}/${fixture.name}-failure.png`}).catch(()=>{});throw error;
   }finally{await ctx.close();}
-}}finally{await new Promise(resolve=>server.close(resolve));fs.writeFileSync(reportDir+'/results.json',JSON.stringify({source:git('.','rev-parse','HEAD'),tree:git('.','rev-parse','HEAD^{tree}'),results,complete:results.length===5},null,2));}
+}}finally{await new Promise(resolve=>server.close(resolve));fs.writeFileSync(reportDir+'/results.json',JSON.stringify({source:git('.','rev-parse','HEAD'),tree:git('.','rev-parse','HEAD^{tree}'),results,failures,complete:results.length===5&&failures.length===0},null,2));}
 assert.equal(results.length,5);console.log(JSON.stringify({status:'PASS',cases:results.map(x=>x.fixture)}));

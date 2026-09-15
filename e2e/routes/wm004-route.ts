@@ -54,6 +54,15 @@ export async function installCourseControls(page:Page,pad:boolean){
       if(Math.abs(state().position.y-1)>.02)throw Error(`extension ${n} missed landing: ${JSON.stringify(state())}`);
       await center(b);return state();
     }
-    w.__wm004Controls={state,keys,frame,until,rest,look,at,center,legacy,extension,events,anchors};
+    async function missFirst(){
+      await center({x:35,z:166});await look(Math.PI);keys('Shift','w');await at('x',40);await jump();await at('x',48);keys();
+      await until(s=>s.grounded&&s.position.y===-18,'ordinary missed ring street landing');await rest(500);return state();
+    }
+    async function approachRecovery(){
+      await look(-Math.PI/2,1.1);keys('w');await at('z',181);await rest();await look(0,1.1);keys('w');await at('x',35,-1);await rest();
+      await look(Math.PI/2,1.1);keys('w','c');await until(s=>s.traversal.surfaceId==='roof-4','recovery wall');await until(s=>s.position.y>-9,'recovery midway');keys('c');return state();
+    }
+    async function finishRecovery(){keys('w','c');await until(s=>s.grounded&&s.position.y===1,'recovery continuous topout');await rest(600);await center({x:35,z:166});return state();}
+    w.__wm004Controls={state,keys,frame,until,rest,look,at,center,legacy,extension,missFirst,approachRecovery,finishRecovery,events,anchors};
   },pad);
 }

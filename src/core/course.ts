@@ -75,7 +75,7 @@ export function advanceCourse(
   return s;
 }
 export function courseLabel(s: CourseState, street = false): string {
-  if (street) return "Street recovery: follow the mint paths to a striped wall. Hold C / RB / R1 and climb up onto its roof.";
+  if (street) return "Follow mint paths to striped walls. Hold C / RB / R1 to climb onto a roof.";
   if (s.completed) return "20-ring course complete! Save, explore the street, or replay from Pause.";
   if (!s.active) return "20-ring course starts across the south practice gap. Cross over, then follow the numbered rings north.";
   if (s.next === 20) return "Release and land on the pink finish pad to complete the 20-ring course.";

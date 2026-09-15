@@ -764,7 +764,9 @@ class WebmasterApp {
     }
     hudLayer.querySelector<HTMLElement>("[data-hud='course']")!.textContent = courseLabel(frame.course, frame.position.y < -1);
     hudLayer.querySelector<HTMLElement>("[data-hud='practice']")!.textContent =
-      frame.training.active
+      frame.position.y < -1 ? "STREET RECOVERY" : frame.course.active
+        ? `20-RING COURSE ${frame.course.next} / 20`
+        : frame.training.active
         ? `CLIMB & PULL ${Math.min(frame.training.stage + 1, 6)} / 6`
         : frame.skyline.active
           ? `SKYLINE ${Math.min(frame.skyline.stage + 1, 4)} / 4`

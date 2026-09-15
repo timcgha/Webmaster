@@ -16,6 +16,8 @@ import { CreateLines } from "@babylonjs/core/Meshes/Builders/linesBuilder.pure";
 import { CreateSphere } from "@babylonjs/core/Meshes/Builders/sphereBuilder.pure";
 import { CreateTorus } from "@babylonjs/core/Meshes/Builders/torusBuilder.pure";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
+import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData";
+import { paintedStreet, STREET_COLORS } from "../core/street-visual";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
 import { PhysicsShapeType } from "@babylonjs/core/Physics/v2/IPhysicsEnginePlugin";
@@ -167,6 +169,7 @@ export class GameWorld {
   private webLine: LinesMesh | null = null;
   private wristFlash: Mesh | null = null;
   private rightArm: TransformNode | null = null;
+  private courseContactShadow: Mesh | null = null;
   private pendingCheckpoint = false;
   private traversal = newTraversal();
   private training = newTrainingRoute();
@@ -481,36 +484,60 @@ export class GameWorld {
   }
 
   private createStreetCourse(): void {
-    const floorTexture = new DynamicTexture("original-street-map", {width:2048,height:2048}, this.scene, true);
-    const c = floorTexture.getContext(); c.fillStyle="#538daf"; c.fillRect(0,0,2048,2048);
-    const px=(x:number)=>(x-STREET.minX)/(STREET.maxX-STREET.minX)*2048;
-    const pz=(z:number)=>(z-STREET.minZ)/(STREET.maxZ-STREET.minZ)*2048;
-    c.strokeStyle="#85e4cb"; c.lineWidth=32;
-    for(const x of [-35,20,51,83,115,150]) { c.beginPath();c.moveTo(px(x),0);c.lineTo(px(x),2048);c.stroke(); }
-    for(const z of [-78,-10,30,66,110,146,188]) { c.beginPath();c.moveTo(0,pz(z));c.lineTo(2048,pz(z));c.stroke(); }
-    c.strokeStyle="#fce28c";c.lineWidth=5;c.setLineDash([12,18]);
-    for(const x of [-35,20,51,83,115,150]) { c.beginPath();c.moveTo(px(x),0);c.lineTo(px(x),2048);c.stroke(); }
-    c.setLineDash([]);floorTexture.update();
-    const floorMat = this.material("street-mat","#ffffff"); floorMat.diffuseTexture=floorTexture;
+    // R2: the same-runner render ablation isolated the regression to the new
+    // large lit surfaces. Bake the static palette into opaque vertex colors:
+    // no per-pixel lights, texture sampling or shadow filtering on these faces.
+    // Accepted S1-S3 materials, hero lighting and every collider stay unchanged.
+    const staticColor = new StandardMaterial("course-static-color", this.scene);
+    staticColor.disableLighting = true;
+    staticColor.emissiveColor = Color3.White();
+    staticColor.specularColor = Color3.Black();
+    const faceColors = (hex:string) => [.82,.70,.74,.90,1,.60].map(shade => {
+      const c=Color3.FromHexString(hex).toLinearSpace().scale(shade);
+      return new Color4(c.r,c.g,c.b,1);
+    });
     const floor=CreateBox("solid-recovery-street",{width:206,depth:288,height:2},this.scene);
-    floor.position.set(55,-19,54); floor.material=floorMat; floor.receiveShadows=true;this.addStaticPhysics(floor);
+    floor.position.set(55,-19,54); floor.isVisible=false; this.addStaticPhysics(floor);
+    const street=new Mesh("painted-recovery-street",this.scene);
+    const positions:number[]=[],indices:number[]=[],normals:number[]=[],colors:number[]=[];
+    const addFace=(vertices:number[],normal:number[],hex:string,shade=1) => {
+      const base=positions.length/3,c=Color3.FromHexString(hex).toLinearSpace().scale(shade);
+      positions.push(...vertices);indices.push(base,base+1,base+2,base,base+2,base+3);
+      for(let i=0;i<4;i++){normals.push(...normal);colors.push(c.r,c.g,c.b,1);}
+    };
+    for(const q of paintedStreet()) addFace([
+      q.minX,-18,q.minZ,q.minX,-18,q.maxZ,q.maxX,-18,q.maxZ,q.maxX,-18,q.minZ,
+    ],[0,1,0],STREET_COLORS[q.color]);
+    // Four opaque outer edges keep the solid street readable at its boundary.
+    const {minX:a,maxX:b,minZ:c,maxZ:d}=STREET;
+    addFace([a,-20,c,a,-18,c,b,-18,c,b,-20,c],[0,0,-1],STREET_COLORS.street,.70);
+    addFace([b,-20,d,b,-18,d,a,-18,d,a,-20,d],[0,0,1],STREET_COLORS.street,.82);
+    addFace([a,-20,d,a,-18,d,a,-18,c,a,-20,c],[-1,0,0],STREET_COLORS.street,.74);
+    addFace([b,-20,c,b,-18,c,b,-18,d,b,-20,d],[1,0,0],STREET_COLORS.street,.90);
+    const data=new VertexData();data.positions=positions;data.indices=indices;data.normals=normals;data.colors=colors;
+    data.applyToMesh(street);street.material=staticColor;street.isPickable=false;
     const palette=["#23a6ba","#e5a746","#8a75cf","#e67799"];
     for(const [i,b] of [{...ROOFS[0]!,maxY:-1},...COURSE_ROOFS].entries()) {
-      const mesh=CreateBox(b.id+"-s4-building",{width:b.maxX-b.minX,depth:b.maxZ-b.minZ,height:b.maxY-b.minY},this.scene);
+      const mesh=CreateBox(b.id+"-s4-building",{width:b.maxX-b.minX,depth:b.maxZ-b.minZ,height:b.maxY-b.minY,
+        faceColors:faceColors(palette[i%4]!)},this.scene);
       mesh.position.set((b.minX+b.maxX)/2,(b.minY+b.maxY)/2,(b.minZ+b.maxZ)/2);
-      mesh.material=this.material(`course-building-${i%4}`,palette[i%4]!);mesh.receiveShadows=true;
+      mesh.material=staticColor;
       if(i>0) this.addStaticPhysics(mesh);
       if(i>0) {
-        const edge=CreateBox(`${b.id}-landing`,{width:19.5,depth:19.5,height:0.06},this.scene);
-        edge.position.set(mesh.position.x,b.maxY+0.025,mesh.position.z);
-        edge.material=this.material(`course-landing-${i}`,i===14?"#f477bc":"#32619a");
+        const edge=CreateBox(`${b.id}-landing`,{width:19.5,depth:19.5,height:0.06,
+          faceColors:faceColors(i===14?"#f477bc":"#32619a")},this.scene);
+        edge.position.set(mesh.position.x,b.maxY-0.03,mesh.position.z);
+        edge.material=staticColor;
       }
     }
+    this.createCourseContactShadow();
     const stripeTexture=new DynamicTexture("original-recovery-stripes",{width:128,height:512},this.scene,true);
     const sc=stripeTexture.getContext();sc.fillStyle="#1b817d";sc.fillRect(0,0,128,512);
     sc.strokeStyle="#b7ffde";sc.lineWidth=9;
     for(let y=32;y<500;y+=58){sc.beginPath();sc.moveTo(22,y+24);sc.lineTo(64,y);sc.lineTo(106,y+24);sc.stroke();}
-    stripeTexture.update(); const stripe=this.material("street-climb-stripes","#ffffff");stripe.diffuseTexture=stripeTexture;
+    // North-facing box face (+Z) has inverted V compared with the billboard's
+    // opposite face: these chevrons must point up the climbable wall.
+    stripeTexture.update(false); const stripe=this.material("street-climb-stripes","#ffffff");stripe.diffuseTexture=stripeTexture;
     for(const wall of RECOVERY_WALLS){
       const panel=CreateBox(`${wall.id}-recovery-stripe`,{width:3.2,height:wall.maxY-wall.minY,depth:0.025},this.scene);
       panel.position.set((wall.minX+wall.maxX)/2,(wall.minY+wall.maxY)/2,wall.maxZ+0.018);panel.material=stripe;
@@ -529,6 +556,33 @@ export class GameWorld {
     this.courseSign("long-course-start","20 RINGS · START",{x:0,y:3,z:-43},"#127a80",5);
     this.courseSign("long-course-finish","20 RINGS · FINISH",{x:COURSE_FINISH.x,y:4,z:COURSE_FINISH.z+3},"#9b327a",5);
     this.courseSign("practice-course-guide","SOUTH: COURSE START",{x:4,y:2,z:-16},"#127a80",4);
+  }
+
+  private createCourseContactShadow(): void {
+    // A small soft contact cue on the new unlit supports; it has no collider.
+    // The accepted real shadow remains on every original lit support.
+    const mesh=new Mesh("course-contact-shadow",this.scene),data=new VertexData();
+    const positions=[0,0,0],colors=[0,0,0,.22],indices:number[]=[];
+    for(let i=0;i<32;i++){const a=i*Math.PI/16;positions.push(Math.cos(a),0,Math.sin(a));colors.push(0,0,0,0);}
+    for(let i=0;i<32;i++)indices.push(0,(i+1)%32+1,i+1);
+    data.positions=positions;data.colors=colors;data.indices=indices;
+    data.normals=Array.from({length:33},()=>[0,1,0]).flat();data.applyToMesh(mesh);
+    const mat=new StandardMaterial("course-contact-shadow-material",this.scene);
+    mat.disableLighting=true;mat.emissiveColor=Color3.White();mat.backFaceCulling=false;
+    mat.transparencyMode=StandardMaterial.MATERIAL_ALPHABLEND;mesh.hasVertexAlpha=true;
+    mesh.material=mat;mesh.isPickable=false;
+    mesh.parent=new TransformNode("course-contact-shadow-motion",this.scene);
+    this.courseContactShadow=mesh;
+  }
+
+  private updateCourseContactShadow():void {
+    const mesh=this.courseContactShadow;if(!mesh)return;
+    const p=this.motion.position;
+    const support=this.skylineSolids.filter(b=>p.x>=b.minX&&p.x<=b.maxX&&p.z>=b.minZ&&p.z<=b.maxZ&&b.maxY<=p.y+.1)
+      .sort((a,b)=>b.maxY-a.maxY)[0];
+    const gap=support?p.y-support.maxY:Infinity;
+    mesh.isVisible=Boolean(support&&(support.id===STREET.id||COURSE_ROOFS.some(b=>b.id===support.id))&&gap<4&&!this.traversal.surfaceId);
+    if(mesh.isVisible&&support){mesh.position.set(p.x,support.maxY+.018,p.z);mesh.scaling.set(.72+gap*.1,1,.72+gap*.1);mesh.visibility=1-gap/4;}
   }
 
   private courseSign(name:string,label:string,p:Vec3Data,color:string,width:number):void {
@@ -916,6 +970,7 @@ export class GameWorld {
     const freeRadius = cameraSafeRadius(t,wanted,desiredRadius,this.skylineSolids);
     this.camera.radius = freeRadius < this.camera.radius ? freeRadius : Math.min(freeRadius,this.camera.radius + delta*8);
     this.renderSwing();
+    this.updateCourseContactShadow();
     this.scene.render();
     if (now - this.lastHudAt > 100) {
       this.lastHudAt = now;
@@ -1047,7 +1102,7 @@ export class GameWorld {
         this.pendingCheckpoint = false;
         this.callbacks.onProgress(
           this.progress,
-          this.training.active
+          this.course.active ? courseLabel(this.course,this.motion.position.y < -1) : this.training.active
             ? TRAINING_LABELS[this.training.stage]!
             : ROUTE_LABELS[this.skyline.stage]!,
         );

@@ -12,13 +12,30 @@ const at=(p:Page,axis:"x"|"z",target:number,sign=1)=>until(p,(s,a)=>a.sign*(s.po
 async function shot(p:Page,name:string){await mkdir(out,{recursive:true});await p.screenshot({path:`${out}/${name}.png`});}
 async function replayStart(p:Page,c:Controls,pad:boolean){
   await c.press("Escape");await expect(p.getByRole("heading",{name:"Paused"})).toBeVisible();
-  if(pad){await padTap(p,12);await padTap(p,0);}else await p.getByRole("button",{name:/Replay 20-ring/}).click();
+  if(pad){
+    // Observe the actual selected menu label; never assume a transport-timed
+    // D-pad tap selected a particular item or inject a click on the pad route.
+    for(let n=0;n<12;n++){
+      if(await p.locator('[data-menu-item][aria-current="true"] > span').innerText()==='Replay 20-ring course')break;
+      await padTap(p,13);
+    }
+    await expect(p.locator('[data-menu-item][aria-current="true"] > span')).toHaveText('Replay 20-ring course');await padTap(p,0);
+  }else await p.getByRole("button",{name:/Replay 20-ring/}).click();
   await c.look(-Math.PI/2,1.65);await p.waitForTimeout(300);
-  expect((await state(p)).course).toMatchObject({valid:true,next:0});
+  expect((await state(p)).position).toEqual({x:0,y:0,z:-42});
+  expect((await state(p)).course).toMatchObject({active:true,valid:true,next:0});
 }
 async function fullCourse(p:Page,label:string){
   await installCourseControls(p,label==="controller");
   await p.evaluate(async()=>{try{await (window as any).__wm004Controls.legacy();}finally{(window as any).__wm004Controls.keys();}});
+  const missed=await p.evaluate(async()=>{try{return await (window as any).__wm004Controls.missFirst();}finally{(window as any).__wm004Controls.keys();}});
+  expect(missed).toMatchObject({health:100,grounded:true,position:{y:-18},course:{next:6,valid:true,completed:false}});
+  await shot(p,`${label}-missed-ring-street`);await hudLayout(p,`wm004-${label}-missed-street`);
+  const climbing=await p.evaluate(async()=>await (window as any).__wm004Controls.approachRecovery());
+  await shot(p,`${label}-missed-ring-climbing`);await hudLayout(p,`wm004-${label}-recovery-climbing`);
+  const rejoined=await p.evaluate(async()=>{try{return await (window as any).__wm004Controls.finishRecovery();}finally{(window as any).__wm004Controls.keys();}});
+  expect(rejoined).toMatchObject({health:100,grounded:true,position:{y:1},course:{next:6,valid:true,completed:false}});await shot(p,`${label}-missed-ring-rejoined`);
+  await writeFile(`${out}/${label}-miss-recovery-rejoin.json`,JSON.stringify({method:"Genuine missed extension jump without web; uninterrupted street landing; ordinary walk around to roof4 marked wall; held climb and continuous top-out; walk back and rejoin next intended anchor. No fixture/state/time writes.",missed,climbing,rejoined},null,2));
   for(let n=0;n<14;n++){
     await p.evaluate(async({a,b,n})=>{try{await (window as any).__wm004Controls.extension(a,b,n);}finally{(window as any).__wm004Controls.keys();}},{a:COURSE_NODES[n]!,b:COURSE_NODES[n+1]!,n});
     if([0,3,7,10,13].includes(n))await shot(p,`${label}-ring-${n+6}-landing`);

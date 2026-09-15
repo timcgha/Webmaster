@@ -20,6 +20,11 @@ describe("WM004 actual connected course and street recovery",()=>{
     const r=driveCourse([1/60],1);expect(r.motion.grounded).toBe(true);expect(r.motion.position.y).toBe(-18);
     expect(r.course.completed).toBe(false);expect(r.course.next).toBe(7);
   });
+  it.each([[1/60],[1/30],[.012,.033,.02,.015]])("misses a ring, walks and climbs from street, then rejoins and earns all20 using real physics at %j",(...schedule)=>{
+    const r=driveCourse(schedule as number[],0,true);
+    expect(r.recoveries).toHaveLength(1);expect(r.recoveries[0]).toMatchObject({landed:{y:-18},returned:{y:1},progress:6});
+    expect(r.course).toMatchObject({next:20,valid:true,completed:true,completions:1});
+  });
   it.each(RECOVERY_WALLS)("walks, climbs and continuously tops out $id without body penetration",wall=>{
     let m:MotionState={position:{x:(wall.minX+wall.maxX)/2,y:-18,z:wall.maxZ+2},velocity:{x:0,y:0,z:0},grounded:true,facingYaw:Math.PI};
     let t=newTraversal(),s=newSwing(),objects=newPullObjects();let attached=false,finished=false;
