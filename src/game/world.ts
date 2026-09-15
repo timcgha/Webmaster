@@ -17,7 +17,7 @@ import { CreateSphere } from "@babylonjs/core/Meshes/Builders/sphereBuilder.pure
 import { CreateTorus } from "@babylonjs/core/Meshes/Builders/torusBuilder.pure";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData";
-import { paintedStreet, STREET_COLORS } from "../core/street-visual";
+import { paintedStreet, STREET_COLORS, STREET_QUAD_TRIANGLES } from "../core/street-visual";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
 import { PhysicsShapeType } from "@babylonjs/core/Physics/v2/IPhysicsEnginePlugin";
@@ -492,8 +492,10 @@ export class GameWorld {
     staticColor.disableLighting = true;
     staticColor.emissiveColor = Color3.White();
     staticColor.specularColor = Color3.Black();
-    const faceColors = (hex:string) => [.82,.70,.74,.90,1,.60].map(shade => {
-      const c=Color3.FromHexString(hex).toLinearSpace().scale(shade);
+    const faceColors = (hex:string,top?:string) => [.82,.70,.74,.90,1,.60].map((shade,face) => {
+      // These authored display colors feed an unlit material in the existing
+      // default display pipeline; an extra linear conversion darkens them twice.
+      const c=Color3.FromHexString(face===4&&top?top:hex).scale(shade);
       return new Color4(c.r,c.g,c.b,1);
     });
     const floor=CreateBox("solid-recovery-street",{width:206,depth:288,height:2},this.scene);
@@ -501,8 +503,8 @@ export class GameWorld {
     const street=new Mesh("painted-recovery-street",this.scene);
     const positions:number[]=[],indices:number[]=[],normals:number[]=[],colors:number[]=[];
     const addFace=(vertices:number[],normal:number[],hex:string,shade=1) => {
-      const base=positions.length/3,c=Color3.FromHexString(hex).toLinearSpace().scale(shade);
-      positions.push(...vertices);indices.push(base,base+1,base+2,base,base+2,base+3);
+      const base=positions.length/3,c=Color3.FromHexString(hex).scale(shade);
+      positions.push(...vertices);indices.push(...STREET_QUAD_TRIANGLES.map(i=>base+i));
       for(let i=0;i<4;i++){normals.push(...normal);colors.push(c.r,c.g,c.b,1);}
     };
     for(const q of paintedStreet()) addFace([
@@ -519,16 +521,12 @@ export class GameWorld {
     const palette=["#23a6ba","#e5a746","#8a75cf","#e67799"];
     for(const [i,b] of [{...ROOFS[0]!,maxY:-1},...COURSE_ROOFS].entries()) {
       const mesh=CreateBox(b.id+"-s4-building",{width:b.maxX-b.minX,depth:b.maxZ-b.minZ,height:b.maxY-b.minY,
-        faceColors:faceColors(palette[i%4]!)},this.scene);
+        faceColors:faceColors(palette[i%4]!,i>0?(i===14?"#f477bc":"#32619a"):undefined)},this.scene);
       mesh.position.set((b.minX+b.maxX)/2,(b.minY+b.maxY)/2,(b.minZ+b.maxZ)/2);
       mesh.material=staticColor;
       if(i>0) this.addStaticPhysics(mesh);
-      if(i>0) {
-        const edge=CreateBox(`${b.id}-landing`,{width:19.5,depth:19.5,height:0.06,
-          faceColors:faceColors(i===14?"#f477bc":"#32619a")},this.scene);
-        edge.position.set(mesh.position.x,b.maxY-0.03,mesh.position.z);
-        edge.material=staticColor;
-      }
+      // Landing paint is the actual top face: no coplanar overlay, extra draw,
+      // flicker or offset between the visible roof and unchanged support height.
     }
     this.createCourseContactShadow();
     const stripeTexture=new DynamicTexture("original-recovery-stripes",{width:128,height:512},this.scene,true);

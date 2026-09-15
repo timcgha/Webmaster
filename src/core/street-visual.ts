@@ -1,6 +1,8 @@
 import {STREET} from './course';
 
 export interface PaintedStreetQuad {minX:number;maxX:number;minZ:number;maxZ:number;color:'street'|'path'|'dash'}
+// Babylon left-handed front faces: our authored +normal quads need this winding.
+export const STREET_QUAD_TRIANGLES=[0,2,1,0,3,2] as const;
 export const STREET_COLORS={street:'#538daf',path:'#85e4cb',dash:'#fce28c'} as const;
 /** One non-overlapping opaque mosaic replaces a large lit texture. These are
  * visual colors only; the original single solid STREET remains the collider. */
