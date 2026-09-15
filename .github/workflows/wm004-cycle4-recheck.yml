@@ -1,7 +1,6 @@
-name: WM004 cycle4 inherited regression recheck
-# Exact PR4 source remains unchanged; this is a verification-only rerun using
-# Vite's non-watching preview server after the Windows dev watcher crashed on
-# a locked Chromium profile cookie database.
+name: WM004 cycle4 failed-route and ceiling recheck
+# Exact PR4 source remains unchanged. This verification-only rerun preserves
+# development/test semantics while excluding retained browser output from Vite's watcher.
 on:
   push:
     branches: [verification/wm004-evidence]
@@ -9,9 +8,9 @@ on:
 permissions:
   contents: read
 jobs:
-  inherited:
+  focused:
     runs-on: windows-2025
-    timeout-minutes: 30
+    timeout-minutes: 25
     defaults:
       run:
         shell: bash
@@ -29,7 +28,7 @@ jobs:
         with:
           node-version: '24.19.0'
           package-manager-cache: false
-      - name: Locked install, clean build and full Chromium
+      - name: Locked install, TypeScript build and full Chromium
         run: |
           corepack enable
           corepack prepare pnpm@11.19.0 --activate
@@ -38,27 +37,29 @@ jobs:
           pnpm exec playwright install chromium
       - name: Exact source before recheck
         run: node scripts/wm004-source-integrity.mjs
-      - name: Prepare non-watching verification config
+      - name: Prepare watcher-exclusion harness
         run: |
-          cp playwright.wm004.config.ts playwright.wm004.preview.config.ts
-          sed -i 's#node scripts/wm004-devserver.mjs#pnpm preview --host 127.0.0.1 --port 4173#' playwright.wm004.preview.config.ts
-      - name: Complete inherited S1-S3 rendered regressions
-        timeout-minutes: 20
+          cp scripts/wm004-devserver.mjs scripts/.wm004-devserver-recheck.mjs
+          sed -i "s#watch:null#watch:{ignored:['**/test-results-wm004/**']}#" scripts/.wm004-devserver-recheck.mjs
+          cp playwright.wm004.config.ts playwright.wm004.recheck.config.ts
+          sed -i 's#node scripts/wm004-devserver.mjs#node scripts/.wm004-devserver-recheck.mjs#' playwright.wm004.recheck.config.ts
+      - name: Four prior failures and both WM003 ceiling journeys
+        timeout-minutes: 15
         env:
-          WM004_SUITE: cycle4-inherited-preview
-        run: pnpm exec playwright test -c playwright.wm004.preview.config.ts e2e/wm001.spec.ts e2e/wm002.spec.ts e2e/wm003.spec.ts e2e/wm003-remediation.spec.ts
+          WM004_SUITE: cycle4-focused
+        run: pnpm exec playwright test -c playwright.wm004.recheck.config.ts e2e/wm001.spec.ts e2e/wm003.spec.ts e2e/wm003-remediation.spec.ts --grep "disconnect releases motion|supports connection after load|persists a Hard run|genuine roof2 checkpoint|WM003 ordinary keyboard combined|WM003 simulated PlayStation complete"
       - name: Exact source after recheck
         if: always()
         run: |
-          rm -f playwright.wm004.preview.config.ts
+          rm -f playwright.wm004.recheck.config.ts scripts/.wm004-devserver-recheck.mjs
           node scripts/wm004-source-integrity.mjs
-      - name: Retain bounded recheck
+      - name: Retain focused evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: wm004-cycle4-inherited-${{ github.run_id }}
+          name: wm004-cycle4-focused-${{ github.run_id }}
           path: |
             candidate/evidence/wm-004/
-            candidate/test-results-wm004/cycle4-inherited-preview/
+            candidate/test-results-wm004/cycle4-focused/
           include-hidden-files: true
           retention-days: 30
