@@ -13,8 +13,6 @@ jobs:
   verify:
     runs-on: windows-2025
     timeout-minutes: 40
-    env:
-      MSYS_NO_PATHCONV: "1"
     defaults:
       run:
         shell: bash
@@ -29,6 +27,13 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 2
+      - name: Exact merged WM003 comparison baseline
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline
+          ref: 3962446ca00c6e1db6bd8b250335b24619a0aeab
+          persist-credentials: false
+          fetch-depth: 1
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: '24.19.0'
@@ -39,6 +44,7 @@ jobs:
           corepack prepare pnpm@11.19.0 --activate
           mkdir -p evidence/wm-004
           pnpm install --frozen-lockfile 2>&1 | tee evidence/wm-004/install.log
+          pnpm --dir ../baseline install --frozen-lockfile 2>&1 | tee evidence/wm-004/baseline-install.log
       - name: Deterministic, TypeScript and storage-isolation gates
         run: |
           set -o pipefail
@@ -46,14 +52,16 @@ jobs:
           pnpm exec tsc --noEmit 2>&1 | tee evidence/wm-004/typescript.log
           node --test scripts/wm004-storage.test.mjs 2>&1 | tee evidence/wm-004/storage.log
       - name: Clean production and Pages builds, dependency audits
+        id: build_gates
         run: |
           set -o pipefail
           pnpm build 2>&1 | tee evidence/wm-004/build.log
-          pnpm exec vite build --base=/Webmaster/wm004-preview/ --outDir=.wm004-pages --manifest 2>&1 | tee evidence/wm-004/pages-build.log
+          node scripts/wm004-build.mjs 2>&1 | tee evidence/wm-004/pages-build.log
           node --input-type=module -e "import fs from 'node:fs';import assert from 'node:assert/strict';assert.ok(fs.readFileSync('.wm004-pages/index.html','utf8').includes('/Webmaster/wm004-preview/assets/'));"
           pnpm audit --json > evidence/wm-004/audit-all.json
           pnpm audit --prod --json > evidence/wm-004/audit-production.json
           node scripts/wm004-source-integrity.mjs
+          node scripts/wm004-package.mjs
       - name: Install prescribed full Chromium
         run: pnpm exec playwright install chromium
       - name: Actual course, ground, hero and street-save browser journeys
@@ -61,6 +69,18 @@ jobs:
         run: |
           set -o pipefail
           pnpm exec playwright test -c playwright.wm004.config.ts e2e/wm004.spec.ts 2>&1 | tee evidence/wm-004/browser.log
+      - name: Compiled preview, historical writers and real profile reopen
+        if: ${{ !cancelled() && steps.build_gates.outcome == 'success' }}
+        timeout-minutes: 6
+        run: |
+          set -o pipefail
+          node scripts/wm004-compiled.mjs 2>&1 | tee evidence/wm-004/compiled.log
+      - name: Same-machine exact merged WM003 comparison
+        if: ${{ !cancelled() && steps.build_gates.outcome == 'success' }}
+        timeout-minutes: 8
+        run: |
+          set -o pipefail
+          node scripts/wm004-performance.mjs 2>&1 | tee evidence/wm-004/performance.log
       - name: Recheck exact tracked source after execution
         if: always()
         run: node scripts/wm004-source-integrity.mjs
@@ -91,6 +111,7 @@ jobs:
           target="../wm004-evidence/evidence/wm-004/${GITHUB_SHA}"
           mkdir -p "$target"
           cp -r evidence/wm-004/. "$target/"
+          if test -d .wm004-payload; then cp -r .wm004-payload "$target/prepared-pages"; fi
           if test -d test-results-wm004; then cp -r test-results-wm004 "$target/browser-output"; fi
           node --input-type=module - "$target" <<'JS'
           import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
