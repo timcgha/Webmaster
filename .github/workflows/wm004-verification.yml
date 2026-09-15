@@ -1,0 +1,95 @@
+name: WM-004 source-bound implementation verification
+run-name: WM-004 verification ${{ github.sha }}
+on:
+  push:
+    branches: [feat/wm004-ground-course-hero]
+permissions:
+  contents: write
+concurrency:
+  group: wm004-verification
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: windows-2025
+    timeout-minutes: 40
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Preserve exact source bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Exact locked install
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          mkdir -p evidence/wm-004
+          pnpm install --frozen-lockfile 2>&1 | tee evidence/wm-004/install.log
+      - name: Deterministic, TypeScript and storage-isolation gates
+        run: |
+          set -o pipefail
+          pnpm test 2>&1 | tee evidence/wm-004/unit.log
+          pnpm exec tsc --noEmit 2>&1 | tee evidence/wm-004/typescript.log
+          node --test scripts/wm004-storage.test.mjs 2>&1 | tee evidence/wm-004/storage.log
+      - name: Clean production and Pages builds, dependency audits
+        run: |
+          set -o pipefail
+          pnpm build 2>&1 | tee evidence/wm-004/build.log
+          pnpm exec vite build --base=/Webmaster/wm004-preview/ --outDir=.wm004-pages --manifest 2>&1 | tee evidence/wm-004/pages-build.log
+          pnpm audit --json > evidence/wm-004/audit-all.json
+          pnpm audit --prod --json > evidence/wm-004/audit-production.json
+          node scripts/wm004-source-integrity.mjs
+      - name: Install prescribed full Chromium
+        run: pnpm exec playwright install chromium
+      - name: Actual course, ground, hero and street-save browser journeys
+        timeout-minutes: 25
+        run: |
+          set -o pipefail
+          pnpm exec playwright test -c playwright.wm004.config.ts e2e/wm004.spec.ts 2>&1 | tee evidence/wm-004/browser.log
+      - name: Recheck exact tracked source after execution
+        if: always()
+        run: node scripts/wm004-source-integrity.mjs
+      - name: Retain full results even after failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm004-${{ github.sha }}
+          path: |
+            candidate/evidence/wm-004/
+            candidate/test-results-wm004/
+            candidate/.wm004-pages/
+          include-hidden-files: true
+          retention-days: 30
+      - name: Preserve attributable evidence on evidence-only branch
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh auth setup-git
+          git clone --depth 1 --branch verification/wm004-evidence https://github.com/${{ github.repository }}.git ../wm004-evidence
+          target="../wm004-evidence/evidence/wm-004/${GITHUB_SHA}"
+          mkdir -p "$target"
+          cp -r evidence/wm-004/. "$target/"
+          if test -d test-results-wm004; then cp -r test-results-wm004 "$target/browser-output"; fi
+          node --input-type=module - "$target" <<'JS'
+          import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
+          const root=process.argv[2],files=[];
+          function scan(p){for(const e of fs.readdirSync(p,{withFileTypes:true})){const file=path.join(p,e.name);if(e.isDirectory())scan(file);else{const b=fs.readFileSync(file);if(b.length>40000000){fs.unlinkSync(file);continue;}files.push({path:path.relative(root,file).replaceAll('\\','/'),bytes:b.length,sha256:crypto.createHash('sha256').update(b).digest('hex')});}}}scan(root);
+          fs.writeFileSync(path.join(root,'archive-manifest.json'),JSON.stringify({source:process.env.GITHUB_SHA,run:process.env.GITHUB_RUN_ID,author:'WEBMASTER_PRODUCT_OWNER',classification:'SELF_REVIEW evidence; not independent QA',files},null,2));
+          JS
+          git -C ../wm004-evidence config user.name 'WEBMASTER_PRODUCT_OWNER'
+          git -C ../wm004-evidence config user.email 'webmaster-po@users.noreply.github.com'
+          git -C ../wm004-evidence add "evidence/wm-004/${GITHUB_SHA}"
+          git -C ../wm004-evidence commit -m "WM-004 retain source-bound run ${GITHUB_RUN_ID} evidence [skip ci]"
+          git -C ../wm004-evidence push origin HEAD:verification/wm004-evidence

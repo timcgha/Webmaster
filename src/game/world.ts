@@ -7,10 +7,11 @@ import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator"
 import { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
+import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
+import { createBlockHero } from "./hero";
+import { COURSE_ANCHORS, COURSE_NODES, COURSE_ROOFS, COURSE_START, COURSE_FINISH, RECOVERY_WALLS, STREET, newCourse, advanceCourse, restoreSafePosition, cameraClearFraction, type CourseState } from "../core/course";
 import { CreateBox } from "@babylonjs/core/Meshes/Builders/boxBuilder.pure";
-import { CreateCapsule } from "@babylonjs/core/Meshes/Builders/capsuleBuilder.pure";
 import { CreateCylinder } from "@babylonjs/core/Meshes/Builders/cylinderBuilder.pure";
-import { CreateLineSystem } from "@babylonjs/core/Meshes/Builders/linesBuilder.pure";
 import { CreateLines } from "@babylonjs/core/Meshes/Builders/linesBuilder.pure";
 import { CreateSphere } from "@babylonjs/core/Meshes/Builders/sphereBuilder.pure";
 import { CreateTorus } from "@babylonjs/core/Meshes/Builders/torusBuilder.pure";
@@ -44,23 +45,19 @@ import {
   type SwingState,
 } from "../core/swing";
 import {
-  ANCHORS,
   CHECKPOINTS,
-  FALLBACK,
   ROOFS,
   ROUTE_LABELS,
   SKY_START,
   advanceSkyline,
   newSkyline,
   resetSegment,
-  restoreSkylinePosition,
   type SkylineState,
 } from "../core/skyline";
 import type { LinesMesh } from "@babylonjs/core/Meshes/linesMesh";
 
 import {
   TRAINING_SOLIDS,
-  TRAINING_ANCHOR,
   SURFACES,
   TRAINING_LABELS,
   newTraversal,
@@ -77,11 +74,10 @@ import {
   type PullObject,
 } from "../core/traversal";
 import {
-  HERO_PRESENTATION,
-  bodyWebLines,
   newLegPose,
   swingLegPose,
   type LegPose,
+  newGait, gaitPose, type GaitPose,
 } from "../core/presentation";
 
 interface SolidBox {
@@ -113,6 +109,8 @@ export interface WorldFrame {
   training: TrainingRoute;
   pullObjects: PullObject[];
   legPose: LegPose;
+  gait: GaitPose;
+  course: CourseState;
   legWorld?: { hip: Vec3Data; tip: Vec3Data; forwardDisplacement: number }[];
   surfaceCameraBlend: number;
   heroPitch: number;
@@ -158,11 +156,15 @@ export class GameWorld {
   private settings: GameSettings;
   private swing = newSwing();
   private skyline = newSkyline();
-  private skylineSolids: Solid[] = [...ROOFS, FALLBACK];
+  private skylineSolids: Solid[] = [...ROOFS, STREET, ...COURSE_ROOFS];
+  private course = newCourse();
+  private gait = newGait();
+  private rig!: ReturnType<typeof createBlockHero>;
+  private lastVisualPosition = copyVec3(START);
   private readonly anchorMeshes = new Map<string, Mesh>();
   private webLine: LinesMesh | null = null;
   private wristFlash: Mesh | null = null;
-  private rightArm: Mesh | null = null;
+  private rightArm: TransformNode | null = null;
   private pendingCheckpoint = false;
   private traversal = newTraversal();
   private training = newTrainingRoute();
@@ -198,7 +200,7 @@ export class GameWorld {
     this.camera.minZ = 0.1;
     this.camera.lowerBetaLimit = 0.55;
     this.camera.upperBetaLimit = 1.65;
-    this.camera.lowerRadiusLimit = 7;
+    this.camera.lowerRadiusLimit = 0.8;
     this.camera.upperRadiusLimit = 18;
     this.heroRoot = new TransformNode("webmaster-root", this.scene);
     this.applySettings(settings);
@@ -287,6 +289,15 @@ export class GameWorld {
     this.createHero(shadows);
     this.createSkyline();
     this.createTraining();
+    this.createStreetCourse();
+
+    // Static authored geometry never moves. Keep culling, but avoid recomputing
+    // its matrices/bounds each frame as the longer course comes into view.
+    for (const mesh of this.scene.meshes) {
+      if (!mesh.parent && !mesh.billboardMode && !this.anchorMeshes.has(mesh.name) &&
+          !this.pullMeshes.has(mesh.name) && !mesh.name.startsWith("marker-ring") &&
+          mesh !== this.webLine && mesh !== this.wristFlash) mesh.freezeWorldMatrix();
+    }
 
     this.scene.onBeforeRenderObservable.add(() => {
       const pulse = 1 + Math.sin(performance.now() / 280) * 0.08;
@@ -304,6 +315,8 @@ export class GameWorld {
     diffuse: string,
     emissive?: string,
   ): StandardMaterial {
+    const existing = this.scene.getMaterialByName(name);
+    if (existing instanceof StandardMaterial) return existing;
     const material = new StandardMaterial(name, this.scene);
     material.diffuseColor = Color3.FromHexString(diffuse);
     material.specularColor = new Color3(0.18, 0.18, 0.28);
@@ -429,10 +442,10 @@ export class GameWorld {
       const width = 3 + (index % 3);
       const building = CreateBox(
         `city-${index}`,
-        { width, depth: width, height },
+        { width, depth: width, height: height + 13 },
         this.scene,
       );
-      building.position.set(x, height / 2 - 5, z);
+      building.position.set(x, (height - 23) / 2, z);
       building.material = this.material(
         `city-mat-${index}`,
         colors[index % colors.length]!,
@@ -443,7 +456,7 @@ export class GameWorld {
         maxX: x + width / 2,
         minZ: z - width / 2,
         maxZ: z + width / 2,
-        minY: -5,
+        minY: -18,
         maxY: height - 5,
       });
       const roof = CreateBox(
@@ -468,135 +481,69 @@ export class GameWorld {
   }
 
   private createHero(shadows: ShadowGenerator): void {
-    const teal = this.material("hero-red", HERO_PRESENTATION.red);
-    const navy = this.material("hero-blue", HERO_PRESENTATION.blue);
-    const white = this.material("hero-eyes", "#ffffff", "#d7f9ff");
-    const orange = this.material("hero-emblem", "#ffb21c", "#ff8c1a");
-
-    const torso = CreateCylinder(
-      "webmaster-torso",
-      { height: 1.75, diameterTop: 0.8, diameterBottom: 1, tessellation: 20 },
-      this.scene,
-    );
-    torso.parent = this.heroRoot;
-    torso.position.y = 1.65;
-    torso.material = navy;
-    const waist = CreateCylinder(
-      "webmaster-waist",
-      { height: 0.7, diameter: 0.86, tessellation: 20 },
-      this.scene,
-    );
-    waist.parent = this.heroRoot;
-    waist.position.y = 0.75;
-    waist.material = teal;
-    const head = CreateSphere(
-      "webmaster-mask",
-      { diameter: 1.05, segments: 24 },
-      this.scene,
-    );
-    head.parent = this.heroRoot;
-    head.position.y = 2.9;
-    head.scaling.y = 1.12;
-    head.material = teal;
-
-    for (const x of [-0.22, 0.22]) {
-      const eye = CreateSphere(
-        `webmaster-eye-${x}`,
-        { diameter: 0.34, segments: 16 },
-        this.scene,
-      );
-      eye.parent = this.heroRoot;
-      eye.position.set(x, HERO_PRESENTATION.eyeY, 0.46);
-      eye.scaling.set(1.15, 0.62, 0.18);
-      eye.rotation.z =
-        x < 0 ? -HERO_PRESENTATION.eyeAngle : HERO_PRESENTATION.eyeAngle;
-      eye.material = white;
-    }
-
-    for (const x of [-0.56, 0.56]) {
-      const arm = CreateCapsule(
-        `webmaster-arm-${x}`,
-        { height: 1.65, radius: 0.19, tessellation: 16 },
-        this.scene,
-      );
-      arm.parent = this.heroRoot;
-      arm.position.set(x, 1.62, 0);
-      arm.rotation.z = x < 0 ? -0.13 : 0.13;
-      arm.material = teal;
-      if (x > 0) this.rightArm = arm;
-      const leg = CreateCapsule(
-        `webmaster-leg-${x}`,
-        { height: 1.62, radius: 0.24, tessellation: 16 },
-        this.scene,
-      );
-      const pivot = new TransformNode(`leg-pivot-${x}`, this.scene);
-      pivot.parent = this.heroRoot;
-      pivot.position.set(x * 0.48, 1.54, 0);
-      leg.parent = pivot;
-      leg.position.set(0, -0.73, 0);
-      this.legs.push(pivot);
-      this.addBodyLines(leg, 1.62, (y) =>
-        Math.sqrt(
-          Math.max(0.001, 0.24 ** 2 - Math.max(0, Math.abs(y) - 0.57) ** 2),
-        ),
-      );
-      this.addBodyLines(arm, 1.65, (y) =>
-        Math.sqrt(
-          Math.max(0.001, 0.19 ** 2 - Math.max(0, Math.abs(y) - 0.635) ** 2),
-        ),
-      );
-      leg.material = navy;
-    }
-
-    this.addBodyLines(torso, 1.75, (y) => 0.45 - (y / 1.75) * 0.1);
-    this.addBodyLines(waist, 0.7, () => 0.43);
-
-    const emblemBody = CreateSphere(
-      "webmaster-original-emblem",
-      { diameter: 0.26, segments: 12 },
-      this.scene,
-    );
-    emblemBody.parent = this.heroRoot;
-    emblemBody.position.set(0, 1.86, 0.56);
-    emblemBody.scaling.y = 1.6;
-    emblemBody.material = orange;
-    for (const side of [-1, 1]) {
-      for (const offset of [-0.2, -0.07, 0.08, 0.22]) {
-        const leg = CreateLines(
-          `emblem-leg-${side}-${offset}`,
-          {
-            points: [
-              new Vector3(side * 0.08, 1.88 + offset, 0.58),
-              new Vector3(side * 0.25, 1.95 + offset, 0.59),
-              new Vector3(side * 0.34, 1.86 + offset, 0.58),
-            ],
-          },
-          this.scene,
-        );
-        leg.parent = this.heroRoot;
-        leg.color = Color3.FromHexString("#ffb21c");
-      }
-    }
-    for (const mesh of this.heroRoot.getChildMeshes())
-      shadows.addShadowCaster(mesh);
+    this.rig = createBlockHero(this.scene, this.heroRoot, shadows);
+    this.legs.push(...this.rig.hips);
+    this.rightArm = this.rig.arms[1]!;
   }
 
-  private addBodyLines(
-    parent: Mesh,
-    height: number,
-    radius: (y: number) => number,
-  ): void {
-    const lines = bodyWebLines(height, radius).map((row) =>
-      row.map((p) => new Vector3(p.x, p.y, p.z)),
-    );
-    const mesh = CreateLineSystem(
-      `${parent.name}-original-web-pattern`,
-      { lines },
-      this.scene,
-    );
-    mesh.parent = parent;
-    mesh.color = Color3.FromHexString(HERO_PRESENTATION.web);
-    mesh.isPickable = false;
+  private createStreetCourse(): void {
+    const floorTexture = new DynamicTexture("original-street-map", {width:2048,height:2048}, this.scene, true);
+    const c = floorTexture.getContext(); c.fillStyle="#538daf"; c.fillRect(0,0,2048,2048);
+    const px=(x:number)=>(x-STREET.minX)/(STREET.maxX-STREET.minX)*2048;
+    const pz=(z:number)=>(z-STREET.minZ)/(STREET.maxZ-STREET.minZ)*2048;
+    c.strokeStyle="#85e4cb"; c.lineWidth=32;
+    for(const x of [-35,20,51,83,115,150]) { c.beginPath();c.moveTo(px(x),0);c.lineTo(px(x),2048);c.stroke(); }
+    for(const z of [-78,-10,30,66,110,146,188]) { c.beginPath();c.moveTo(0,pz(z));c.lineTo(2048,pz(z));c.stroke(); }
+    c.strokeStyle="#fce28c";c.lineWidth=5;c.setLineDash([12,18]);
+    for(const x of [-35,20,51,83,115,150]) { c.beginPath();c.moveTo(px(x),0);c.lineTo(px(x),2048);c.stroke(); }
+    c.setLineDash([]);floorTexture.update();
+    const floorMat = this.material("street-mat","#ffffff"); floorMat.diffuseTexture=floorTexture;
+    const floor=CreateBox("solid-recovery-street",{width:206,depth:288,height:2},this.scene);
+    floor.position.set(55,-19,54); floor.material=floorMat; floor.receiveShadows=true;this.addStaticPhysics(floor);
+    const palette=["#23a6ba","#e5a746","#8a75cf","#e67799"];
+    for(const [i,b] of [{...ROOFS[0]!,maxY:-1},...COURSE_ROOFS].entries()) {
+      const mesh=CreateBox(b.id+"-s4-building",{width:b.maxX-b.minX,depth:b.maxZ-b.minZ,height:b.maxY-b.minY},this.scene);
+      mesh.position.set((b.minX+b.maxX)/2,(b.minY+b.maxY)/2,(b.minZ+b.maxZ)/2);
+      mesh.material=this.material(`course-building-${i%4}`,palette[i%4]!);mesh.receiveShadows=true;
+      if(i>0) this.addStaticPhysics(mesh);
+      if(i>0) {
+        const edge=CreateBox(`${b.id}-landing`,{width:19.5,depth:19.5,height:0.06},this.scene);
+        edge.position.set(mesh.position.x,b.maxY+0.025,mesh.position.z);
+        edge.material=this.material(`course-landing-${i}`,i===14?"#f477bc":"#32619a");
+      }
+    }
+    const stripeTexture=new DynamicTexture("original-recovery-stripes",{width:128,height:512},this.scene,true);
+    const sc=stripeTexture.getContext();sc.fillStyle="#1b817d";sc.fillRect(0,0,128,512);
+    sc.strokeStyle="#b7ffde";sc.lineWidth=9;
+    for(let y=32;y<500;y+=58){sc.beginPath();sc.moveTo(22,y+24);sc.lineTo(64,y);sc.lineTo(106,y+24);sc.stroke();}
+    stripeTexture.update(); const stripe=this.material("street-climb-stripes","#ffffff");stripe.diffuseTexture=stripeTexture;
+    for(const wall of RECOVERY_WALLS){
+      const panel=CreateBox(`${wall.id}-recovery-stripe`,{width:3.2,height:wall.maxY-wall.minY,depth:0.025},this.scene);
+      panel.position.set((wall.minX+wall.maxX)/2,(wall.minY+wall.maxY)/2,wall.maxZ+0.018);panel.material=stripe;
+      this.courseSign(`wall-sign-${wall.id}`,"CLIMB UP",{x:panel.position.x,y:-15.6,z:wall.maxZ+0.06},"#175c68",2.8);
+    }
+    for(const [i,a] of COURSE_ANCHORS.entries()){
+      this.courseSign(`ring-number-${i+1}`,String(i+1),{x:a.position.x,y:a.position.y+2,z:a.position.z},"#16576b",1.6);
+    }
+    for(let i=0;i<COURSE_NODES.length-1;i++){
+      const from=COURSE_NODES[i]!,to=COURSE_NODES[i+1]!;
+      const arrow=CreateCylinder(`course-direction-${i}`,{diameterTop:0,diameterBottom:2,height:2.5,tessellation:3},this.scene);
+      arrow.position.set(from.x,from.y+0.08,from.z);
+      arrow.rotation.x=Math.PI/2;arrow.rotation.y=Math.atan2(to.x-from.x,to.z-from.z);
+      arrow.material=this.scene.getMaterialByName("skyline-marker-0");
+    }
+    this.courseSign("long-course-start","20 RINGS · START",{x:0,y:3,z:-43},"#127a80",5);
+    this.courseSign("long-course-finish","20 RINGS · FINISH",{x:COURSE_FINISH.x,y:4,z:COURSE_FINISH.z+3},"#9b327a",5);
+    this.courseSign("practice-course-guide","SOUTH: COURSE START",{x:4,y:2,z:-16},"#127a80",4);
+  }
+
+  private courseSign(name:string,label:string,p:Vec3Data,color:string,width:number):void {
+    const tex=new DynamicTexture(name+"-original-type",{width:512,height:128},this.scene,true);
+    const ctx=tex.getContext() as CanvasRenderingContext2D;ctx.fillStyle=color;ctx.fillRect(0,0,512,128);
+    ctx.fillStyle="#fff5cf";ctx.font="bold 35px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(label,256,64);
+    tex.update();const mat=this.material(name+"-mat","#ffffff");mat.diffuseTexture=tex;mat.emissiveColor=new Color3(.13,.13,.13);
+    const sign=CreateBox(name,{width,height:width/4,depth:.05},this.scene);sign.position.set(p.x,p.y,p.z);sign.material=mat;
+    sign.billboardMode=Mesh.BILLBOARDMODE_Y;sign.isPickable=false;
   }
 
   private createTraining(): void {
@@ -718,7 +665,7 @@ export class GameWorld {
 
   private createSkyline(): void {
     const colors = ["#2456a7", "#785cd4", "#edaf37", "#149ab3", "#de4f8b"];
-    for (const [index, roof] of [...ROOFS.slice(1), FALLBACK].entries()) {
+    for (const [index, roof] of ROOFS.slice(1).entries()) {
       const mesh = CreateBox(
         roof.id,
         {
@@ -753,7 +700,7 @@ export class GameWorld {
       );
     }
     const available = this.material("anchor-available", "#35ffee", "#35ffee");
-    for (const a of ANCHORS) {
+    for (const a of COURSE_ANCHORS.slice(1)) {
       const ring = CreateTorus(
         a.id,
         { diameter: 2, thickness: 0.22, tessellation: 24 },
@@ -844,8 +791,11 @@ export class GameWorld {
           : 0.28;
     }
     if (this.rightArm) {
-      this.rightArm.rotation.x = web ? 1.05 : 0;
-      this.rightArm.rotation.z = web ? 0 : 0.13;
+      // Two-segment arm reaches the unchanged gameplay wrist origin exactly.
+      const d = Math.hypot(0.44, 0.71);
+      this.rightArm.rotation.x = web ? Math.atan2(-0.71,0.44) - Math.acos((0.55**2+d*d-0.52**2)/(2*0.55*d)) : this.gait.arms[1];
+      this.rightArm.rotation.z = 0;
+      this.rig.elbows[1]!.rotation.x = web ? Math.acos((d*d-0.55**2-0.52**2)/(2*0.55*0.52)) : 0;
     }
     this.webLine?.setEnabled(Boolean(web));
     this.wristFlash?.setEnabled(Boolean(web));
@@ -911,9 +861,19 @@ export class GameWorld {
     this.heroRoot.position.y += (1 - Math.cos(this.heroRoot.rotation.x)) * 2.6;
     if (!this.paused)
       this.legPose = swingLegPose(this.legPose, this.motion, this.swing, delta);
-    // Positive X rotation trails the downward leg away from local forward (+Z).
-    for (const leg of this.legs)
-      leg.rotation.x = -this.legPose.angle * this.legPose.blend;
+    if (!this.paused) {
+      const actual = distance(this.motion.position, this.lastVisualPosition) / Math.max(0.001,delta);
+      this.gait = gaitPose(this.gait, this.traversal.surfaceId ? Math.min(3.5,actual) : Math.hypot(this.motion.velocity.x,this.motion.velocity.z),
+        this.traversal.surfaceId ? "climb" : this.motion.grounded ? "ground" : "air", this.legPose, delta);
+    }
+    this.lastVisualPosition = copyVec3(this.motion.position);
+    this.heroRoot.position.y += this.gait.lift;
+    for (const i of [0,1] as const) {
+      this.rig.hips[i]!.rotation.x = this.gait.hips[i];
+      this.rig.knees[i]!.rotation.x = this.gait.knees[i];
+      this.rig.ankles[i]!.rotation.x = -this.gait.hips[i] - this.gait.knees[i];
+      this.rig.arms[i]!.rotation.x = this.traversal.surfaceId ? -2.5 : this.gait.arms[i];
+    }
     for (const o of this.pullObjects) {
       const mesh = this.pullMeshes.get(o.id)!;
       mesh.position.set(o.position.x, o.position.y, o.position.z);
@@ -940,7 +900,7 @@ export class GameWorld {
     const target = new Vector3(
       this.motion.position.x,
       this.motion.position.y +
-        (this.training.active
+        (this.motion.position.y < -1 ? 1.7 : this.training.active
           ? this.traversal.surfaceId
             ? 1.55
             : 3.4
@@ -952,11 +912,17 @@ export class GameWorld {
     this.camera.target.copyFrom(
       Vector3.Lerp(this.camera.target, target, Math.min(1, delta * 10)),
     );
+    const desiredRadius = this.traversal.surfaceId || this.motion.position.y < -1 ? 10.5 : this.skyline.active ? 16 : 10.5;
+    const t = this.camera.target;
+    const wanted = { x: t.x + desiredRadius*Math.cos(this.camera.alpha)*Math.sin(this.camera.beta),
+      y: t.y + desiredRadius*Math.cos(this.camera.beta), z: t.z + desiredRadius*Math.sin(this.camera.alpha)*Math.sin(this.camera.beta) };
+    const freeRadius = Math.max(0.8, desiredRadius * cameraClearFraction(t,wanted,this.skylineSolids) - 0.15);
+    this.camera.radius = freeRadius < this.camera.radius ? freeRadius : Math.min(freeRadius,this.camera.radius + delta*8);
     this.renderSwing();
     this.scene.render();
     if (now - this.lastHudAt > 100) {
       this.lastHudAt = now;
-      this.emitFrame("keyboard-mouse");
+      this.emitFrame(this.latestActions?.source ?? "keyboard-mouse");
     }
   };
 
@@ -1035,13 +1001,17 @@ export class GameWorld {
             },
           },
         },
-        [...ANCHORS, TRAINING_ANCHOR],
+        COURSE_ANCHORS,
         this.skylineSolids,
+        [...SURFACES, ...RECOVERY_WALLS],
       );
       this.motion = result.motion;
       this.swing = result.swing;
       this.traversal = result.traversal;
       this.pullObjects = result.objects;
+      const oldCourse = this.course;
+      this.course = advanceCourse(this.course, before, this.motion, priorSwing, this.swing);
+      if (oldCourse.next !== this.course.next || oldCourse.completed !== this.course.completed) this.pendingCheckpoint = true;
       const priorTraining = this.training;
       this.training = advanceTraining(
         this.training,
@@ -1085,15 +1055,11 @@ export class GameWorld {
             : ROUTE_LABELS[this.skyline.stage]!,
         );
       }
-      if (this.motion.grounded && this.motion.position.y === FALLBACK.maxY) {
-        this.recoverFromFall();
-        break;
-      }
       this.pendingJump = false;
       this.accumulator -= FIXED_STEP;
       steps += 1;
       this.checkProgress();
-      if (this.motion.position.y < (this.skyline.active ? -20 : -10)) {
+      if (this.motion.position.y < STREET.minY - 10) {
         this.recoverFromFall();
         break;
       }
@@ -1184,6 +1150,8 @@ export class GameWorld {
       training: structuredClone(this.training),
       pullObjects: structuredClone(this.pullObjects),
       legPose: structuredClone(this.legPose),
+      gait: structuredClone(this.gait),
+      course: structuredClone(this.course),
       surfaceCameraBlend: this.surfaceCameraBlend,
       heroPitch: this.heroRoot.rotation.x,
     });
@@ -1208,6 +1176,8 @@ export class GameWorld {
     this.traversal = newTraversal();
     this.traversal.freshClimb = true;
     this.traversal.freshPull = true;
+    this.course = newCourse(payload?.course);
+    this.gait = newGait();
     this.training = payload?.climb
       ? restoreTraining(payload.climb)
       : newTrainingRoute();
@@ -1235,16 +1205,9 @@ export class GameWorld {
           : (payload?.checkpoint ?? START),
     );
     this.motion = {
-      position: copyVec3(
-        payload?.climb
-          ? trainingCheckpoint(payload.climb.checkpoint)
-          : payload?.skyline
-            ? restoreSkylinePosition(
-                payload.position,
-                payload.skyline.checkpoint,
-              )
-            : (payload?.position ?? this.checkpoint),
-      ),
+      position: restoreSafePosition(payload?.position ?? this.checkpoint, this.skylineSolids, this.checkpoint,
+        [...this.skylineSolids, ...this.pullObjects.map(o => ({ id:o.id, minX:o.position.x-o.half.x, maxX:o.position.x+o.half.x,
+          minY:o.position.y-o.half.y,maxY:o.position.y+o.half.y,minZ:o.position.z-o.half.z,maxZ:o.position.z+o.half.z }))]),
       velocity: { x: 0, y: 0, z: 0 },
       grounded: true,
       facingYaw: 0,
@@ -1336,6 +1299,7 @@ export class GameWorld {
   ): RunSavePayload {
     return {
       schemaVersion: 1,
+      ...(this.course.active ? { course: { version: 1 as const, next: this.course.next, completed: this.course.completed } } : {}),
       ...(this.training.active
         ? {
             climb: {
@@ -1397,6 +1361,7 @@ export class GameWorld {
     this.skyline = { ...resetSegment(this.skyline), valid: false };
     this.traversal = clearTraversal(this.traversal);
     this.training.valid = false;
+    this.course.valid = false;
     this.motion.position = copyVec3(position);
     this.motion.velocity = { x: 0, y: 0, z: 0 };
     this.motion.grounded = false;
@@ -1412,6 +1377,7 @@ export class GameWorld {
     this.heroRoot.rotation.x = 0;
     this.surfaceCameraBlend = 0;
     this.legPose = newLegPose();
+    this.gait = newGait();
     if (this.training.active) {
       this.camera.alpha = Math.PI / 2;
       this.groundBeta = 1.08;
@@ -1428,6 +1394,15 @@ export class GameWorld {
         completions: this.training.completions,
       };
   }
+  replayCourse(): void {
+    this.course = newCourse();
+    this.training = newTrainingRoute();
+    this.skyline = newSkyline();
+    this.checkpoint = copyVec3(COURSE_START);
+    this.restart();
+    this.camera.alpha = -Math.PI / 2;
+  }
+
   replayTraining(): void {
     this.training = {
       ...newTrainingRoute(),
@@ -1480,6 +1455,8 @@ export class GameWorld {
       training: structuredClone(this.training),
       pullObjects: structuredClone(this.pullObjects),
       legPose: structuredClone(this.legPose),
+      gait: structuredClone(this.gait),
+      course: structuredClone(this.course),
       legWorld: this.legs.map((leg) => {
         const matrix = leg.computeWorldMatrix(true);
         const hip = Vector3.TransformCoordinates(Vector3.Zero(), matrix);
