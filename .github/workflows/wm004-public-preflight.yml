@@ -1,0 +1,61 @@
+name: WM004 preserved public baseline byte check
+on:
+  push:
+    branches: [verification/wm004-evidence]
+    paths: [.github/workflows/wm004-public-preflight.yml]
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: windows-2025
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Preserve checkout bytes
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: tooling
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: publication
+          ref: 5a3a31585e4f22b313bc361d48626322bbebb389
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Verify all171accepted public bytes
+        working-directory: publication
+        run: |
+          set -o pipefail
+          node ../tooling/evidence/wm-004/publication/tooling/public-bytes.mjs ../tooling/evidence/wm-004/publication/tooling/preserved-pages.json ../public-byte-results.json --preflight 2>&1 | tee ../public-byte.log
+      - name: Retain public verification result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm004-public-preflight-${{ github.run_id }}
+          path: |
+            public-byte-results.json
+            public-byte.log
+          retention-days: 30
+      - name: Preserve source-attributable public evidence
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh auth setup-git
+          git clone --depth 1 --branch verification/wm004-evidence https://github.com/${{ github.repository }}.git retained
+          target="retained/evidence/wm-004/publication/runs/${GITHUB_RUN_ID}"
+          mkdir -p "$target"
+          if test -f public-byte-results.json; then cp public-byte-results.json "$target/"; fi
+          cp public-byte.log "$target/"
+          git -C retained config user.name WEBMASTER_PRODUCT_OWNER
+          git -C retained config user.email webmaster-po@users.noreply.github.com
+          git -C retained add -f evidence/wm-004/publication/runs
+          git -C retained commit -m "WM004 retain public baseline preflight ${GITHUB_RUN_ID} [skip ci]"
+          git -C retained push origin HEAD:verification/wm004-evidence
