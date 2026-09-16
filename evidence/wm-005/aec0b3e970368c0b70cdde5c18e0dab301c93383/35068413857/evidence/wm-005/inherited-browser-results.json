@@ -1,0 +1,273 @@
+{
+  "config": {
+    "argv": [
+      "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+      "D:\\a\\Webmaster\\Webmaster\\candidate\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "-c",
+      "playwright.wm005.config.ts",
+      "e2e/wm001.spec.ts",
+      "e2e/wm003.spec.ts",
+      "--grep",
+      "moves, jumps, orbits|supports connection after load|WM003 repeated replay"
+    ],
+    "configFile": "D:\\a\\Webmaster\\Webmaster\\candidate\\playwright.wm005.config.ts",
+    "rootDir": "D:/a/Webmaster/Webmaster/candidate/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": true,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": {},
+    "maxFailures": 0,
+    "metadata": {
+      "ci": {
+        "commitHref": "https://github.com/timcgha/Webmaster/commit/aec0b3e970368c0b70cdde5c18e0dab301c93383",
+        "commitHash": "aec0b3e970368c0b70cdde5c18e0dab301c93383",
+        "buildHref": "https://github.com/timcgha/Webmaster/actions/runs/35068413857"
+      },
+      "gitCommit": {
+        "shortHash": "aec0b3e",
+        "hash": "aec0b3e970368c0b70cdde5c18e0dab301c93383",
+        "subject": "WM-005 C3: bound joint rendering cost and correct browser observations",
+        "body": "WM-005 C3: bound joint rendering cost and correct browser observations",
+        "author": {
+          "name": "timcgha",
+          "email": "official.signup.john@gmail.com",
+          "time": 1789543462000
+        },
+        "committer": {
+          "name": "timcgha",
+          "email": "official.signup.john@gmail.com",
+          "time": 1789543462000
+        },
+        "branch": "HEAD"
+      },
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/a/Webmaster/Webmaster/candidate/test-results-wm005/inherited",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "ci": {
+            "commitHref": "https://github.com/timcgha/Webmaster/commit/aec0b3e970368c0b70cdde5c18e0dab301c93383",
+            "commitHash": "aec0b3e970368c0b70cdde5c18e0dab301c93383",
+            "buildHref": "https://github.com/timcgha/Webmaster/actions/runs/35068413857"
+          },
+          "gitCommit": {
+            "shortHash": "aec0b3e",
+            "hash": "aec0b3e970368c0b70cdde5c18e0dab301c93383",
+            "subject": "WM-005 C3: bound joint rendering cost and correct browser observations",
+            "body": "WM-005 C3: bound joint rendering cost and correct browser observations",
+            "author": {
+              "name": "timcgha",
+              "email": "official.signup.john@gmail.com",
+              "time": 1789543462000
+            },
+            "committer": {
+              "name": "timcgha",
+              "email": "official.signup.john@gmail.com",
+              "time": 1789543462000
+            },
+            "branch": "HEAD"
+          },
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/a/Webmaster/Webmaster/candidate/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "wm005.spec.ts",
+          "wm005-hero.spec.ts",
+          "wm005-climb.spec.ts",
+          "wm003.spec.ts",
+          "wm003-remediation.spec.ts",
+          "wm002.spec.ts",
+          "wm001.spec.ts"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/wm-005/inherited-browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "node scripts/wm005-devserver.mjs",
+      "url": "http://127.0.0.1:4173",
+      "timeout": 120000,
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "wm001.spec.ts",
+      "file": "wm001.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "WM-001 rendered keyboard and mouse journey",
+          "file": "wm001.spec.ts",
+          "line": 165,
+          "column": 6,
+          "specs": [
+            {
+              "title": "moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 26318,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-16T07:33:29.122Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-0585bb2fb25258ed894b",
+              "file": "wm001.spec.ts",
+              "line": 166,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "WM-001 controller remediation lifecycle (simulated Gamepad API)",
+          "file": "wm001.spec.ts",
+          "line": 453,
+          "column": 6,
+          "specs": [
+            {
+              "title": "supports connection after load, disconnect cleanup, keyboard fallback, and deliberate replacement",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 11610,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-16T07:33:55.694Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-66003a1564c27a9512fe",
+              "file": "wm001.spec.ts",
+              "line": 539,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "wm003.spec.ts",
+      "file": "wm003.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "WM003 repeated replay pause save load clears transients and bounds resources",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 100000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 32662,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-16T07:34:07.388Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0f907fb332c802910d0e-ceedbc8d6faf73309b5a",
+          "file": "wm003.spec.ts",
+          "line": 615,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-16T07:33:27.531Z",
+    "duration": 73007.014,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

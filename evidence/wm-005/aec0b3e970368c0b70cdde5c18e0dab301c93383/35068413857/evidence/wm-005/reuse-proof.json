@@ -1,0 +1,120 @@
+{
+  "status": "BOUNDED_REUSE_PASS_FRESH_GATES_REQUIRED",
+  "role": "WEBMASTER_PRODUCT_OWNER",
+  "classification": "SELF_REVIEW; not independent QA",
+  "source": "aec0b3e970368c0b70cdde5c18e0dab301c93383",
+  "tree": "2d815a1d42d6e9da3d08175b286aa685acb06e72",
+  "changed": [
+    ".github/workflows/wm005-verification.yml",
+    "e2e/wm001.spec.ts",
+    "e2e/wm003.spec.ts",
+    "e2e/wm005-climb.spec.ts",
+    "scripts/wm005-reuse.mjs",
+    "src/game/hero.ts",
+    "src/game/world.ts",
+    "tests/wm005-shadow-review.test.ts"
+  ],
+  "sourceEvidence": {
+    "c2": {
+      "source": "a5ef60b893b746f1b1792cbec270872783ffa128",
+      "run": 35065467172,
+      "archive": "bff98139d8f08cf1f8587c5387beac9bffaabc89"
+    },
+    "c1": {
+      "source": "8a221c08642ebdd1264a04ebfaf6093d838cf60e",
+      "run": 35062375370,
+      "archive": "85396f7bc071c8873860fa9634d72e1dc9801c12"
+    }
+  },
+  "hashes": [
+    [
+      "c2",
+      "source-integrity.json",
+      "200bc875c4444764c421fc56407097317456b0e6ad12aea6b5b6a47ad5fe3cc8"
+    ],
+    [
+      "c2",
+      "new-browser-results.json",
+      "cb91edfee218ad71701941dbf761879158d56d2925057356af688fc2cb9fa699"
+    ],
+    [
+      "c2",
+      "inherited-browser-results.json",
+      "f3d2e82e86c9dbb3d851082dacb4c6c163673f452d63b8c7633955dbab5dc911"
+    ],
+    [
+      "c2",
+      "compiled/results.json",
+      "61e822cbdaf79c36b8c43631eb9b88769c1a29ee4bc07b4241a285e5a1dd30b3"
+    ],
+    [
+      "c1",
+      "new-browser-results.json",
+      "71811020ced63349a3691033f5e58bd9edc62f557c68c87fccd06f3b292af563"
+    ]
+  ],
+  "reusedInherited": [
+    "keeps occupied-slot bytes unchanged when replacement is cancelled",
+    "keeps the prior committed save and remains paused when Save & Quit write fails",
+    "loads only the prior commit after pointer verification fails, then permits a clean retry",
+    "renders storage-unavailable records explicitly and refuses destructive replacement",
+    "remains controllable under a second real-time CPU/frame profile",
+    "persists a Hard run after closing and reopening the same browser profile and exact origin",
+    "labels corrupt and incompatible save fixtures without hiding valid choices",
+    "recovers outside the bounded street, reduces health, and performs a clean zero-health retry",
+    "explains and enforces safe-state saving while airborne",
+    "uses gamepad alone for new game, movement, camera, pause, save, save-and-quit, Continue, and Load",
+    "disconnect releases motion and reconnect requires neutral then fresh input",
+    "shows PlayStation-style prompts without changing standard semantic actions",
+    "operates persisted main and pause settings without mouse or typing",
+    "makes exposure, release, ready, HUD status, and local copy diagnostics persistent",
+    "keeps keyboard available when the Gamepad API is unavailable",
+    "rejects an unsupported mapping visibly while keyboard remains available",
+    "selects active index 1 over idle index 0 and ignores noisy extra axes",
+    "cleans up held movement on blur/focus and requires neutral then fresh input",
+    "keeps controller status and local diagnostics usable at a representative iPad landscape viewport",
+    "WM-002 keyboard continuous four-gap route, safe save and same-origin reopen",
+    "WM-002 simulated PlayStation controller-only complete route and safe save/load",
+    "WM-002 targeted anchor, unsafe save, pause, focus, fall recovery, invalid finish and replay cleanup",
+    "WM-002 LT disconnect clears web, reconnect needs neutral and diagnostics retain swing mapping",
+    "WM-002 continuous keyboard route under near-30fps render schedule",
+    "WM-002 continuous keyboard route under uneven render schedule",
+    "WM-002 repeated pause, replay, save and load keeps runtime resources bounded",
+    "WM003 R1 genuine roof2 checkpoint and manual save survive reload",
+    "WM003 R1 standing on dynamic step still disables both save actions",
+    "WM003 ordinary keyboard combined swing climb ceiling pull route",
+    "WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback",
+    "WM003 loads exact historical WM-001 writer records without changing old generations",
+    "WM003 loads exact historical WM-002 writer records without changing old generations",
+    "WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen",
+    "WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web",
+    "WM003 RB and LB disconnect cleanup with neutral reconnect and keyboard fallback",
+    "WM003 complete route under near-30 rendered timing",
+    "WM003 complete route under uneven rendered timing"
+  ],
+  "reusedNewGameplay": [
+    "WM005 two complete circuit laps plus ground recovery keyboard-mouse",
+    "WM005 two complete circuit laps plus ground recovery semantic-controller",
+    "WM005 street safe save reopen Continue preserves position and generations",
+    "WM005 insufficient momentum vertical orbit keyboard-mouse",
+    "WM005 sufficient momentum vertical orbit keyboard-mouse",
+    "WM005 insufficient momentum vertical orbit semantic-controller",
+    "WM005 sufficient momentum vertical orbit semantic-controller",
+    "WM005 held web survives rooftop contact keyboard-mouse",
+    "WM005 held web survives rooftop contact semantic-controller"
+  ],
+  "impact": "C3 runtime difference is only the small joint sphere tessellation/shadow representation; world difference is read-only counts. C2 core/input/save/HUD/camera/collision code and all other runtime/build/dependency files are byte-identical. C1 nine functional ring/orbit/held-roof/save journeys use unchanged core logic; C2 presentation-only core difference is covered by fresh ceiling/hero cases. Reuse covers actual functional outcomes, not current appearance or performance. Historical source-integrity failure and failed browser cases are not reused as PASS.",
+  "requiredFresh": [
+    "all deterministic tests",
+    "TypeScript",
+    "isolated storage",
+    "production/Pages builds",
+    "audits",
+    "source integrity",
+    "7 hero/climb rendered cases",
+    "3 failed inherited cases",
+    "6 compiled save cases",
+    "48 paired performance samples",
+    "personal visual self-review"
+  ]
+}
