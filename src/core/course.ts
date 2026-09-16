@@ -1,5 +1,5 @@
 import { ANCHORS, ROOFS } from "./skyline";
-import { TRAINING_ANCHOR, TRAINING_SOLIDS, type Surface } from "./traversal";
+import { TRAINING_ANCHOR, TRAINING_SOLIDS, exteriorWalls, type Surface } from "./traversal";
 import { distance, HERO_HEIGHT, HERO_RADIUS, type Anchor, type Solid, type SwingState } from "./swing";
 import type { MotionState, Vec3Data } from "./types";
 
@@ -8,9 +8,9 @@ import type { MotionState, Vec3Data } from "./types";
 export const COURSE_NODES: readonly Vec3Data[] = [
   [35, 166], [67, 166], [99, 166], [131, 166], [131, 134],
   [131, 102], [131, 70], [131, 38], [131, 6], [131, -26],
-  [131, -58], [99, -58], [67, -58], [67, -26], [67, 6],
-].map(([x, z]) => ({ x: x!, y: 1, z: z! }));
-export const COURSE_ROOFS: readonly Solid[] = COURSE_NODES.slice(1).map((p, i) => ({
+  [131, -58], [99, -58], [67, -58], [35, -58], [0, -42],
+].map(([x, z]) => ({ x: x!, y: x===0 ? 0 : 1, z: z! }));
+export const COURSE_ROOFS: readonly Solid[] = COURSE_NODES.slice(1,-1).map((p, i) => ({
   id: `course-roof-${i + 1}`, minX: p.x - 10, maxX: p.x + 10,
   minZ: p.z - 10, maxZ: p.z + 10, minY: -18, maxY: p.y,
 }));
@@ -31,16 +31,19 @@ export const CITY_SOLIDS: readonly Solid[] = Array.from({length:18},(_,i)=>{
   const x=(i%2===0?-1:1)*(18+(i%4)*3.5),z=-16+(i%13)*4,h=5+((i*7)%14),w=3+(i%3);
   return {id:`city-${i}`,minX:x-w/2,maxX:x+w/2,minZ:z-w/2,maxZ:z+w/2,minY:-18,maxY:h-5};
 });
-export const RECOVERY_WALLS: readonly Surface[] = [
-  ...ROOFS, TRAINING_SOLIDS[1]!, ...COURSE_ROOFS,
-].map((roof) => ({ ...roof, role: "CLIMBABLE_WALL", normal: { x: 0, y: 0, z: 1 }, topOut: true }));
+export const EXTERIOR_WALLS: readonly Surface[] = [
+  ...ROOFS, ...TRAINING_SOLIDS, ...COURSE_ROOFS, ...CITY_SOLIDS,
+].flatMap(exteriorWalls).filter(s => !(s.id === "climb-wall"));
+export const RECOVERY_WALLS: readonly Surface[] = [...ROOFS,TRAINING_SOLIDS[1]!,...COURSE_ROOFS].map(b=>exteriorWalls(b)[0]!);
+// The marked challenge front retains its authored ceiling transition; all other
+// exterior faces use the identical collision-aware attachment/top-out rules.
 
-export interface CourseSave { version: 1; next: number; completed: boolean; active?: boolean }
+export interface CourseSave { version: 1; next: number; completed: boolean; active?: boolean; lapNext?: number }
 export interface CourseState extends CourseSave {
   active: boolean; valid: boolean; released: boolean; completions: number;
 }
 export const newCourse = (save?: CourseSave): CourseState => ({
-  version: 1, next: save?.completed ? 20 : Math.min(save?.next ?? 0, 19),
+  version: 1, next: save?.completed ? (save.lapNext ?? 0) : Math.min(save?.next ?? 0, 20),
   completed: save?.completed ?? false, active: save ? save.active !== false : false, valid: true,
   released: true, completions: 0,
 });
@@ -49,14 +52,14 @@ export function validCourseSave(value: unknown): value is CourseSave {
   const s = value as Partial<CourseSave>;
   return s.version === 1 && Number.isInteger(s.next) && s.next! >= 0 && s.next! <= 20 &&
     (s.active === undefined || typeof s.active === "boolean") &&
-    typeof s.completed === "boolean" && (!s.completed || s.next === 20);
+    typeof s.completed === "boolean" && (!s.completed || s.next === 20) && (s.lapNext === undefined || (Number.isInteger(s.lapNext) && s.lapNext >= 0 && s.lapNext <= 20));
 }
 export function advanceCourse(
   route: CourseState, before: MotionState, m: MotionState, oldWeb: SwingState, web: SwingState,
 ): CourseState {
   const s = { ...route };
   if (distance(before.position, m.position) > 1.1) return { ...s, valid: false };
-  if (!s.valid || s.completed) return s;
+  if (!s.valid) return s;
   if (!s.active && m.grounded && Math.abs(m.position.y) < 0.02 &&
     Math.cos(m.facingYaw) > 0.7 && Math.abs(m.position.x) < 4 && m.position.z > -46 && m.position.z < -37) s.active = true;
   if (!s.active) return s;
@@ -65,20 +68,18 @@ export function advanceCourse(
   if (s.next < 20 && m.grounded) s.released = true;
   if (oldWeb.web && !web.web && web.releases > oldWeb.releases && !m.grounded) s.released = true;
   if (web.web && web.web.anchorId !== oldWeb.web?.anchorId && !m.grounded && s.released &&
-    web.web.anchorId === COURSE_ANCHORS[s.next]?.id) {
-    s.next++; s.released = false;
-  }
-  if (s.next === 20 && s.released && m.grounded && Math.abs(m.position.y - 1) < 0.02 &&
-    Math.hypot(m.position.x - COURSE_FINISH.x, m.position.z - COURSE_FINISH.z) < 5) {
-    s.completed = true; s.completions++;
+    web.web.anchorId === COURSE_ANCHORS[s.next % 20]?.id) {
+    if(s.next===20){s.completed=true;s.completions++;s.next=1;}
+    else s.next++;
+    s.released = false;
   }
   return s;
 }
 export function courseLabel(s: CourseState, street = false): string {
-  if (street) return "Follow mint paths to striped walls. Hold C / RB / R1 to climb onto a roof.";
-  if (s.completed) return "20-ring course complete! Save, explore the street, or replay from Pause.";
+  if (street) return "Every building face is climbable. Mint paths teach the route. Hold C / RB / R1 to climb onto a roof.";
+  if (s.completed) return `Circuit complete · laps this session ${s.completions} · ${s.next}/20 · Keep swinging to ring ${s.next%20+1}!`;
   if (!s.active) return "20-ring course starts across the south practice gap. Cross over, then follow the numbered rings north.";
-  if (s.next === 20) return "Release and land on the pink finish pad to complete the 20-ring course.";
+  if (s.next === 20) return "Close the circuit: release and catch ring 1 again. Keep swinging into the next lap!";
   return `20-ring course · ${s.next}/20 · Next: ${s.next + 1}. Jump, hold your web, then release onto the next roof.`;
 }
 
@@ -132,3 +133,4 @@ export function cameraSafeRadius(from:Vec3Data,to:Vec3Data,desired:number,solids
   // A cosmetic minimum must never push the camera through the facade it hit.
   return Math.max(0.08,desired*cameraClearFraction(from,to,solids)-0.15);
 }
+

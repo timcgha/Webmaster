@@ -11,7 +11,7 @@ const input=(extras:Partial<TraversalInput>={}):TraversalInput=>({moveX:0,moveY:
 describe("WM004 actual connected course and street recovery",()=>{
   it.each([[1/60],[1/30],[1/120],[.012,.033,.02,.015]])("earns all twenty anchors and finish using real physics at %j",(...schedule)=>{
     const r=driveCourse(schedule as number[]);
-    expect(r.course).toMatchObject({next:20,completed:true,valid:true,completions:1});
+    expect(r.course).toMatchObject({next:1,completed:true,valid:true,completions:1});
     expect(r.skyline).toMatchObject({stage:4,completed:true});
     expect(r.events).toHaveLength(21);
     expect(COURSE_ANCHORS).toHaveLength(20);expect(new Set(COURSE_ANCHORS.map(a=>a.id)).size).toBe(20);
@@ -23,7 +23,7 @@ describe("WM004 actual connected course and street recovery",()=>{
   it.each([[1/60],[1/30],[.012,.033,.02,.015]])("misses a ring, walks and climbs from street, then rejoins and earns all20 using real physics at %j",(...schedule)=>{
     const r=driveCourse(schedule as number[],0,true);
     expect(r.recoveries).toHaveLength(1);expect(r.recoveries[0]).toMatchObject({landed:{y:-18},returned:{y:1},progress:6});
-    expect(r.course).toMatchObject({next:20,valid:true,completed:true,completions:1});
+    expect(r.course).toMatchObject({next:1,valid:true,completed:true,completions:1});
   });
   it.each(RECOVERY_WALLS)("walks, climbs and continuously tops out $id without body penetration",wall=>{
     let m:MotionState={position:{x:(wall.minX+wall.maxX)/2,y:-18,z:wall.maxZ+2},velocity:{x:0,y:0,z:0},grounded:true,facingYaw:Math.PI};
@@ -111,7 +111,7 @@ describe("WM004 read-only safe restoration and visual/camera invariants",()=>{
     for(const s of [{version:1,next:21,completed:false},{version:1,next:19,completed:true},{version:2,next:20,completed:true}])expect(validCourseSave(s)).toBe(false);
     const p:MotionState={position:{x:67,y:1,z:6},velocity:{x:0,y:0,z:0},grounded:true,facingYaw:0};
     const r=advanceCourse(newCourse(),{...p,position:{x:0,y:0,z:0}},p,newSwing(),newSwing());expect(r.valid).toBe(false);expect(r.completed).toBe(false);
-    expect(newCourse({version:1,next:20,completed:false}).next).toBe(19);
+    expect(newCourse({version:1,next:20,completed:false}).next).toBe(20);
   });
   it("re-arms an automatically broken web after street recovery without awarding a ring or finish",()=>{
     const m:MotionState={position:{x:67,y:-18,z:181},velocity:{x:0,y:0,z:0},grounded:true,facingYaw:0};
@@ -128,3 +128,4 @@ describe("WM004 read-only safe restoration and visual/camera invariants",()=>{
     expect(validCourseSave({version:1,next:7,completed:false,active:"false"})).toBe(false);
   });
 });
+

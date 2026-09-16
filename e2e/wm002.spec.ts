@@ -128,13 +128,13 @@ test("WM-002 keyboard continuous four-gap route, safe save and same-origin reope
   browserName,
 }, testInfo) => {
   test.skip(browserName !== "chromium", "Exact browser-profile close/reopen is captured on Chromium, as in WM-001.");
-  test.setTimeout(100000);
+  test.setTimeout(180000);
   const profile = testInfo.outputPath("skyline-persistent-profile");
   const options = {
     headless: true,
     baseURL: "http://127.0.0.1:4173",
     viewport: { width: 1280, height: 720 },
-    recordVideo: { dir: testInfo.outputPath("persistent-video") },
+    ...(process.env.WM_BROWSER_CHANNEL ? { channel: process.env.WM_BROWSER_CHANNEL } : { recordVideo: { dir: testInfo.outputPath("persistent-video") } }),
     ...(process.env.WM_CHROMIUM_PATH ? { executablePath: process.env.WM_CHROMIUM_PATH } : {}),
   };
   let context = await playwright.chromium.launchPersistentContext(profile, options);

@@ -33,6 +33,7 @@ export interface Web {
   anchor: Vec3Data;
   length: number;
   origin: "right-wrist";
+  age?: number;
 }
 export interface SwingState {
   phase: SwingPhase;
@@ -48,7 +49,7 @@ export interface SwingState {
 }
 export const SWING_RANGE = 31;
 export const AIM_COSINE = Math.cos((58 * Math.PI) / 180);
-export const MAX_SWING_SPEED = 26;
+export const MAX_SWING_SPEED = 48;
 export const HERO_RADIUS = 0.48;
 export const HERO_HEIGHT = 3.4;
 const GRAVITY = 22;
@@ -317,6 +318,9 @@ export function stepSwing(
         ? "Ring ready. Hold E or LT / L2. Release to sail forward."
         : "Aim at a glowing ring. Walk toward the skyline arrows.";
   }
+  if(s.web){s.web.age=(s.web.age??0)+dt;
+    if(s.web.age>3.5)s.message="Web held. Press forward to build momentum for a loop; let go to release.";
+  }
   const forward = normalized({ ...input.cameraForward, y: 0 });
   const desire = normalized({
     x: forward.z * input.moveX + forward.x * input.moveY,
@@ -334,10 +338,23 @@ export function stepSwing(
     m.velocity.x += desire.x * 9 * dt;
     m.velocity.z += desire.z * 9 * dt;
   }
+  if(s.web && moving && !m.grounded) {
+    const radial=normalized(subtract(handOrigin(m),s.web.anchor));
+    const along=dot(m.velocity,radial);
+    const tangent={x:m.velocity.x-radial.x*along,y:m.velocity.y-radial.y*along,z:m.velocity.z-radial.z*along};
+    const speed=Math.hypot(tangent.x,tangent.y,tangent.z);
+    // Forward pumping adds bounded tangential force, never radial position or
+    // angle. Ordinary short transfers retain their established steering. Holding the
+    // same web for3.5seconds enables gradual pumping; energy still obeys gravity.
+    if(input.moveY>0 && (s.web.age??0)>3.5 && speed>.5){const force=12*Math.min(1,input.moveY)*dt/speed;
+      m.velocity.x+=tangent.x*force;m.velocity.y+=tangent.y*force;m.velocity.z+=tangent.z*force;}
+  }
   m.velocity.y -= GRAVITY * dt;
   const speed = Math.hypot(m.velocity.x, m.velocity.y, m.velocity.z);
-  if (speed > MAX_SWING_SPEED) {
-    const scale = MAX_SWING_SPEED / speed;
+  const incomingLimit=Math.min(MAX_SWING_SPEED,Math.max(26,Math.hypot(motion.velocity.x,motion.velocity.y,motion.velocity.z)));
+  const limit=s.web && (s.web.age??0)>3.5 ? MAX_SWING_SPEED : incomingLimit;
+  if (speed > limit) {
+    const scale = limit / speed;
     for (const axis of ["x", "y", "z"] as const) m.velocity[axis] *= scale;
   }
   if (moving && !s.web) m.facingYaw = Math.atan2(desire.x, desire.z);
@@ -376,9 +393,9 @@ export function stepSwing(
         m.velocity.z -= n.z * outward;
       }
     }
-    // A solid wall always wins over a rope. Detach instead of pulling through it.
+    // Collision wins. Projection roundoff/roof contact must not cancel a valid
+    // held web. Only a real segment obstruction invalidates the attachment.
     if (
-      distance(handOrigin(m), s.web.anchor) > s.web.length + 0.02 ||
       segmentBlocked(handOrigin(m), s.web.anchor, solids)
     ) {
       s.web = null;
@@ -389,7 +406,7 @@ export function stepSwing(
     }
   }
   const landed = !motion.grounded && m.grounded;
-  if (landed) {
+  if (landed && !s.web) {
     s.web = null;
     s.phase = "LANDING";
     s.phaseTime = 0.16;
@@ -398,3 +415,4 @@ export function stepSwing(
   }
   return { motion: m, swing: s, landed, attached, released };
 }
+

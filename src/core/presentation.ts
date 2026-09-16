@@ -5,7 +5,7 @@ export const HERO_PRESENTATION = Object.freeze({
   blue: "#2456bd",
   eyeY: 3.12,
   eyeAngle: Math.PI / 4,
-  web: "#f4cfd7",
+  web: "#bfc5ce",
   capsuleRadius: 0.48,
   capsuleHeight: 3.4,
 });
@@ -123,4 +123,26 @@ export function swingLegPose(
     phase,
     angle: previous.angle + (desired - previous.angle) * rate,
   };
+}
+
+
+/** Face-up ceiling presentation: local forward points toward the ceiling and
+ * local head points along travel. The upright collision capsule is unchanged. */
+export function ceilingClimbOffset(pitch:number, facingYaw=Math.PI, wallNormal:Vec3Data={x:0,y:0,z:1}):Vec3Data {
+  const angle=Math.max(0,Math.min(Math.PI/2,-pitch));
+  // Keep the complete local Y/Z envelope below the ceiling through the rotation.
+  // Rotate around the middle of the body, with its centre on the free side of
+  // the adjoining wall. Reversing travel then turns the body in place instead
+  // of swinging its head through the wall. No physics/hitbox displacement.
+  const half=HERO_PRESENTATION.capsuleHeight/2*Math.sin(angle);
+  return {x:half*(wallNormal.x+Math.sin(facingYaw)),
+    y:(1-Math.cos(angle))*3.4-Math.sin(angle)*1.2,
+    z:half*(wallNormal.z+Math.cos(facingYaw))};
+}
+export function climbLimbPose(phase:number,weight:number){
+  const wave=Math.sin(phase*Math.PI*2)*weight;
+  return {arms:[-2.3+.1*wave,-2.3-.1*wave] as [number,number],
+    elbows:[.35+.05*wave,.35-.05*wave] as [number,number],
+    hips:[-1.0-.08*wave,-1.0+.08*wave] as [number,number],
+    knees:[.5+.1*wave,.5-.1*wave] as [number,number]};
 }

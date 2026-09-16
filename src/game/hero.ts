@@ -2,7 +2,8 @@ import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { Vector4 } from "@babylonjs/core/Maths/math.vector";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
-import { CreateBox } from "@babylonjs/core/Meshes/Builders/boxBuilder.pure";
+import { addBlockShadow } from "./shadow-proxy";
+import { createRoundedBlock } from "./rounded-block";
 import { CreateSphere } from "@babylonjs/core/Meshes/Builders/sphereBuilder.pure";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import type { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
@@ -16,7 +17,7 @@ function costume(scene: Scene, name: string, color: string, detail: "web" | "mas
   const c = texture.getContext() as CanvasRenderingContext2D;
   for (let face = 0; face < 6; face++) {
     c.save(); c.translate(face * tile, 0); c.fillStyle = color; c.fillRect(0,0,tile,tile);
-    c.beginPath(); c.strokeStyle = detail === "mask" ? "#682437" : "#bfd1e8"; c.lineWidth = detail === "mask" ? 3 : 2;
+    c.beginPath(); c.strokeStyle = HERO_PRESENTATION.web; c.lineWidth = detail === "mask" ? 3 : 2;
     // A readable tapered fan and bowed cross-lines, continued on every face.
     for (let x = -128; x <= 384; x += 64) { c.moveTo(128,128); c.lineTo(x,0); c.moveTo(128,128); c.lineTo(x,256); }
     for (let y = 35; y <= 230; y += 42) { c.moveTo(0,y); c.quadraticCurveTo(128,y+22,256,y); }
@@ -52,15 +53,22 @@ export function createBlockHero(scene: Scene, root: TransformNode, shadows: Shad
   const blue = costume(scene,"hero-blue-integrated",HERO_PRESENTATION.blue);
   const mask = costume(scene,"hero-mask-integrated",HERO_PRESENTATION.red,"mask");
   const chest = costume(scene,"hero-chest-integrated",HERO_PRESENTATION.red,"emblem");
+  const shadowMaterial = new StandardMaterial("hero-opaque-shadow",scene);
+  shadowMaterial.disableLighting=true;
   const faceUV = Array.from({length:6},(_,i)=>new Vector4((i*256+1)/1536,1/256,((i+1)*256-1)/1536,255/256));
   function block(name: string, size: [number,number,number], pos: [number,number,number], parent: TransformNode, material = blue) {
-    const mesh = CreateBox(name,{width:size[0],height:size[1],depth:size[2],faceUV},scene);
+    const mesh = createRoundedBlock(name,{width:size[0],height:size[1],depth:size[2],faceUV},scene);
     mesh.parent=parent; mesh.position.set(...pos); mesh.material=material;
-    mesh.metadata={originalProcedural:true,surfaceArtwork:true,visualOnly:true}; return mesh;
+    mesh.metadata={originalProcedural:true,surfaceArtwork:true,visualOnly:true};
+    mesh.isPickable=false; addBlockShadow(mesh,size,shadows,shadowMaterial); return mesh;
   }
   function joint(name: string, radius: number, parent: TransformNode, material = blue) {
-    const mesh = CreateSphere(name,{diameter:radius*2,segments:8},scene); mesh.parent=parent; mesh.material=material;
-    return mesh;
+    // Small smooth joints need 144 rather than 400 triangles at gameplay size.
+    // Keep the same radius, poles and hip/shoulder contact envelope. Their
+    // subpixel shadow-map detail uses the same opaque proxy as the limbs.
+    const mesh = CreateSphere(name,{diameter:radius*2,segments:4},scene); mesh.parent=parent; mesh.material=material;
+    mesh.metadata={originalProcedural:true,visualOnly:true,heroJoint:true};
+    mesh.isPickable=false; addBlockShadow(mesh,[radius*2,radius*2,radius*2],shadows,shadowMaterial); return mesh;
   }
   block("webmaster-pelvis",[0.72,0.44,0.46],[0,1.50,0],root);
   block("webmaster-torso",[0.90,1.10,0.48],[0,2.09,0],root,chest);
@@ -86,6 +94,5 @@ export function createBlockHero(scene: Scene, root: TransformNode, shadows: Shad
     block(`hand-${side}`,[0.28,0.23,0.30],[0,-0.53,0],elbow,red);
     arms.push(arm); elbows.push(elbow);
   }
-  for (const mesh of root.getChildMeshes()) { mesh.isPickable=false; shadows.addShadowCaster(mesh); }
   return {hips,knees,ankles,arms,elbows};
 }

@@ -8,8 +8,9 @@ import { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
+import { createRoundedBlock } from "./rounded-block";
 import { createBlockHero } from "./hero";
-import { COURSE_ANCHORS, COURSE_NODES, COURSE_ROOFS, COURSE_START, COURSE_FINISH, RECOVERY_WALLS, STREET, CITY_SOLIDS, newCourse, advanceCourse, courseLabel, restoreSafePosition, cameraClearFraction, cameraSafeRadius, type CourseState } from "../core/course";
+import { COURSE_ANCHORS, COURSE_NODES, COURSE_ROOFS, COURSE_START, COURSE_FINISH, RECOVERY_WALLS, EXTERIOR_WALLS, STREET, CITY_SOLIDS, newCourse, advanceCourse, courseLabel, restoreSafePosition, cameraClearFraction, cameraSafeRadius, type CourseState } from "../core/course";
 import { CreateBox } from "@babylonjs/core/Meshes/Builders/boxBuilder.pure";
 import { CreateCylinder } from "@babylonjs/core/Meshes/Builders/cylinderBuilder.pure";
 import { CreateLines } from "@babylonjs/core/Meshes/Builders/linesBuilder.pure";
@@ -79,7 +80,7 @@ import {
   newLegPose,
   swingLegPose,
   type LegPose,
-  newGait, gaitPose, ceilingPresentationOffset, type GaitPose,
+  newGait, gaitPose, ceilingClimbOffset, climbLimbPose, type GaitPose,
 } from "../core/presentation";
 
 interface SolidBox {
@@ -178,6 +179,7 @@ export class GameWorld {
   private readonly legs: TransformNode[] = [];
   private legPose = newLegPose();
   private surfaceCameraBlend = 0;
+  private climbOffsetBlend = 0;
   private groundBeta = 1.08;
 
   private constructor(
@@ -520,8 +522,8 @@ export class GameWorld {
     data.applyToMesh(street);street.material=staticColor;street.isPickable=false;
     const palette=["#23a6ba","#e5a746","#8a75cf","#e67799"];
     for(const [i,b] of [{...ROOFS[0]!,maxY:-1},...COURSE_ROOFS].entries()) {
-      const mesh=CreateBox(b.id+"-s4-building",{width:b.maxX-b.minX,depth:b.maxZ-b.minZ,height:b.maxY-b.minY,
-        faceColors:faceColors(palette[i%4]!,i>0?(i===14?"#f477bc":"#32619a"):undefined)},this.scene);
+      const mesh=createRoundedBlock(b.id+"-s4-building",{width:b.maxX-b.minX,depth:b.maxZ-b.minZ,height:b.maxY-b.minY,
+        faceColors:faceColors(palette[i%4]!,i>0?"#32619a":undefined)},this.scene,.12);
       mesh.position.set((b.minX+b.maxX)/2,(b.minY+b.maxY)/2,(b.minZ+b.maxZ)/2);
       mesh.material=staticColor;
       if(i>0) this.addStaticPhysics(mesh);
@@ -552,7 +554,7 @@ export class GameWorld {
       arrow.material=this.scene.getMaterialByName("skyline-marker-0");
     }
     this.courseSign("long-course-start","20 RINGS · START",{x:0,y:3,z:-43},"#127a80",5);
-    this.courseSign("long-course-finish","20 RINGS · FINISH",{x:COURSE_FINISH.x,y:4,z:COURSE_FINISH.z+3},"#9b327a",5);
+    this.courseSign("long-course-finish","CIRCUIT · KEEP GOING",{x:COURSE_FINISH.x,y:4,z:COURSE_FINISH.z+3},"#9b327a",5);
     this.courseSign("practice-course-guide","SOUTH: COURSE START",{x:4,y:2,z:-16},"#127a80",4);
   }
 
@@ -839,9 +841,9 @@ export class GameWorld {
     if (this.rightArm) {
       // Two-segment arm reaches the unchanged gameplay wrist origin exactly.
       const d = Math.hypot(0.44, 0.71);
-      this.rightArm.rotation.x = web ? Math.atan2(-0.71,0.44) - Math.acos((0.55**2+d*d-0.52**2)/(2*0.55*d)) : this.traversal.surfaceId ? -2.5 : this.gait.arms[1];
+      this.rightArm.rotation.x = web ? Math.atan2(-0.71,0.44) - Math.acos((0.55**2+d*d-0.52**2)/(2*0.55*d)) : this.rig.arms[1]!.rotation.x;
       this.rightArm.rotation.z = 0;
-      this.rig.elbows[1]!.rotation.x = web ? Math.acos((d*d-0.55**2-0.52**2)/(2*0.55*0.52)) : 0;
+      this.rig.elbows[1]!.rotation.x = web ? Math.acos((d*d-0.55**2-0.52**2)/(2*0.55*0.52)) : this.rig.elbows[1]!.rotation.x;
     }
     this.webLine?.setEnabled(Boolean(web));
     this.wristFlash?.setEnabled(Boolean(web));
@@ -899,17 +901,19 @@ export class GameWorld {
       this.motion.position.z,
     );
     this.heroRoot.rotation.y = this.motion.facingYaw;
+    this.climbOffsetBlend += ((this.traversal.surfaceId?1:0)-this.climbOffsetBlend)*(1-Math.exp(-delta*20));
+    if(this.traversal.wallNormal){
+      const n=this.traversal.wallNormal,away=.7*this.climbOffsetBlend*Math.max(0,Math.cos(this.heroRoot.rotation.x));
+      this.heroRoot.position.x+=n.x*away;this.heroRoot.position.z+=n.z*away;
+    }
     const desiredPitch =
-      this.traversal.cameraMode === "ceiling" ? Math.PI / 2 : 0;
+      this.traversal.cameraMode === "ceiling" ? -Math.PI / 2 : 0;
     this.heroRoot.rotation.x +=
       (desiredPitch - this.heroRoot.rotation.x) * Math.min(1, delta * 8);
     // Rotate the visual rig onto the ceiling while keeping its full authored
     // extent on the playable side of the wall. Physics stays at motion.position.
     if (this.heroRoot.rotation.x !== 0) {
-      const presentationOffset = ceilingPresentationOffset(
-        this.heroRoot.rotation.x,
-        this.motion.facingYaw,
-      );
+      const presentationOffset = ceilingClimbOffset(this.heroRoot.rotation.x, this.motion.facingYaw, this.traversal.wallNormal ?? undefined);
       this.heroRoot.position.x += presentationOffset.x;
       this.heroRoot.position.y += presentationOffset.y;
       this.heroRoot.position.z += presentationOffset.z;
@@ -923,11 +927,15 @@ export class GameWorld {
     }
     this.lastVisualPosition = copyVec3(this.motion.position);
     this.heroRoot.position.y += this.gait.lift;
+    const climb=climbLimbPose(this.gait.phase,this.gait.weight), limbBlend=1-Math.exp(-delta*14);
     for (const i of [0,1] as const) {
-      this.rig.hips[i]!.rotation.x = this.gait.hips[i];
-      this.rig.knees[i]!.rotation.x = this.gait.knees[i];
-      this.rig.ankles[i]!.rotation.x = -this.gait.hips[i] - this.gait.knees[i];
-      this.rig.arms[i]!.rotation.x = this.traversal.surfaceId ? -2.5 : this.gait.arms[i];
+      const onSurface=Boolean(this.traversal.surfaceId),hip=onSurface?climb.hips[i]:this.gait.hips[i],
+        knee=onSurface?climb.knees[i]:this.gait.knees[i],arm=onSurface?climb.arms[i]:this.gait.arms[i];
+      this.rig.hips[i]!.rotation.x+=(hip-this.rig.hips[i]!.rotation.x)*limbBlend;
+      this.rig.knees[i]!.rotation.x+=(knee-this.rig.knees[i]!.rotation.x)*limbBlend;
+      this.rig.ankles[i]!.rotation.x=-this.rig.hips[i]!.rotation.x-this.rig.knees[i]!.rotation.x;
+      this.rig.arms[i]!.rotation.x+=(arm-this.rig.arms[i]!.rotation.x)*limbBlend;
+      this.rig.elbows[i]!.rotation.x+=((onSurface?climb.elbows[i]:0)-this.rig.elbows[i]!.rotation.x)*limbBlend;
     }
     for (const o of this.pullObjects) {
       const mesh = this.pullMeshes.get(o.id)!;
@@ -944,12 +952,10 @@ export class GameWorld {
         this.groundBeta * (1 - this.surfaceCameraBlend) +
         1.52 * this.surfaceCameraBlend;
       this.camera.radius = 10.5;
-      const a = Math.atan2(
-        Math.sin(this.camera.alpha),
-        Math.cos(this.camera.alpha),
-      );
-      const bounded = Math.max(0.4, Math.min(Math.PI - 0.4, a));
-      this.camera.alpha += (bounded - a) * Math.min(1, delta * 6);
+      const n=this.traversal.wallNormal??{x:0,z:1},outward=Math.atan2(n.z,n.x);
+      const relative=Math.atan2(Math.sin(this.camera.alpha-outward),Math.cos(this.camera.alpha-outward));
+      const bounded=Math.max(-Math.PI/2+.4,Math.min(Math.PI/2-.4,relative));
+      this.camera.alpha+=(bounded-relative)*Math.min(1,delta*6);
     }
 
     const target = new Vector3(
@@ -1062,7 +1068,7 @@ export class GameWorld {
         },
         COURSE_ANCHORS,
         this.skylineSolids,
-        [...SURFACES, ...RECOVERY_WALLS],
+        [...SURFACES, ...EXTERIOR_WALLS],
       );
       this.motion = result.motion;
       this.swing = result.swing;
@@ -1360,7 +1366,7 @@ export class GameWorld {
   ): RunSavePayload {
     return {
       schemaVersion: 1,
-      ...(this.course.active || this.course.next > 0 || this.course.completed ? { course: { version: 1 as const, next: this.course.next, completed: this.course.completed, active: this.course.active } } : {}),
+      ...(this.course.active || this.course.next > 0 || this.course.completed ? { course: { version: 1 as const, next: this.course.completed ? 20 : this.course.next, completed: this.course.completed, active: this.course.active, ...(this.course.completed ? {lapNext:this.course.next}: {}) } } : {}),
       ...(this.training.active
         ? {
             climb: {
@@ -1488,6 +1494,33 @@ export class GameWorld {
     };
     this.checkpoint = copyVec3(SKY_START);
     this.restart();
+  }
+
+  /** Read-only verification view, only exposed by the existing ?test=1 API.
+   * Actual transformed vertices avoid conservative rotated-box false positives. */
+  heroViewForTests() {
+    const matrix=this.heroRoot.computeWorldMatrix(true);
+    const casters=this.scene.getLightByName("sun")?.getShadowGenerator()?.getShadowMap()?.renderList??[];
+    return {root:copyVec3(this.heroRoot.position),
+      front:copyVec3(Vector3.TransformNormal(new Vector3(0,0,1),matrix).normalize()),
+      head:copyVec3(Vector3.TransformNormal(new Vector3(0,1,0),matrix).normalize()),
+      shadowPass:{
+        visibleTriangles:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.surfaceArtwork).reduce((n,m)=>n+m.getTotalIndices()/3,0),
+        jointTriangles:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.heroJoint).reduce((n,m)=>n+m.getTotalIndices()/3,0),
+        jointCount:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.heroJoint).length,
+        proxyTriangles:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).reduce((n,m)=>n+m.getTotalIndices()/3,0),
+        proxiesInShadowPass:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).every(m=>casters.includes(m)),
+        visibleBlocksExcludedFromShadowPass:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.surfaceArtwork).every(m=>!casters.includes(m)),
+        proxyCount:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).length,
+        proxiesExcludedFromCamera:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).every(m=>(m.layerMask & this.camera.layerMask)===0),
+      },
+      meshes:this.heroRoot.getChildMeshes().filter(m=>!m.metadata?.shadowOnly).map(mesh=>{
+        const matrix=mesh.computeWorldMatrix(true),vertices=mesh.getVerticesData("position")??[],
+          min={x:Infinity,y:Infinity,z:Infinity},max={x:-Infinity,y:-Infinity,z:-Infinity};
+        for(let i=0;i<vertices.length;i+=3){const p=Vector3.TransformCoordinates(new Vector3(vertices[i]!,vertices[i+1]!,vertices[i+2]!),matrix);
+          for(const a of["x","y","z"] as const){min[a]=Math.min(min[a],p[a]);max[a]=Math.max(max[a],p[a]);}}
+        return {name:mesh.name,min,max};
+      })};
   }
 
   stateForTests(): WorldFrame {

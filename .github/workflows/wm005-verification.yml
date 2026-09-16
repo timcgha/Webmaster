@@ -1,0 +1,228 @@
+name: WM-005 exact-source self-review verification
+run-name: WM-005 verification ${{ github.sha }}
+on:
+  push:
+    branches: [feat/wm005-free-traversal]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: wm005-verification
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: windows-2025
+    timeout-minutes: 150
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Preserve checkout bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 3
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline
+          ref: a63ad0e05ce12d2b42ff22e97d39de4af51d4b08
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: save-baseline
+          ref: 3962446ca00c6e1db6bd8b250335b24619a0aeab
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: prior-c2
+          ref: bff98139d8f08cf1f8587c5387beac9bffaabc89
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /evidence/wm-005/a5ef60b893b746f1b1792cbec270872783ffa128/35065467172/evidence/wm-005/source-integrity.json
+            /evidence/wm-005/a5ef60b893b746f1b1792cbec270872783ffa128/35065467172/evidence/wm-005/new-browser-results.json
+            /evidence/wm-005/a5ef60b893b746f1b1792cbec270872783ffa128/35065467172/evidence/wm-005/inherited-browser-results.json
+            /evidence/wm-005/a5ef60b893b746f1b1792cbec270872783ffa128/35065467172/evidence/wm-005/compiled/results.json
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: prior-c1
+          ref: 85396f7bc071c8873860fa9634d72e1dc9801c12
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: /evidence/wm-005/8a221c08642ebdd1264a04ebfaf6093d838cf60e/35062375370/evidence/wm-005/new-browser-results.json
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Exact locked installs
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          mkdir -p evidence/wm-005
+          pnpm install --frozen-lockfile 2>&1 | tee evidence/wm-005/install.log
+          pnpm --dir ../baseline install --frozen-lockfile 2>&1 | tee evidence/wm-005/baseline-install.log
+          node scripts/wm005-source-integrity.mjs
+      - name: Prove exact bounded reuse of unaffected completed evidence
+        run: node scripts/wm005-reuse.mjs
+      - name: Full deterministic, TypeScript and isolated-storage gates
+        run: |
+          set -euo pipefail
+          WM_TEST_EVIDENCE_ROOT=evidence/wm-005/unit pnpm test 2>&1 | tee evidence/wm-005/unit.log
+          pnpm exec tsc --noEmit 2>&1 | tee evidence/wm-005/typescript.log
+          node --test scripts/wm005-storage.test.mjs 2>&1 | tee evidence/wm-005/storage.log
+          node scripts/wm005-source-integrity.mjs
+      - name: Clean builds, dependency audits and exact preview packaging
+        id: builds
+        run: |
+          set -euo pipefail
+          pnpm build 2>&1 | tee evidence/wm-005/build.log
+          node scripts/wm005-build.mjs 2>&1 | tee evidence/wm-005/pages-build.log
+          pnpm audit --json > evidence/wm-005/audit-all.json
+          pnpm audit --prod --json > evidence/wm-005/audit-production.json
+          node scripts/wm005-package.mjs
+      - name: Prescribed full Chromium
+        run: pnpm exec playwright install chromium
+      - name: Affected ceiling reversal, unmarked climb and hero shadow/appearance journeys
+        id: rendered
+        timeout-minutes: 45
+        env:
+          WM005_SUITE: new
+        run: |
+          set -euo pipefail
+          pnpm exec playwright test -c playwright.wm005.config.ts e2e/wm005-climb.spec.ts e2e/wm005-hero.spec.ts 2>&1 | tee evidence/wm-005/new-browser.log
+      - name: Retain new rendered evidence immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm005-rendered-${{ github.sha }}
+          path: |
+            candidate/evidence/wm-005/
+            candidate/test-results-wm005/new/
+          include-hidden-files: true
+          retention-days: 90
+      - name: Compiled route and historical WM001 through WM004 writers
+        if: ${{ !cancelled() && steps.builds.outcome == 'success' }}
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          node scripts/wm005-compiled.mjs 2>&1 | tee evidence/wm-005/compiled.log
+      - name: Fresh recheck of the three retained inherited failures
+        if: ${{ !cancelled() && steps.builds.outcome == 'success' }}
+        timeout-minutes: 30
+        env:
+          WM005_SUITE: inherited
+        run: |
+          set -euo pipefail
+          pnpm exec playwright test -c playwright.wm005.config.ts e2e/wm001.spec.ts e2e/wm003.spec.ts --grep "moves, jumps, orbits|supports connection after load|WM003 repeated replay" 2>&1 | tee evidence/wm-005/inherited-browser.log
+      - name: Final exact-source integrity
+        if: always()
+        run: node scripts/wm005-source-integrity.mjs
+      - name: Retain complete pass or failure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm005-${{ github.sha }}
+          path: |
+            candidate/evidence/wm-005/
+            candidate/test-results-wm005/
+            candidate/.wm005-payload/
+          include-hidden-files: true
+          retention-days: 90
+  performance:
+    runs-on: windows-2025
+    timeout-minutes: 50
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Preserve checkout bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline
+          ref: a63ad0e05ce12d2b42ff22e97d39de4af51d4b08
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Exact locked performance environment
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm --dir ../baseline install --frozen-lockfile
+          pnpm exec playwright install chromium
+          node scripts/wm005-source-integrity.mjs
+      - name: Four paired practice swing and climb rounds on one runner
+        timeout-minutes: 40
+        run: |
+          set -euo pipefail
+          node scripts/wm005-performance.mjs 2>&1 | tee evidence/wm-005/performance.log
+      - name: Final performance source integrity
+        if: always()
+        run: |
+          node scripts/wm005-source-integrity.mjs
+          cp evidence/wm-005/source-integrity.json evidence/wm-005/performance-source-integrity.json
+      - name: Retain complete or partial paired evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm005-performance-${{ github.sha }}
+          path: candidate/evidence/wm-005/performance*
+          retention-days: 90
+  archive:
+    if: always()
+    needs: [verify, performance]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: verification/wm005-evidence
+          path: archive
+          sparse-checkout: evidence/wm-005
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: wm005-${{ github.sha }}
+          path: retained
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: wm005-performance-${{ github.sha }}
+          path: retained/evidence/wm-005
+      - name: Preserve source-bound evidence and hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="archive/evidence/wm-005/${GITHUB_SHA}/${GITHUB_RUN_ID}"
+          mkdir -p "$target"
+          cp -r retained/. "$target/"
+          python - "$target" <<'PY'
+          import pathlib,hashlib,json,os,sys
+          root=pathlib.Path(sys.argv[1]);files=[]
+          for p in sorted(root.rglob('*')):
+            if p.is_file():
+              b=p.read_bytes();files.append({'path':str(p.relative_to(root)),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()})
+          (root/'archive-manifest.json').write_text(json.dumps({'source':os.environ['GITHUB_SHA'],'run':os.environ['GITHUB_RUN_ID'],'role':'WEBMASTER_PRODUCT_OWNER','classification':'SELF_REVIEW evidence; not independent QA','files':files},indent=2))
+          PY
+          git -C archive config user.name WEBMASTER_PRODUCT_OWNER
+          git -C archive config user.email webmaster-po@users.noreply.github.com
+          git -C archive add -f evidence/wm-005
+          git -C archive commit -m "WM-005 retain exact-source run ${GITHUB_RUN_ID} evidence [skip ci]"
+          git -C archive push origin HEAD:verification/wm005-evidence

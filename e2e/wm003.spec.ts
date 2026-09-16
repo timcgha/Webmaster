@@ -324,9 +324,24 @@ test("WM003 negative lifecycle probes: wall pause focus pull interruption heavy 
   await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await fixture(page, -9, 0, -51, "negative pull pause");
   await look(page, Math.PI, 1.45);
-  await page.keyboard.down("q");
-  await wait(page, (s) => s.traversal.phase === "PULLING");
-  await page.keyboard.press("Escape");
+  // Arm the observer before pressing Q so a short valid PULLING phase cannot
+  // pass between remote browser calls. Escape is ordinary DOM keyboard input.
+  const pullAtPause=await page.evaluate(()=>new Promise<any>((resolve,reject)=>{
+    const begun=performance.now();
+    const frame=()=>{const s=window.__WM_DEBUG__!.getState();
+      if(s.traversal.phase==='PULLING'){
+        window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true}));
+        window.dispatchEvent(new KeyboardEvent('keyup',{key:'Escape',code:'Escape',bubbles:true}));resolve(s);return;
+      }
+      if(performance.now()-begun>5000){reject(new Error(`No moving pull observed: ${s.traversal.phase} ${s.traversal.message}`));return;}
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+    window.dispatchEvent(new KeyboardEvent('keydown',{key:'q',code:'KeyQ',bubbles:true}));
+  }));
+  expect(pullAtPause.traversal.pullId).toBe('route-step');
+  expect(pullAtPause.pullObjects.some((o:any)=>o.speed>0)).toBe(true);
+  await expect(page.getByRole('heading',{name:'Paused'})).toBeVisible();
   await expect(page.getByRole("button", { name: /^Save Game/ })).toBeDisabled();
   await shot(page, "save-unavailable-pulling");
   const pulled = (await state(page)).pullObjects;
@@ -384,6 +399,7 @@ test("WM003 negative lifecycle probes: wall pause focus pull interruption heavy 
       {
         method:
           "Explicitly labeled negative placements; no route completion evidence",
+        pullAtPause,
         recovered,
       },
       null,
@@ -625,6 +641,11 @@ test("WM003 repeated replay pause save load clears transients and bounds resourc
     expect(s.surfaceCameraBlend).toBe(0);
     expect(s.pullObjects.every((o) => o.speed === 0)).toBe(true);
     await page.waitForTimeout(350);
+    // Compare identical quiescent pause screens. During play the HUD replaces
+    // eleven text nodes between GC and the separate DOM-counter RPC, producing
+    // 254/265-node oscillation without retained growth. Preserve the same limits.
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("heading",{name:"Paused",exact:true})).toBeVisible();
     await cdp.send("HeapProfiler.collectGarbage");
     const heap = await cdp.send("Runtime.getHeapUsage"),
       dom = await cdp.send("Memory.getDOMCounters");
@@ -633,14 +654,17 @@ test("WM003 repeated replay pause save load clears transients and bounds resourc
       heap: heap.usedSize,
       nodes: dom.nodes,
       listeners: dom.jsEventListeners,
+      screen: "paused",
+      connectedElements: await page.locator("*").count(),
     });
+    await page.getByRole("button",{name:/Resume/}).click();
   }
   await writeFile(
     info.outputPath("resources.json"),
     JSON.stringify(
       {
         method:
-          "12 ordinary S3 replay/pause/save/Continue cycles; 350ms settled UI then post-GC heap and DOM/listeners; finite warmup bounds",
+          "12 ordinary S3 replay/pause/save/Continue cycles; same ordinary paused UI then post-GC heap and DOM/listeners; unchanged finite warmup bounds",
         measurements,
       },
       null,
@@ -657,7 +681,7 @@ test("WM003 repeated replay pause save load clears transients and bounds resourc
     JSON.stringify(
       {
         method:
-          "12 ordinary S3 replay/pause/save/Continue cycles; post-GC heap and DOM/listeners; finite warmup bounds",
+          "12 ordinary S3 replay/pause/save/Continue cycles; same ordinary paused UI, post-GC heap and DOM/listeners; unchanged finite warmup bounds",
         measurements,
       },
       null,
@@ -665,3 +689,4 @@ test("WM003 repeated replay pause save load clears transients and bounds resourc
     ),
   );
 });
+
