@@ -1,0 +1,39 @@
+
+ RUN  v5.0.0 /workspace/scratch/89089cc8f2ce/wm005
+
+ ❯ tests/wm005-review-regression.test.ts (2 tests | 2 failed) 7ms
+   × F-WM005-SR-01 retains earned tangential momentum on a new attachment 4ms
+   × F-WM005-SR-02 keeps the full climbing boot clear of wall and ceiling 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/wm005-review-regression.test.ts > F-WM005-SR-01 retains earned tangential momentum on a new attachment
+AssertionError: expected 25.956482461690605 to be greater than 39
+ ❯ tests/wm005-review-regression.test.ts:8:71
+      6|  const a={id:'next-loop',position:{x:.56,y:14.03,z:.71},eligible:true,…
+      7|  const r=stepSwing(m,newSwing(),{moveX:0,moveY:0,run:false,jumpPressed…
+      8|  expect(r.swing.web?.anchorId).toBe(a.id);expect(r.motion.velocity.z).…
+       |                                                                       ^
+      9| });
+     10| it('F-WM005-SR-02 keeps the full climbing boot clear of wall and ceili…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/wm005-review-regression.test.ts > F-WM005-SR-02 keeps the full climbing boot clear of wall and ceiling
+AssertionError: expected 1.1923293300642663 to be less than 1.19
+ ❯ tests/wm005-review-regression.test.ts:13:15
+     11|  for(let phase=0;phase<1;phase+=.01){const p=climbLimbPose(phase,1);fo…
+     12|   const toe=-.66*Math.sin(p.hips[i]!)-.66*Math.sin(p.hips[i]!+p.knees[…
+     13|   expect(toe).toBeLessThan(.495+.7-.005);expect(7.6+2.2+toe).toBeLessT…
+       |               ^
+     14|  }}
+     15| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  08:30:57
+   Duration  220ms (transform 78%, import 11%, tests 7%, worker 3%)
+
