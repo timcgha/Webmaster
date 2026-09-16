@@ -1,0 +1,96 @@
+
+Running 40 tests using 1 worker
+
+  x   1 [chromium] › e2e\wm001.spec.ts:166:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route (22.5s)
+  ok  2 [chromium] › e2e\wm001.spec.ts:269:3 › WM-001 rendered keyboard and mouse journey › recovers outside the bounded street, reduces health, and performs a clean zero-health retry (9.2s)
+  ok  3 [chromium] › e2e\wm001.spec.ts:283:3 › WM-001 rendered keyboard and mouse journey › explains and enforces safe-state saving while airborne (12.4s)
+  ok  4 [chromium] › e2e\wm001.spec.ts:304:3 › WM-001 rendered simulated Gamepad journey › uses gamepad alone for new game, movement, camera, pause, save, save-and-quit, Continue, and Load (18.6s)
+  ok  5 [chromium] › e2e\wm001.spec.ts:363:3 › WM-001 rendered simulated Gamepad journey › disconnect releases motion and reconnect requires neutral then fresh input (7.3s)
+  ok  6 [chromium] › e2e\wm001.spec.ts:394:3 › WM-001 rendered simulated Gamepad journey › shows PlayStation-style prompts without changing standard semantic actions (4.6s)
+  ok  7 [chromium] › e2e\wm001.spec.ts:402:3 › WM-001 rendered simulated Gamepad journey › operates persisted main and pause settings without mouse or typing (20.4s)
+  ok  8 [chromium] › e2e\wm001.spec.ts:439:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › makes exposure, release, ready, HUD status, and local copy diagnostics persistent (9.6s)
+  ok  9 [chromium] › e2e\wm001.spec.ts:474:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps keyboard available when the Gamepad API is unavailable (4.2s)
+  ok 10 [chromium] › e2e\wm001.spec.ts:488:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › rejects an unsupported mapping visibly while keyboard remains available (3.2s)
+  ok 11 [chromium] › e2e\wm001.spec.ts:500:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › selects active index 1 over idle index 0 and ignores noisy extra axes (6.9s)
+  ok 12 [chromium] › e2e\wm001.spec.ts:524:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › supports connection after load, disconnect cleanup, keyboard fallback, and deliberate replacement (7.2s)
+  ok 13 [chromium] › e2e\wm001.spec.ts:561:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › cleans up held movement on blur/focus and requires neutral then fresh input (6.0s)
+  ok 14 [chromium] › e2e\wm001.spec.ts:588:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps controller status and local diagnostics usable at a representative iPad landscape viewport (8.8s)
+  ok 15 [chromium] › e2e\wm001.spec.ts:608:1 › keeps occupied-slot bytes unchanged when replacement is cancelled (12.9s)
+  ok 16 [chromium] › e2e\wm001.spec.ts:625:1 › keeps the prior committed save and remains paused when Save & Quit write fails (11.9s)
+  ok 17 [chromium] › e2e\wm001.spec.ts:647:1 › loads only the prior commit after pointer verification fails, then permits a clean retry (11.5s)
+  ok 18 [chromium] › e2e\wm001.spec.ts:706:1 › renders storage-unavailable records explicitly and refuses destructive replacement (9.7s)
+  ok 19 [chromium] › e2e\wm001.spec.ts:738:1 › remains controllable under a second real-time CPU/frame profile (8.3s)
+  ok 20 [chromium] › e2e\wm001.spec.ts:763:1 › persists a Hard run after closing and reopening the same browser profile and exact origin (13.6s)
+  ok 21 [chromium] › e2e\wm001.spec.ts:815:1 › labels corrupt and incompatible save fixtures without hiding valid choices (7.1s)
+  ok 22 [chromium] › e2e\wm002.spec.ts:126:1 › WM-002 keyboard continuous four-gap route, safe save and same-origin reopen (30.5s)
+  ok 23 [chromium] › e2e\wm002.spec.ts:349:1 › WM-002 simulated PlayStation controller-only complete route and safe save/load (28.2s)
+  ok 24 [chromium] › e2e\wm002.spec.ts:388:1 › WM-002 targeted anchor, unsafe save, pause, focus, fall recovery, invalid finish and replay cleanup (16.5s)
+  ok 25 [chromium] › e2e\wm002.spec.ts:454:1 › WM-002 LT disconnect clears web, reconnect needs neutral and diagnostics retain swing mapping (11.0s)
+  ok 26 [chromium] › e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under near-30fps render schedule (23.7s)
+  ok 27 [chromium] › e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under uneven render schedule (24.2s)
+  ok 28 [chromium] › e2e\wm002.spec.ts:544:1 › WM-002 repeated pause, replay, save and load keeps runtime resources bounded (25.7s)
+  ok 29 [chromium] › e2e\wm003-remediation.spec.ts:22:1 › WM003 R1 genuine roof2 checkpoint and manual save survive reload (19.0s)
+  ok 30 [chromium] › e2e\wm003-remediation.spec.ts:77:1 › WM003 R1 standing on dynamic step still disables both save actions (8.1s)
+  ok 31 [chromium] › e2e\wm003.spec.ts:20:1 › WM003 ordinary keyboard combined swing climb ceiling pull route (58.4s)
+  ok 32 [chromium] › e2e\wm003.spec.ts:59:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback (53.5s)
+  ok 33 [chromium] › e2e\wm003.spec.ts:123:3 › WM003 loads exact historical WM-001 writer records without changing old generations (2.9s)
+  ok 34 [chromium] › e2e\wm003.spec.ts:123:3 › WM003 loads exact historical WM-002 writer records without changing old generations (2.5s)
+  ok 35 [chromium] › e2e\wm003.spec.ts:167:1 › WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen (1.0m)
+  x  36 [chromium] › e2e\wm003.spec.ts:282:1 › WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web (56.2s)
+  ok 37 [chromium] › e2e\wm003.spec.ts:395:1 › WM003 RB and LB disconnect cleanup with neutral reconnect and keyboard fallback (24.3s)
+  ok 38 [chromium] › e2e\wm003.spec.ts:542:3 › WM003 complete route under near-30 rendered timing (39.0s)
+  ok 39 [chromium] › e2e\wm003.spec.ts:542:3 › WM003 complete route under uneven rendered timing (47.2s)
+  ok 40 [chromium] › e2e\wm003.spec.ts:599:1 › WM003 repeated replay pause save load clears transients and bounds resources (46.3s)
+
+
+  1) [chromium] › e2e\wm001.spec.ts:166:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 3
+    Received: 2
+
+    Call Log:
+    - Timeout 4000ms exceeded while waiting on the predicate
+
+      244 |     await page.keyboard.down("w");
+      245 |     await page.keyboard.down("Shift");
+    > 246 |     await expect.poll(async () => (await state(page)).progress, { timeout: 4_000, intervals: [50] }).toBe(3);
+          |                                                                                                      ^
+      247 |     await page.keyboard.up("Shift");
+      248 |     await page.keyboard.up("w");
+      249 |     await page.waitForTimeout(100);
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm001.spec.ts:246:102
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm005\inherited\wm001-WM-001-rendered-keyb-bc063-tes-the-real-practice-route-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm005\inherited\wm001-WM-001-rendered-keyb-bc063-tes-the-real-practice-route-chromium\error-context.md
+
+  2) [chromium] › e2e\wm003.spec.ts:282:1 › WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web 
+
+    TimeoutError: page.waitForFunction: Timeout 20000ms exceeded.
+
+       at routes\wm003-route.ts:7
+
+       5 |   p.evaluate(() => window.__WM_DEBUG__!.getState());
+       6 | export async function wait(p: Page, fn: (s: any) => boolean, timeout = 20000) {
+    >  7 |   await p.waitForFunction(
+         |           ^
+       8 |     ({ body }) =>
+       9 |       new Function("s", `return (${body})(s)`)(window.__WM_DEBUG__!.getState()),
+      10 |     { body: fn.toString() },
+        at wait (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:7:11)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm003.spec.ts:328:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm005\inherited\wm003-WM003-negative-lifec-fa287-vy-feedback-and-blocked-web-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm005\inherited\wm003-WM003-negative-lifec-fa287-vy-feedback-and-blocked-web-chromium\error-context.md
+
+  2 failed
+    [chromium] › e2e\wm001.spec.ts:166:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route 
+    [chromium] › e2e\wm003.spec.ts:282:1 › WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web 
+  38 passed (13.3m)
