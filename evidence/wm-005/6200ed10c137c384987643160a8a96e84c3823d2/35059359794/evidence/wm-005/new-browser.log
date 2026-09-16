@@ -1,0 +1,117 @@
+
+Running 16 tests using 1 worker
+
+  ok  1 [chromium] › e2e\wm005-climb.spec.ts:7:30 › WM005 unmarked east facade street-to-roof keyboard-mouse (22.6s)
+  ok  2 [chromium] › e2e\wm005-climb.spec.ts:7:30 › WM005 unmarked east facade street-to-roof semantic-controller (36.0s)
+  ok  3 [chromium] › e2e\wm005-climb.spec.ts:20:30 › WM005 visible face-up head-first ceiling and challenge top-out keyboard-mouse (32.2s)
+  ok  4 [chromium] › e2e\wm005-climb.spec.ts:20:30 › WM005 visible face-up head-first ceiling and challenge top-out semantic-controller (57.4s)
+  x   5 [chromium] › e2e\wm005.spec.ts:54:31 › WM005 two complete circuit laps plus ground recovery keyboard-mouse (1.0m)
+  x   6 [chromium] › e2e\wm005.spec.ts:54:31 › WM005 two complete circuit laps plus ground recovery semantic-controller (1.2m)
+  ok  7 [chromium] › e2e\wm005.spec.ts:61:1 › WM005 street safe save reopen Continue preserves position and generations (20.1s)
+  ok  8 [chromium] › e2e\wm005.spec.ts:75:60 › WM005 insufficient momentum vertical orbit keyboard-mouse (1.1m)
+  ok  9 [chromium] › e2e\wm005.spec.ts:75:60 › WM005 sufficient momentum vertical orbit keyboard-mouse (28.8s)
+  ok 10 [chromium] › e2e\wm005.spec.ts:75:60 › WM005 insufficient momentum vertical orbit semantic-controller (47.7s)
+  ok 11 [chromium] › e2e\wm005.spec.ts:75:60 › WM005 sufficient momentum vertical orbit semantic-controller (32.5s)
+  x  12 [chromium] › e2e\wm005.spec.ts:93:30 › WM005 held web survives rooftop contact keyboard-mouse (29.1s)
+  x  13 [chromium] › e2e\wm005.spec.ts:93:30 › WM005 held web survives rooftop contact semantic-controller (33.8s)
+  ok 14 [chromium] › e2e\wm005-hero.spec.ts:10:103 › WM005 hero rear idle walking running jump and stop transitions (22.4s)
+  ok 15 [chromium] › e2e\wm005-hero.spec.ts:10:103 › WM005 hero front idle walking running jump and stop transitions (32.0s)
+  ok 16 [chromium] › e2e\wm005-hero.spec.ts:10:103 › WM005 hero side idle walking running jump and stop transitions (24.3s)
+
+
+  1) [chromium] › e2e\wm005.spec.ts:54:31 › WM005 two complete circuit laps plus ground recovery keyboard-mouse 
+
+    Error: wm005-keyboard-missed-street 1280x720: .objective-card overlaps .swing-card
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+       at routes\wm003-route.ts:60
+
+      58 |           overlapX > 1 && overlapY > 1,
+      59 |           `${label} ${width}x${height}: ${x.selector} overlaps ${y.selector}`,
+    > 60 |         ).toBe(false);
+         |           ^
+      61 |       }
+      62 |     records.push({ width, height, boxes });
+      63 |     await shot(p, `layout-${label}-${width}x${height}`);
+        at hudLayout (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:60:11)
+        at fullCourse (D:\a\Webmaster\Webmaster\candidate\e2e\wm005.spec.ts:33:47)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm005.spec.ts:57:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm005\new\wm005-WM005-two-complete-c-fa908-und-recovery-keyboard-mouse-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm005\new\wm005-WM005-two-complete-c-fa908-und-recovery-keyboard-mouse-chromium\error-context.md
+
+  2) [chromium] › e2e\wm005.spec.ts:54:31 › WM005 two complete circuit laps plus ground recovery semantic-controller 
+
+    Error: wm005-controller-missed-street 1280x720: .objective-card overlaps .swing-card
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+       at routes\wm003-route.ts:60
+
+      58 |           overlapX > 1 && overlapY > 1,
+      59 |           `${label} ${width}x${height}: ${x.selector} overlaps ${y.selector}`,
+    > 60 |         ).toBe(false);
+         |           ^
+      61 |       }
+      62 |     records.push({ width, height, boxes });
+      63 |     await shot(p, `layout-${label}-${width}x${height}`);
+        at hudLayout (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:60:11)
+        at fullCourse (D:\a\Webmaster\Webmaster\candidate\e2e\wm005.spec.ts:33:47)
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm005.spec.ts:57:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm005\new\wm005-WM005-two-complete-c-83ae3-ecovery-semantic-controller-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm005\new\wm005-WM005-two-complete-c-83ae3-ecovery-semantic-controller-chromium\error-context.md
+
+  3) [chromium] › e2e\wm005.spec.ts:93:30 › WM005 held web survives rooftop contact keyboard-mouse ─
+
+    Error: page.evaluate: Error: attached roof contact: {"active":true,"paused":false,"safe":false,"health":100,"maxHealth":100,"progress":1,"progressLabel":"First gap: jump and hold the close ring, then let go.","position":{"x":-15.426295108194507,"y":15.951962772559442,"z":24.26605445256706},"grounded":false,"fps":28,"cameraAlpha":-1.5707963267948966,"cameraBeta":1.6470000000000007,"cameraRadius":15.85,"cameraPosition":{"x":-15.494949209285318,"y":18.019410399692344,"z":11.420969385590109},"inputSource":"keyboard-mouse","velocity":{"x":12.095382281821905,"y":-1.005162235673911,"z":-45.180958448968596},"swing":{"phase":"SWING_ATTACHED","web":{"anchorId":"ring-1","anchor":{"x":0,"y":16,"z":29},"length":15.528265983181923,"origin":"right-wrist","age":20.083333333333474},"targetId":"ring-1","held":true,"freshRequired":false,"phaseTime":0,"message":"Web held. Press forward to build momentum for a loop; let go to release.","attachments":1,"releases":0,"collisions":2},"hand":{"x":-14.866295108194507,"y":17.98196277255944,"z":24.976054452567062},"skyline":{"active":true,"stage":0,"completed":false,"completions":0,"anchors":["ring-1"],"released":false,"reattached":false,"leftRoof":true,"lastAnchor":"ring-1","valid":true},"traversal":{"phase":"SWING_ATTACHED","surfaceId":null,"targetId":null,"pullId":null,"webOrigin":null,"phaseTime":0,"freshClimb":false,"freshPull":false,"heldClimb":false,"heldPull":false,"message":"South of practice: follow the Climb & Pull arrows.","cameraMode":"ground"},"training":{"active":false,"stage":0,"checkpoint":0,"completed":false,"completions":0,"valid":true,"swingAttached":false,"swingReleased":false,"wallStart":null,"vertical":0,"lateral":0,"ceilingStart":null,"ceilingDistance":0,"pulledDistance":0,"stepped":false},"pullObjects":[{"id":"route-step","role":"PULLABLE_LIGHT","position":{"x":0,"y":0.65,"z":-51},"initial":{"x":0,"y":0.65,"z":-51},"half":{"x":1.5,"y":0.65,"z":1.5},"speed":0},{"id":"limited-crate","role":"PULLABLE_LIMITED","position":{"x":4,"y":0.55,"z":-57},"initial":{"x":4,"y":0.55,"z":-57},"half":{"x":0.75,"y":0.55,"z":0.75},"speed":0},{"id":"heavy-crate","role":"TOO_HEAVY","position":{"x":4,"y":1,"z":-49},"initial":{"x":4,"y":1,"z":-49},"half":{"x":1,"y":1,"z":1},"speed":0},{"id":"ordinary-crate","role":"ORDINARY_SOLID","position":{"x":7,"y":0.9,"z":-55},"initial":{"x":7,"y":0.9,"z":-55},"half":{"x":0.9,"y":0.9,"z":0.9},"speed":0}],"legPose":{"blend":0.9999999999999999,"phase":-0.3048598956612473,"angle":0.6104877742181661},"gait":{"phase":0.8428787231008057,"weight":6.612494909026509e-62,"hips":[-0.6345712143633978,-0.6345712143633978],"knees":[4.9277598549034065e-76,6.879544363160997e-79],"arms":[0.4124712893362086,0.4124712893362086],"lift":-1.1617700375971137e-78},"course":{"version":1,"next":0,"completed":false,"active":false,"valid":true,"released":true,"completions":0},"legWorld":[{"hip":{"x":-15.646295547485352,"y":17.411962509155273,"z":24.266054153442383},"tip":{"x":-15.646295547485352,"y":16.17692200064659,"z":25.18598609805107},"forwardDisplacement":0.9199319446086882},{"hip":{"x":-15.206295013427734,"y":17.411962509155273,"z":24.266054153442383},"tip":{"x":-15.206295013427734,"y":16.17692200064659,"z":25.18598609805107},"forwardDisplacement":0.9199319446086882}],"surfaceCameraBlend":0,"heroPitch":0}
+        at Object.until (eval at evaluate (:311:30), <anonymous>:49:58)
+        at async eval (eval at evaluate (:311:30), <anonymous>:12:5)
+        at async <anonymous>:337:30
+        at Object.until (eval at evaluate (:311:30), <anonymous>:49:58)
+        at async eval (eval at evaluate (:311:30), <anonymous>:12:5)
+        at async <anonymous>:337:30
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm005.spec.ts:95:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm005\new\wm005-WM005-held-web-survives-rooftop-contact-keyboard-mouse-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm005\new\wm005-WM005-held-web-survives-rooftop-contact-keyboard-mouse-chromium\error-context.md
+
+  4) [chromium] › e2e\wm005.spec.ts:93:30 › WM005 held web survives rooftop contact semantic-controller 
+
+    Error: page.evaluate: Error: attached roof contact: {"active":true,"paused":false,"safe":false,"health":100,"maxHealth":100,"progress":1,"progressLabel":"First gap: jump and hold the close ring, then let go.","position":{"x":-5.125947245414645,"y":13.301827194439085,"z":13.582849669157536},"grounded":false,"fps":30,"cameraAlpha":-1.5707963267948966,"cameraBeta":1.6362369742359733,"cameraRadius":15.85,"cameraPosition":{"x":-7.046975377954873,"y":15.352487971975602,"z":-1.2608267340774333},"inputSource":"gamepad","velocity":{"x":28.544128106820946,"y":2.9786371836878383,"z":-8.997067718032563},"swing":{"phase":"SWING_ATTACHED","web":{"anchorId":"ring-1","anchor":{"x":0,"y":16,"z":29},"length":15.414103931140477,"origin":"right-wrist","age":20.083333333333474},"targetId":"ring-1","held":true,"freshRequired":false,"phaseTime":0,"message":"Web held. Press forward to build momentum for a loop; let go to release.","attachments":1,"releases":0,"collisions":2},"hand":{"x":-4.565947245414645,"y":15.331827194439084,"z":14.292849669157537},"skyline":{"active":true,"stage":0,"completed":false,"completions":0,"anchors":["ring-1"],"released":false,"reattached":false,"leftRoof":true,"lastAnchor":"ring-1","valid":true},"traversal":{"phase":"SWING_ATTACHED","surfaceId":null,"targetId":null,"pullId":null,"webOrigin":null,"phaseTime":0,"freshClimb":false,"freshPull":false,"heldClimb":false,"heldPull":false,"message":"South of practice: follow the Climb & Pull arrows.","cameraMode":"ground"},"training":{"active":false,"stage":0,"checkpoint":0,"completed":false,"completions":0,"valid":true,"swingAttached":false,"swingReleased":false,"wallStart":null,"vertical":0,"lateral":0,"ceilingStart":null,"ceilingDistance":0,"pulledDistance":0,"stepped":false},"pullObjects":[{"id":"route-step","role":"PULLABLE_LIGHT","position":{"x":0,"y":0.65,"z":-51},"initial":{"x":0,"y":0.65,"z":-51},"half":{"x":1.5,"y":0.65,"z":1.5},"speed":0},{"id":"limited-crate","role":"PULLABLE_LIMITED","position":{"x":4,"y":0.55,"z":-57},"initial":{"x":4,"y":0.55,"z":-57},"half":{"x":0.75,"y":0.55,"z":0.75},"speed":0},{"id":"heavy-crate","role":"TOO_HEAVY","position":{"x":4,"y":1,"z":-49},"initial":{"x":4,"y":1,"z":-49},"half":{"x":1,"y":1,"z":1},"speed":0},{"id":"ordinary-crate","role":"ORDINARY_SOLID","position":{"x":7,"y":0.9,"z":-55},"initial":{"x":7,"y":0.9,"z":-55},"half":{"x":0.9,"y":0.9,"z":0.9},"speed":0}],"legPose":{"blend":0.9999999999999999,"phase":-1,"angle":-0.5720682343075003},"gait":{"phase":0.5506217855919768,"weight":2.1892698216759503e-62,"hips":[0.4871473619988581,0.4871473619988581],"knees":[6.1327992857174575e-77,1.716643310224415e-80],"arms":[-0.3166457852992578,-0.3166457852992578],"lift":-3.2466007427162364e-79},"course":{"version":1,"next":0,"completed":false,"active":false,"valid":true,"released":true,"completions":0},"legWorld":[{"hip":{"x":-5.345947265625,"y":14.76182746887207,"z":13.582849502563477},"tip":{"x":-5.345947265625,"y":13.34024457335472,"z":12.990648415088653},"forwardDisplacement":-0.5922010874748231},{"hip":{"x":-4.905947685241699,"y":14.76182746887207,"z":13.582849502563477},"tip":{"x":-4.905947685241699,"y":13.34024457335472,"z":12.990648415088653},"forwardDisplacement":-0.5922010874748231}],"surfaceCameraBlend":0,"heroPitch":0}
+        at Object.until (eval at evaluate (:311:30), <anonymous>:49:58)
+        at async eval (eval at evaluate (:311:30), <anonymous>:12:5)
+        at async <anonymous>:337:30
+        at Object.until (eval at evaluate (:311:30), <anonymous>:49:58)
+        at async eval (eval at evaluate (:311:30), <anonymous>:12:5)
+        at async <anonymous>:337:30
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm005.spec.ts:95:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm005\new\wm005-WM005-held-web-survi-4c51f-contact-semantic-controller-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm005\new\wm005-WM005-held-web-survi-4c51f-contact-semantic-controller-chromium\error-context.md
+
+  4 failed
+    [chromium] › e2e\wm005.spec.ts:54:31 › WM005 two complete circuit laps plus ground recovery keyboard-mouse 
+    [chromium] › e2e\wm005.spec.ts:54:31 › WM005 two complete circuit laps plus ground recovery semantic-controller 
+    [chromium] › e2e\wm005.spec.ts:93:30 › WM005 held web survives rooftop contact keyboard-mouse ──
+    [chromium] › e2e\wm005.spec.ts:93:30 › WM005 held web survives rooftop contact semantic-controller 
+  12 passed (10.4m)
