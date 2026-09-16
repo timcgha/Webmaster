@@ -65,3 +65,17 @@ Historical WM-001 implementation and evidence details are in [evidence/wm-001/im
 - All visible art is original procedural geometry, color, text, and CSS authored in this repository. There are no copied character models, logos, textures, music, or sound.
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for dependency provenance.
+
+
+
+## WM-005 / Sprint 5 candidate
+
+Rounded Blocks and Free Traversal is an isolated candidate under the adopted single-agent SELF_REVIEW arrangement. The normal GitHub Pages game remains accepted WM-004 until separate sponsor release authority.
+
+- Restrained rounded hero blocks retain original, surface-painted white eyes and sun-spider emblem; mask/body web lines share a gray palette.
+- Every clear exterior building face can be climbed with C / RB / R1; arrows teach a route. At a ceiling lip, keep holding climb to reach the fascia, then press forward/up to climb onto the platform.
+- E / LT / L2 keeps a valid web through roof contact. Release deliberately. Sustained forward input on the same web builds momentum; after a few seconds it can power a real vertical loop where there is room.
+- The twenty-ring course returns to its first ring. Catch it again to finish a lap and continue immediately. Completed older course saves stay completed; repeated-lap progress is separate.
+- The planned /wm005-preview/ uses separate save/settings keys. Existing normal-game records and prior previews are preserved.
+
+Exact criteria and limits: timcgha/product-operating-model, changes/WM-005.md r1; roadmap r3. Technical checks and rendered evidence must pass before preview publication. Synthetic controller/renderer results do not establish physical device compatibility. No combat, paid assets/services, merge or normal-root replacement in this assignment.
