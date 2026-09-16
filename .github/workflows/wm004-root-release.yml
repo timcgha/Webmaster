@@ -1,0 +1,116 @@
+name: WM004 accepted root release
+on:
+  push:
+    branches: [verification/wm004-evidence]
+    paths: [.github/workflows/wm004-root-release.yml]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: 504f6087beef67daf0a88e6de27a21a1b6b10a28
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline
+          ref: 3962446ca00c6e1db6bd8b250335b24619a0aeab
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: site
+          ref: gh-pages
+          fetch-depth: 1
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: tooling
+          ref: ${{ github.sha }}
+          sparse-checkout: evidence/wm-004/release-tooling
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Build and verify exact accepted root payload
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm exec tsc --noEmit
+          cp ../tooling/evidence/wm-004/release-tooling/*.mjs scripts/
+          node scripts/package-root.mjs
+          node scripts/wm004-source-integrity.mjs
+          pnpm audit --json > evidence/wm-004/root-release/audit.json
+          pnpm exec playwright install --with-deps chromium
+      - name: Prepared root historical saves and real process reopen
+        run: node scripts/root-saves.mjs
+      - name: Publish root and preserve earlier previews
+        run: |
+          test "$(git -C ../site rev-parse HEAD)" = "e59b603d9ca1f4fd203b1a8ac1f021a0074141c2"
+          cp -a .wm004-payload/. ../site/
+          git -C ../site add .
+          test -z "$(git -C ../site diff --cached --name-only -- wm003-preview wm004-preview)"
+          git -C ../site config user.name WEBMASTER_PRODUCT_OWNER
+          git -C ../site config user.email webmaster-po@users.noreply.github.com
+          git -C ../site commit -m "WM-004 sponsor-accepted normal public game"
+          git -C ../site push origin HEAD:gh-pages
+          git -C ../site show -s --format='%H%n%T%n%P' > evidence/wm-004/root-release/publication.txt
+      - name: Verify every public payload byte
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';import crypto from 'node:crypto';import assert from 'node:assert/strict';
+          const origin='https://timcgha.github.io/Webmaster/';
+          let p;
+          for(let i=0;i<40;i++){try{const r=await fetch(origin+'wm-provenance.json?release=wm004-'+i);p=await r.json();if(p.source==='504f6087beef67daf0a88e6de27a21a1b6b10a28')break;}catch{}await new Promise(r=>setTimeout(r,10000));}
+          assert.equal(p?.source,'504f6087beef67daf0a88e6de27a21a1b6b10a28');
+          const files=JSON.parse(fs.readFileSync('evidence/wm-004/root-release/packaging.json')).files;
+          files.push({path:'wm-manifest.tsv',sha256:crypto.createHash('sha256').update(fs.readFileSync('.wm004-payload/wm-manifest.tsv')).digest('hex')});
+          const result=[];
+          for(const f of files){const r=await fetch(origin+f.path);assert.equal(r.status,200,f.path);const bytes=Buffer.from(await r.arrayBuffer());assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),f.sha256,f.path);result.push(f.path);}
+          for(const path of ['wm003-preview/','wm004-preview/']){const r=await fetch(origin+path);assert.equal(r.status,200,path);}
+          fs.writeFileSync('evidence/wm-004/root-release/public-bytes.json',JSON.stringify({status:'PASS',files:result,previews:'HTTP200'},null,2));console.log('Public byte verification PASS: '+result.length);
+          JS
+      - name: Public root historical saves and real process reopen
+        env:
+          WM_PUBLIC_ORIGIN: https://timcgha.github.io
+        run: node scripts/root-saves.mjs
+      - name: Final source integrity
+        if: always()
+        run: node scripts/wm004-source-integrity.mjs
+      - name: Retain release results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm004-root-release-${{ github.run_id }}
+          path: |
+            candidate/evidence/wm-004/root-release/
+            candidate/evidence/wm-004/source-integrity.json
+            candidate/.wm004-payload/
+          include-hidden-files: true
+          retention-days: 90
+      - name: Archive release evidence durably
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh auth setup-git
+          git clone --depth 1 --filter=blob:none --sparse --branch verification/wm004-evidence https://github.com/timcgha/Webmaster.git ../archive
+          git -C ../archive sparse-checkout set evidence/wm-004/root-release
+          target="../archive/evidence/wm-004/root-release/${GITHUB_RUN_ID}"
+          mkdir -p "$target"
+          cp -a evidence/wm-004/root-release/. "$target/"
+          cp evidence/wm-004/source-integrity.json "$target/"
+          git -C ../archive config user.name WEBMASTER_PRODUCT_OWNER
+          git -C ../archive config user.email webmaster-po@users.noreply.github.com
+          git -C ../archive add evidence/wm-004/root-release
+          git -C ../archive commit -m "WM-004 retain release verification ${GITHUB_RUN_ID} [skip ci]"
+          git -C ../archive push origin HEAD:verification/wm004-evidence
