@@ -1,0 +1,43 @@
+WM005 correction1 local verification evidence. Frozen correction8a221c08642ebdd1264a04ebfaf6093d838cf60e /e2260133f48d5bff7a61586922b67ce11c7550c7. CPU microbenchmark is diagnostic only, never a rendered FPS PASS. Actual Windows gates remain in run35062375370.
+
+/tmp/wm005-selectwall-before.log
+
+ RUN  v5.0.0 /workspace/scratch/89089cc8f2ce/wm005
+
+stdout | tests/wm005-perf-review.test.ts > records wall-selection cost for the actual starting practice position
+{"method":"5 rounds of 10000 actual initial-position selectWall calls after1000 warmup; node CPU microbenchmark, not rendered FPS","faces":165,"solids":42,"samples":[469.743463,472.92051700000013,466.46737299999995,460.84294799999975,458.1183040000001]}
+
+ ✓ tests/wm005-perf-review.test.ts > records wall-selection cost for the actual starting practice position 2390ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  09:02:02
+   Duration  2.68s (tests 93%, transform 6%, import 1%)
+
+
+/tmp/wm005-selectwall-after.log
+
+ RUN  v5.0.0 /workspace/scratch/89089cc8f2ce/wm005
+
+stdout | tests/wm005-perf-review.test.ts > records wall-selection cost for the actual starting practice position
+{"method":"5 rounds of 10000 actual initial-position selectWall calls after1000 warmup; node CPU microbenchmark, not rendered FPS","faces":165,"solids":42,"samples":[54.81835100000001,56.334862999999984,52.71880699999997,47.37520500000005,48.80511200000001]}
+
+ ✓ tests/wm005-perf-review.test.ts > records wall-selection cost for the actual starting practice position 272ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  09:04:54
+   Duration  580ms (tests 59%, transform 37%, import 3%, worker 1%)
+
+
+/tmp/wm005-cycle1-full-unit.log
+
+ RUN  v5.0.0 /workspace/scratch/89089cc8f2ce/wm005
+
+
+ Test Files  13 passed (13)
+      Tests  395 passed (395)
+   Start at  09:05:30
+   Duration  3.41s (tests 78%, transform 16%, import 6%, worker 1%)
+
+
