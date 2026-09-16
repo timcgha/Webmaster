@@ -1,0 +1,26 @@
+
+ RUN  v5.0.0 /workspace/scratch/89089cc8f2ce/wm005
+
+ ❯ tests/wm005-ceiling-reverse-review.test.ts (1 test | 1 failed) 9ms
+   × F-WM005-SR-09 keeps the head clear when reversing toward the wall beneath the ceiling 9ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/wm005-ceiling-reverse-review.test.ts > F-WM005-SR-09 keeps the head clear when reversing toward the wall beneath the ceiling
+AssertionError: head must remain outside the wall front at z=-61: expected -61.58833333333315 to be greater than or equal to -61
+ ❯ tests/wm005-ceiling-reverse-review.test.ts:16:67
+     14|  // Its complete vertical band is inside the adjacent wall's0..11 heig…
+     15|  const headZ=m.position.z+ceilingClimbOffset(-Math.PI/2).z-HERO_RIG.he…
+     16|  expect(headZ,'head must remain outside the wall front at z=-61').toBe…
+       |                                                                   ^
+     17| });
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  09:29:34
+   Duration  309ms (transform 85%, import 8%, tests 5%, worker 2%)
+

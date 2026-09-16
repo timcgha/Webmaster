@@ -1,0 +1,341 @@
+--- a/src/core/presentation.ts
++++ b/src/core/presentation.ts
+@@ -128,10 +128,16 @@
+ 
+ /** Face-up ceiling presentation: local forward points toward the ceiling and
+  * local head points along travel. The upright collision capsule is unchanged. */
+-export function ceilingClimbOffset(pitch:number):Vec3Data {
++export function ceilingClimbOffset(pitch:number, facingYaw=Math.PI, wallNormal:Vec3Data={x:0,y:0,z:1}):Vec3Data {
+   const angle=Math.max(0,Math.min(Math.PI/2,-pitch));
+   // Keep the complete local Y/Z envelope below the ceiling through the rotation.
+-  return {x:0,y:(1-Math.cos(angle))*3.4-Math.sin(angle)*1.2,z:0};
++  // Rotate around the middle of the body, with its centre on the free side of
++  // the adjoining wall. Reversing travel then turns the body in place instead
++  // of swinging its head through the wall. No physics/hitbox displacement.
++  const half=HERO_PRESENTATION.capsuleHeight/2*Math.sin(angle);
++  return {x:half*(wallNormal.x+Math.sin(facingYaw)),
++    y:(1-Math.cos(angle))*3.4-Math.sin(angle)*1.2,
++    z:half*(wallNormal.z+Math.cos(facingYaw))};
+ }
+ export function climbLimbPose(phase:number,weight:number){
+   const wave=Math.sin(phase*Math.PI*2)*weight;
+--- a/src/game/hero.ts
++++ b/src/game/hero.ts
+@@ -2,6 +2,7 @@
+ import { Vector4 } from "@babylonjs/core/Maths/math.vector";
+ import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
+ import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
++import { addBlockShadow } from "./shadow-proxy";
+ import { createRoundedBlock } from "./rounded-block";
+ import { CreateSphere } from "@babylonjs/core/Meshes/Builders/sphereBuilder.pure";
+ import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
+@@ -52,15 +53,18 @@
+   const blue = costume(scene,"hero-blue-integrated",HERO_PRESENTATION.blue);
+   const mask = costume(scene,"hero-mask-integrated",HERO_PRESENTATION.red,"mask");
+   const chest = costume(scene,"hero-chest-integrated",HERO_PRESENTATION.red,"emblem");
++  const shadowMaterial = new StandardMaterial("hero-opaque-shadow",scene);
++  shadowMaterial.disableLighting=true;
+   const faceUV = Array.from({length:6},(_,i)=>new Vector4((i*256+1)/1536,1/256,((i+1)*256-1)/1536,255/256));
+   function block(name: string, size: [number,number,number], pos: [number,number,number], parent: TransformNode, material = blue) {
+     const mesh = createRoundedBlock(name,{width:size[0],height:size[1],depth:size[2],faceUV},scene);
+     mesh.parent=parent; mesh.position.set(...pos); mesh.material=material;
+-    mesh.metadata={originalProcedural:true,surfaceArtwork:true,visualOnly:true}; return mesh;
++    mesh.metadata={originalProcedural:true,surfaceArtwork:true,visualOnly:true};
++    mesh.isPickable=false; addBlockShadow(mesh,size,shadows,shadowMaterial); return mesh;
+   }
+   function joint(name: string, radius: number, parent: TransformNode, material = blue) {
+     const mesh = CreateSphere(name,{diameter:radius*2,segments:8},scene); mesh.parent=parent; mesh.material=material;
+-    return mesh;
++    mesh.isPickable=false; shadows.addShadowCaster(mesh,false); return mesh;
+   }
+   block("webmaster-pelvis",[0.72,0.44,0.46],[0,1.50,0],root);
+   block("webmaster-torso",[0.90,1.10,0.48],[0,2.09,0],root,chest);
+@@ -86,7 +90,6 @@
+     block(`hand-${side}`,[0.28,0.23,0.30],[0,-0.53,0],elbow,red);
+     arms.push(arm); elbows.push(elbow);
+   }
+-  for (const mesh of root.getChildMeshes()) { mesh.isPickable=false; shadows.addShadowCaster(mesh); }
+   return {hips,knees,ankles,arms,elbows};
+ }
+ 
+--- a/src/game/world.ts
++++ b/src/game/world.ts
+@@ -913,7 +913,7 @@
+     // Rotate the visual rig onto the ceiling while keeping its full authored
+     // extent on the playable side of the wall. Physics stays at motion.position.
+     if (this.heroRoot.rotation.x !== 0) {
+-      const presentationOffset = ceilingClimbOffset(this.heroRoot.rotation.x);
++      const presentationOffset = ceilingClimbOffset(this.heroRoot.rotation.x, this.motion.facingYaw, this.traversal.wallNormal ?? undefined);
+       this.heroRoot.position.x += presentationOffset.x;
+       this.heroRoot.position.y += presentationOffset.y;
+       this.heroRoot.position.z += presentationOffset.z;
+@@ -1500,10 +1500,19 @@
+    * Actual transformed vertices avoid conservative rotated-box false positives. */
+   heroViewForTests() {
+     const matrix=this.heroRoot.computeWorldMatrix(true);
++    const casters=this.scene.getLightByName("sun")?.getShadowGenerator()?.getShadowMap()?.renderList??[];
+     return {root:copyVec3(this.heroRoot.position),
+       front:copyVec3(Vector3.TransformNormal(new Vector3(0,0,1),matrix).normalize()),
+       head:copyVec3(Vector3.TransformNormal(new Vector3(0,1,0),matrix).normalize()),
+-      meshes:this.heroRoot.getChildMeshes().map(mesh=>{
++      shadowPass:{
++        visibleTriangles:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.surfaceArtwork).reduce((n,m)=>n+m.getTotalIndices()/3,0),
++        proxyTriangles:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).reduce((n,m)=>n+m.getTotalIndices()/3,0),
++        proxiesInShadowPass:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).every(m=>casters.includes(m)),
++        visibleBlocksExcludedFromShadowPass:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.surfaceArtwork).every(m=>!casters.includes(m)),
++        proxyCount:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).length,
++        proxiesExcludedFromCamera:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).every(m=>(m.layerMask & this.camera.layerMask)===0),
++      },
++      meshes:this.heroRoot.getChildMeshes().filter(m=>!m.metadata?.shadowOnly).map(mesh=>{
+         const matrix=mesh.computeWorldMatrix(true),vertices=mesh.getVerticesData("position")??[],
+           min={x:Infinity,y:Infinity,z:Infinity},max={x:-Infinity,y:-Infinity,z:-Infinity};
+         for(let i=0;i<vertices.length;i+=3){const p=Vector3.TransformCoordinates(new Vector3(vertices[i]!,vertices[i+1]!,vertices[i+2]!),matrix);
+--- a/src/game/shadow-proxy.ts
++++ b/src/game/shadow-proxy.ts
+@@ -0,0 +1,17 @@
++import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.pure';
++import type { Mesh } from '@babylonjs/core/Meshes/mesh';
++import type { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator';
++import type { Material } from '@babylonjs/core/Materials/material';
++
++/** The 256px shadow map cannot resolve the costume's 0.045m bevel. Preserve
++ * its opaque box silhouette in that pass without drawing bevels a second time.
++ * The explicit shadow render list ignores camera layers; the ordinary camera
++ * excludes this layer. Visible costume geometry/materials remain untouched. */
++export const HERO_SHADOW_LAYER = 0x10000000;
++export function addBlockShadow(mesh: Mesh, size: [number,number,number], shadows: ShadowGenerator, material: Material): Mesh {
++  const proxy=CreateBox(`${mesh.name}-shadow`,{width:size[0],height:size[1],depth:size[2]},mesh.getScene());
++  proxy.parent=mesh; proxy.material=material; proxy.layerMask=HERO_SHADOW_LAYER;
++  proxy.isPickable=false; proxy.metadata={shadowOnly:true,visualOnly:true,originalProcedural:true};
++  shadows.addShadowCaster(proxy,false);
++  return proxy;
++}
+--- a/tests/wm005-shadow-review.test.ts
++++ b/tests/wm005-shadow-review.test.ts
+@@ -0,0 +1,25 @@
++import {it,expect} from 'vitest';
++import {NullEngine} from '@babylonjs/core/Engines/nullEngine';
++import {Scene} from '@babylonjs/core/scene';
++import {FreeCamera} from '@babylonjs/core/Cameras/freeCamera';
++import {Vector3} from '@babylonjs/core/Maths/math.vector';
++import {DirectionalLight} from '@babylonjs/core/Lights/directionalLight';
++import {ShadowGenerator} from '@babylonjs/core/Lights/Shadows/shadowGenerator';
++import {StandardMaterial} from '@babylonjs/core/Materials/standardMaterial';
++import {createRoundedBlock} from '../src/game/rounded-block';
++import {addBlockShadow} from '../src/game/shadow-proxy';
++it('opaque low-poly shadow follows the rounded costume while remaining excluded from the camera',()=>{
++ const engine=new NullEngine(),scene=new Scene(engine),camera=new FreeCamera('camera',Vector3.Zero(),scene);
++ const shadow=new ShadowGenerator(256,new DirectionalLight('sun',new Vector3(-.4,-1,.35),scene));
++ const block=createRoundedBlock('head',{width:.72,height:.78,depth:.66},scene);
++ const proxy=addBlockShadow(block,[.72,.78,.66],shadow,new StandardMaterial('opaque',scene));
++ expect(proxy.getTotalIndices()).toBe(36);expect(block.getTotalIndices()).toBe(324);
++ expect(shadow.getShadowMap()!.renderList).toHaveLength(1);expect(shadow.getShadowMap()!.renderList![0]).toBe(proxy);
++ expect(shadow.getShadowMap()!.forceLayerMaskCheck).toBe(false);
++ expect(proxy.isVisible).toBe(true);expect(proxy.isEnabled()).toBe(true);expect(proxy.isPickable).toBe(false);
++ expect(proxy.layerMask & camera.layerMask).toBe(0);expect(block.layerMask & camera.layerMask).not.toBe(0);
++ block.position.set(2,8,-5);block.rotation.set(-1.3,.8,.2);block.computeWorldMatrix(true);proxy.computeWorldMatrix(true);
++ expect(proxy.getWorldMatrix().asArray()).toEqual(block.getWorldMatrix().asArray());
++ const box=proxy.getBoundingInfo().boundingBox;expect(box.extendSize.asArray()).toEqual([.36,.39,.33]);
++ scene.dispose();expect(engine.scenes).toHaveLength(0);engine.dispose();
++});
+--- a/tests/wm005-ceiling-reverse-review.test.ts
++++ b/tests/wm005-ceiling-reverse-review.test.ts
+@@ -0,0 +1,27 @@
++import {it,expect} from 'vitest';
++import {newTraversal,stepTraversal,SURFACES} from '../src/core/traversal';
++import {EXTERIOR_WALLS} from '../src/core/course';
++import {newSwing} from '../src/core/swing';
++import {HERO_RIG,ceilingClimbOffset} from '../src/core/presentation';
++import {COURSE_SOLIDS} from './course-driver';
++it('F-WM005-SR-09 keeps the head clear when reversing toward the wall beneath the ceiling',()=>{
++ let m={position:{x:-6,y:7.6,z:-55},velocity:{x:0,y:0,z:0},grounded:false,facingYaw:Math.PI};
++ let t={...newTraversal(),surfaceId:'climb-ceiling',cameraMode:'ceiling' as const,wallNormal:{x:0,y:0,z:1}},sw=newSwing();
++ const input={moveX:0,moveY:1,run:false,jumpPressed:false,swingHeld:false,climbHeld:true,pullHeld:false,cameraForward:{x:0,y:0,z:-1},aim:{origin:{x:0,y:0,z:0},direction:{x:0,y:0,z:-1}}};
++ for(let i=0;i<55;i++){const r=stepTraversal(m,t,sw,[],input,[],COURSE_SOLIDS,[...SURFACES,...EXTERIOR_WALLS]);m=r.motion;t=r.traversal as typeof t;sw=r.swing;}
++ expect(t.surfaceId).toBe('climb-ceiling');expect(m.position.z).toBeLessThan(-58);expect(m.facingYaw).toBeCloseTo(0);
++ // At face-up pitch, actual head top (local +Y) points toward world -Z.
++ // Its complete vertical band is inside the adjacent wall's0..11 height.
++ const headZ=m.position.z+ceilingClimbOffset(-Math.PI/2,m.facingYaw,t.wallNormal).z-HERO_RIG.headTop;
++ expect(headZ,'head must remain outside the wall front at z=-61').toBeGreaterThanOrEqual(-61);
++});
++
++it('ceiling reversal pivots the body centre in place for every heading',()=>{
++ for(const normal of [{x:0,y:0,z:1},{x:1,y:0,z:0},{x:-1,y:0,z:0},{x:0,y:0,z:-1}]){
++  for(let yaw=0;yaw<Math.PI*2;yaw+=.05){
++   const o=ceilingClimbOffset(-Math.PI/2,yaw,normal);
++   expect(o.x-1.7*Math.sin(yaw)).toBeCloseTo(1.7*normal.x);
++   expect(o.z-1.7*Math.cos(yaw)).toBeCloseTo(1.7*normal.z);
++  }
++ }
++});
+--- a/tests/swing.test.ts
++++ b/tests/swing.test.ts
+@@ -295,9 +295,10 @@
+     expect(Math.max(...firstSpeeds) - Math.min(...firstSpeeds)).toBeLessThan(
+       1.5,
+     );
+-    mkdirSync("evidence/wm-002", { recursive: true });
++    const output=process.env.WM_TEST_EVIDENCE_ROOT ?? "test-results/unit";
++    mkdirSync(output, { recursive: true });
+     writeFileSync(
+-      "evidence/wm-002/timing-profiles.json",
++      `${output}/timing-profiles.json`,
+       JSON.stringify(
+         {
+           method:
+@@ -369,3 +370,4 @@
+     z: 88,
+   });
+ });
++
+--- a/e2e/wm005-climb.spec.ts
++++ b/e2e/wm005-climb.spec.ts
+@@ -28,9 +28,19 @@
+  for(const mesh of viewBefore.meshes)expect(mesh.max.y,mesh.name).toBeLessThanOrEqual(11.005);
+  await c.down('s');await page.waitForTimeout(1500);await c.up('s');const moved=await state(page);const viewAfter=await page.evaluate(()=>window.__WM_DEBUG__!.getHeroView());expect(viewAfter.head.z).toBeGreaterThan(.99);
+  for(const mesh of viewAfter.meshes)expect(mesh.max.y,mesh.name).toBeLessThanOrEqual(11.005);
+- expect(moved.position.z).toBeGreaterThan(first.position.z+3);await page.screenshot({path:`${out}/${label}-ceiling-head-first.png`});await saveHeroRecording(page,`${out}/${label}-ceiling-climb.webm`);
++ expect(moved.position.z).toBeGreaterThan(first.position.z+3);await page.screenshot({path:`${out}/${label}-ceiling-head-first.png`});// Reverse toward the adjoining wall; inspect actual transformed geometry, not just the capsule.
++ await c.down('w');await wait(page,s=>s.position.z<-58);await c.up('w');await page.waitForTimeout(500);
++ const reversed=await state(page),viewReversed=await page.evaluate(()=>window.__WM_DEBUG__!.getHeroView());
++ expect(viewReversed.head.z).toBeLessThan(-.99);
++ for(const mesh of viewReversed.meshes){expect(mesh.min.z,mesh.name).toBeGreaterThanOrEqual(-61);expect(mesh.max.y,mesh.name).toBeLessThanOrEqual(11.005);}
++ expect(viewReversed.shadowPass.proxiesExcludedFromCamera).toBe(true);
++ expect(viewReversed.shadowPass.proxiesInShadowPass).toBe(true);expect(viewReversed.shadowPass.visibleBlocksExcludedFromShadowPass).toBe(true);
++ expect(viewReversed.shadowPass.proxyCount).toBe(16);
++ expect(viewReversed.shadowPass.proxyTriangles).toBeLessThan(viewReversed.shadowPass.visibleTriangles/8);
++ await page.screenshot({path:`${out}/${label}-ceiling-reversed.png`});
++ await saveHeroRecording(page,`${out}/${label}-ceiling-climb.webm`);
+  // Continuous held crawl reaches the outer fascia; ordinary forward/up input tops out.
+  await c.down('s');await wait(page,s=>s.traversal.surfaceId==='climb-ceiling:face-0'&&s.traversal.cameraMode==='wall',15000);await c.up('s');
+  await c.down('w');await wait(page,s=>s.grounded&&s.position.y===11.5);await stop(page,c);const finish=await state(page);await page.screenshot({path:`${out}/${label}-challenge-platform-top.png`});
+- await writeFile(`${out}/${label}-ceiling-topout.json`,JSON.stringify({method:'Earned entry swing, real vertical/lateral wall climb, face-up head-first ceiling traversal and actual fascia/top-out',first,moved,viewBefore,viewAfter,finish},null,2));
++ await writeFile(`${out}/${label}-ceiling-topout.json`,JSON.stringify({method:'Earned entry swing, real vertical/lateral wall climb, face-up head-first ceiling traversal and actual fascia/top-out',first,moved,viewBefore,viewAfter,reversed,viewReversed,finish},null,2));
+ });
+--- a/e2e/wm001.spec.ts
++++ b/e2e/wm001.spec.ts
+@@ -236,17 +236,18 @@
+     expect(blocked.position.z).toBeLessThan(-2.05);
+ 
+     await page.evaluate(() => window.__WM_DEBUG__!.setFixturePosition({ x: 0, y: 0, z: -8 }, "route start only"));
+-    await hold(page, ["w", "Shift"], 1250);
++    // Observe actual route coordinates rather than relying on wall-clock travel
++    // distances, which vary on software rendering and can miss the finish lane.
++    await page.keyboard.down("Shift");await page.keyboard.down("w");
++    await page.waitForFunction(()=>window.__WM_DEBUG__!.getState().position.z>3,null,{timeout:15000});
+     expect((await state(page)).progress).toBeGreaterThanOrEqual(1);
+-    await hold(page, ["w", "d", "Shift"], 1350);
+-    expect((await state(page)).progress).toBeGreaterThanOrEqual(2);
+-    await hold(page, ["a", "Shift"], 1300);
+-    await page.keyboard.down("w");
+-    await page.keyboard.down("Shift");
+-    await expect.poll(async () => (await state(page)).progress, { timeout: 4_000, intervals: [50] }).toBe(3);
+-    await page.keyboard.up("Shift");
+-    await page.keyboard.up("w");
+-    await page.waitForTimeout(100);
++    await page.keyboard.down("d");
++    await page.waitForFunction(()=>window.__WM_DEBUG__!.getState().progress===2,null,{timeout:15000});
++    await page.keyboard.up("w");await page.keyboard.up("d");await page.keyboard.down("a");
++    await page.waitForFunction(()=>window.__WM_DEBUG__!.getState().position.x < -3.5,null,{timeout:15000});
++    await page.keyboard.up("a");await page.keyboard.down("w");
++    await page.waitForFunction(()=>window.__WM_DEBUG__!.getState().progress===3,null,{timeout:15000});
++    await page.keyboard.up("Shift");await page.keyboard.up("w");await page.waitForTimeout(100);
+     expect((await state(page)).progress).toBe(3);
+     expect((await state(page)).grounded).toBe(true);
+     await page.screenshot({ path: `${captures}/${browserName}-route-complete.png` });
+--- a/e2e/wm003.spec.ts
++++ b/e2e/wm003.spec.ts
+@@ -324,9 +324,24 @@
+   await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+   await fixture(page, -9, 0, -51, "negative pull pause");
+   await look(page, Math.PI, 1.45);
+-  await page.keyboard.down("q");
+-  await wait(page, (s) => s.traversal.phase === "PULLING");
+-  await page.keyboard.press("Escape");
++  // Arm the observer before pressing Q so a short valid PULLING phase cannot
++  // pass between remote browser calls. Escape is ordinary DOM keyboard input.
++  const pullAtPause=await page.evaluate(()=>new Promise<any>((resolve,reject)=>{
++    const begun=performance.now();
++    const frame=()=>{const s=window.__WM_DEBUG__!.getState();
++      if(s.traversal.phase==='PULLING'){
++        window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true}));
++        window.dispatchEvent(new KeyboardEvent('keyup',{key:'Escape',code:'Escape',bubbles:true}));resolve(s);return;
++      }
++      if(performance.now()-begun>5000){reject(new Error(`No moving pull observed: ${s.traversal.phase} ${s.traversal.message}`));return;}
++      requestAnimationFrame(frame);
++    };
++    requestAnimationFrame(frame);
++    window.dispatchEvent(new KeyboardEvent('keydown',{key:'q',code:'KeyQ',bubbles:true}));
++  }));
++  expect(pullAtPause.traversal.pullId).toBe('route-step');
++  expect(pullAtPause.pullObjects.some((o:any)=>o.speed>0)).toBe(true);
++  await expect(page.getByRole('heading',{name:'Paused'})).toBeVisible();
+   await expect(page.getByRole("button", { name: /^Save Game/ })).toBeDisabled();
+   await shot(page, "save-unavailable-pulling");
+   const pulled = (await state(page)).pullObjects;
+@@ -384,6 +399,7 @@
+       {
+         method:
+           "Explicitly labeled negative placements; no route completion evidence",
++        pullAtPause,
+         recovered,
+       },
+       null,
+@@ -665,3 +681,4 @@
+     ),
+   );
+ });
++
+--- a/scripts/wm005-source-integrity.mjs
++++ b/scripts/wm005-source-integrity.mjs
+@@ -1,10 +1,15 @@
+ import fs from 'node:fs';import crypto from 'node:crypto';import {execFileSync} from 'node:child_process';import assert from 'node:assert/strict';
+ const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
+-const files=[];
++const files=[],discrepancies=[];
+ for(const row of execFileSync('git',['ls-tree','-r','-z','HEAD'],{encoding:'utf8'}).split('\0').filter(Boolean)) {
+   const tab=row.indexOf('\t'), sha=row.slice(0,tab).split(' ')[2], path=row.slice(tab+1);
++  if(!fs.existsSync(path)){discrepancies.push({path,expected:sha,actual:'MISSING'});continue;}
+   const bytes=fs.readFileSync(path),blob=crypto.createHash('sha1').update(Buffer.from(`blob ${bytes.length}\0`)).update(bytes).digest('hex');
+-  assert.equal(blob,sha,path);files.push({path,blob,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),bytes:bytes.length});
++  if(blob!==sha)discrepancies.push({path,expected:sha,actual:blob});
++  files.push({path,blob,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),bytes:bytes.length});
+ }
+-fs.mkdirSync('evidence/wm-005',{recursive:true});const report={source:git('rev-parse','HEAD'),tree:git('rev-parse','HEAD^{tree}'),baseline:'a63ad0e05ce12d2b42ff22e97d39de4af51d4b08',checked:files.length,status:'PASS',files};fs.writeFileSync('evidence/wm-005/source-integrity.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({...report,files:undefined}));
+-
++fs.mkdirSync('evidence/wm-005',{recursive:true});
++const report={source:git('rev-parse','HEAD'),tree:git('rev-parse','HEAD^{tree}'),baseline:'a63ad0e05ce12d2b42ff22e97d39de4af51d4b08',checked:files.length,status:discrepancies.length?'FAIL':'PASS',discrepancies,files};
++fs.writeFileSync('evidence/wm-005/source-integrity.json',JSON.stringify(report,null,2)+'\n');
++console.log(JSON.stringify({...report,files:undefined}));
++assert.equal(discrepancies.length,0,'Tracked bytes changed; the complete discrepancy report has been retained');
+--- a/.github/workflows/wm005-verification.yml
++++ b/.github/workflows/wm005-verification.yml
+@@ -53,9 +53,10 @@
+       - name: Full deterministic, TypeScript and isolated-storage gates
+         run: |
+           set -euo pipefail
+-          pnpm test 2>&1 | tee evidence/wm-005/unit.log
++          WM_TEST_EVIDENCE_ROOT=evidence/wm-005/unit pnpm test 2>&1 | tee evidence/wm-005/unit.log
+           pnpm exec tsc --noEmit 2>&1 | tee evidence/wm-005/typescript.log
+           node --test scripts/wm005-storage.test.mjs 2>&1 | tee evidence/wm-005/storage.log
++          node scripts/wm005-source-integrity.mjs
+       - name: Clean builds, dependency audits and exact preview packaging
+         id: builds
+         run: |
+@@ -67,14 +68,14 @@
+           node scripts/wm005-package.mjs
+       - name: Prescribed full Chromium
+         run: pnpm exec playwright install chromium
+-      - name: New circuit, orbit, climbing, appearance and save browser journeys
++      - name: Affected ceiling reversal, unmarked climb and hero shadow/appearance journeys
+         id: rendered
+         timeout-minutes: 45
+         env:
+           WM005_SUITE: new
+         run: |
+           set -euo pipefail
+-          pnpm exec playwright test -c playwright.wm005.config.ts e2e/wm005 2>&1 | tee evidence/wm-005/new-browser.log
++          pnpm exec playwright test -c playwright.wm005.config.ts e2e/wm005-climb.spec.ts e2e/wm005-hero.spec.ts 2>&1 | tee evidence/wm-005/new-browser.log
+       - name: Retain new rendered evidence immediately
+         if: always()
+         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

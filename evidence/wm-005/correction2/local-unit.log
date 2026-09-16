@@ -1,0 +1,90 @@
+$ vitest run
+
+ RUN  v5.0.0 /workspace/scratch/89089cc8f2ce/wm005
+
+ ❯ tests/street-visual.test.ts (2 tests | 1 failed) 6108ms
+   ❯ WM004 bounded opaque street rendering (2)
+     × covers the entire unchanged solid exactly once, with no overlapping depth layers or holes 5430ms
+ ❯ tests/course.test.ts (37 tests | 1 failed) 11522ms
+   ❯ WM004 actual connected course and street recovery (29)
+     × earns all twenty anchors and finish using real physics at 0.016666666666666666 7098ms
+ ❯ tests/wm005.test.ts (178 tests | 1 failed) 11348ms
+   ❯ WM005 genuine continuous circuit (5)
+     × earns two laps including final-to-first using ordinary inputs 0.016666666666666666 8796ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/course.test.ts > WM004 actual connected course and street recovery > earns all twenty anchors and finish using real physics at 0.016666666666666666
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/course.test.ts:12:56
+     10|   cameraForward:{x:0,y:0,z:-1},aim:{origin:{x:0,y:0,z:0},direction:{x:…
+     11| describe("WM004 actual connected course and street recovery",()=>{
+     12|   it.each([[1/60],[1/30],[1/120],[.012,.033,.02,.015]])("earns all twe…
+       |                                                        ^
+     13|     const r=driveCourse(schedule as number[]);
+     14|     expect(r.course).toMatchObject({next:1,completed:true,valid:true,c…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/street-visual.test.ts > WM004 bounded opaque street rendering > covers the entire unchanged solid exactly once, with no overlapping depth layers or holes
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/street-visual.test.ts:20:3
+     18|     }
+     19|   });
+     20|   it('covers the entire unchanged solid exactly once, with no overlapp…
+       |   ^
+     21|     const q=paintedStreet();expect(q.length).toBeLessThan(600);
+     22|     expect(new Set(q.map(x=>x.color))).toEqual(new Set(['street','path…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/wm005.test.ts > WM005 genuine continuous circuit > earns two laps including final-to-first using ordinary inputs 0.016666666666666666
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/wm005.test.ts:47:55
+     45|
+     46| describe('WM005 genuine continuous circuit',()=>{
+     47|  it.each([[1/60],[1/30],[1/120],[.012,.033,.02,.015]])('earns two laps…
+       |                                                       ^
+     48|   const r=driveCourse(schedule as number[],-1,false,2);expect(r.course…
+     49|   expect(r.events).toHaveLength(41);expect(COURSE_ANCHORS).toHaveLengt…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed | 12 passed (15)
+      Tests  3 failed | 395 passed (398)
+   Start at  09:40:56
+   Duration  24.12s (transform 48%, tests 36%, import 16%, worker 1%)
+
+  Transform  transforming modules took 59.11s · 48% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+
+[ELIFECYCLE] Test failed. See above for more details.
+
+ RUN  v5.0.0 /workspace/scratch/89089cc8f2ce/wm005
+
+
+ Test Files  15 passed (15)
+      Tests  398 passed (398)
+   Start at  09:41:58
+   Duration  10.08s (tests 85%, transform 7%, import 7%, worker 1%)
+
+    Isolate  15 workers spawned · ~129ms startup each (spawn + environment, per file)
+             at least ~1.81s faster with isolate: false — reuses workers across files instead of one per file
+
+
+ RUN  v5.0.0 /workspace/scratch/89089cc8f2ce/wm005
+
+
+ Test Files  15 passed (15)
+      Tests  398 passed (398)
+   Start at  09:46:14
+   Duration  9.02s (tests 88%, import 7%, transform 4%, worker 1%)
+
+    Isolate  15 workers spawned · ~108ms startup each (spawn + environment, per file)
+             at least ~1.52s faster with isolate: false — reuses workers across files instead of one per file
+

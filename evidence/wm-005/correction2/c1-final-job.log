@@ -1,0 +1,976 @@
+﻿2026-09-16T06:08:20.4668888Z Current runner version: '2.337.0'
+2026-09-16T06:08:20.4705454Z ##[group]Runner Image Provisioner
+2026-09-16T06:08:20.4707137Z Hosted Compute Agent
+2026-09-16T06:08:20.4707916Z Version: 20260828.587
+2026-09-16T06:08:20.4708743Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+2026-09-16T06:08:20.4709793Z Build Date: 2026-08-28T16:44:25Z
+2026-09-16T06:08:20.4710745Z Worker ID: {4b5f8d21-b580-4eae-b6be-b3c37739c7b5}
+2026-09-16T06:08:20.4711805Z Azure Region: northcentralus
+2026-09-16T06:08:20.4712606Z ##[endgroup]
+2026-09-16T06:08:20.4714586Z ##[group]Operating System
+2026-09-16T06:08:20.4715471Z Microsoft Windows Server 2025
+2026-09-16T06:08:20.4716304Z 10.0.26100
+2026-09-16T06:08:20.4717082Z Datacenter
+2026-09-16T06:08:20.4717795Z ##[endgroup]
+2026-09-16T06:08:20.4718544Z ##[group]Runner Image
+2026-09-16T06:08:20.4719362Z Image: windows-2025-vs2026
+2026-09-16T06:08:20.4720162Z Version: 20260907.229.1
+2026-09-16T06:08:20.4722519Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20260907.229/images/windows/Windows2025-VS2026-Readme.md
+2026-09-16T06:08:20.4725090Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20260907.229
+2026-09-16T06:08:20.4726916Z ##[endgroup]
+2026-09-16T06:08:20.4728685Z ##[group]GITHUB_TOKEN Permissions
+2026-09-16T06:08:20.4731315Z Actions: read
+2026-09-16T06:08:20.4732069Z Contents: read
+2026-09-16T06:08:20.4732806Z Metadata: read
+2026-09-16T06:08:20.4733496Z ##[endgroup]
+2026-09-16T06:08:20.4736414Z Secret source: Actions
+2026-09-16T06:08:20.4737767Z Cache mode: write
+2026-09-16T06:08:20.4738750Z Prepare workflow directory
+2026-09-16T06:08:20.5330126Z Prepare all required actions
+2026-09-16T06:08:20.5400354Z Getting action download info
+2026-09-16T06:08:20.7771684Z Download action repository 'actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09' (SHA:fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09)
+2026-09-16T06:08:20.9997254Z Download action repository 'actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444' (SHA:a0853c24544627f65ddf259abe73b1d18a591444)
+2026-09-16T06:08:21.1760006Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-09-16T06:08:21.5813201Z Complete job name: verify
+2026-09-16T06:08:21.7201228Z ##[group]Run git config --global core.autocrlf false
+2026-09-16T06:08:21.7202379Z [36;1mgit config --global core.autocrlf false[0m
+2026-09-16T06:08:21.7224041Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-09-16T06:08:21.7225144Z ##[endgroup]
+2026-09-16T06:08:22.4498482Z ##[group]Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+2026-09-16T06:08:22.4500164Z with:
+2026-09-16T06:08:22.4500982Z   path: candidate
+2026-09-16T06:08:22.4501956Z   ref: 8a221c08642ebdd1264a04ebfaf6093d838cf60e
+2026-09-16T06:08:22.4503200Z   persist-credentials: false
+2026-09-16T06:08:22.4504240Z   fetch-depth: 2
+2026-09-16T06:08:22.4505160Z   repository: timcgha/Webmaster
+2026-09-16T06:08:22.4516376Z   token: ***
+2026-09-16T06:08:22.4517315Z   ssh-strict: true
+2026-09-16T06:08:22.4518182Z   ssh-user: git
+2026-09-16T06:08:22.4519009Z   clean: true
+2026-09-16T06:08:22.4519883Z   sparse-checkout-cone-mode: true
+2026-09-16T06:08:22.4520927Z   fetch-tags: false
+2026-09-16T06:08:22.4521809Z   show-progress: true
+2026-09-16T06:08:22.4522683Z   lfs: false
+2026-09-16T06:08:22.4523489Z   submodules: false
+2026-09-16T06:08:22.4524383Z   set-safe-directory: true
+2026-09-16T06:08:22.4525424Z   allow-unsafe-pr-checkout: false
+2026-09-16T06:08:22.4526566Z ##[endgroup]
+2026-09-16T06:08:22.6231969Z Syncing repository: timcgha/Webmaster
+2026-09-16T06:08:22.6235698Z ##[group]Getting Git version info
+2026-09-16T06:08:22.6237562Z Working directory is 'D:\a\Webmaster\Webmaster\candidate'
+2026-09-16T06:08:22.7065095Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-16T06:08:22.7394527Z git version 2.55.0.windows.5
+2026-09-16T06:08:22.7445630Z ##[endgroup]
+2026-09-16T06:08:22.7462019Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\d7d6c0e9-4ec3-4b1a-bf13-062a355e29e8\.gitconfig'
+2026-09-16T06:08:22.7490662Z Temporarily overriding HOME='D:\a\_temp\d7d6c0e9-4ec3-4b1a-bf13-062a355e29e8' before making global git config changes
+2026-09-16T06:08:22.7494607Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-16T06:08:22.7503733Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Webmaster\Webmaster\candidate
+2026-09-16T06:08:22.7855787Z ##[group]Initializing the repository
+2026-09-16T06:08:22.7865671Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\Webmaster\Webmaster\candidate
+2026-09-16T06:08:22.8322334Z Initialized empty Git repository in D:/a/Webmaster/Webmaster/candidate/.git/
+2026-09-16T06:08:22.8379751Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/timcgha/Webmaster
+2026-09-16T06:08:22.8737566Z ##[endgroup]
+2026-09-16T06:08:22.8739779Z ##[group]Disabling automatic garbage collection
+2026-09-16T06:08:22.8749188Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-09-16T06:08:22.9140324Z ##[endgroup]
+2026-09-16T06:08:22.9142273Z ##[group]Setting up auth
+2026-09-16T06:08:22.9144685Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-16T06:08:22.9602576Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-16T06:08:24.1166564Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-16T06:08:24.1520233Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-16T06:08:24.8872119Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-16T06:08:24.9223451Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-16T06:08:25.5625916Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-09-16T06:08:25.5993328Z ##[endgroup]
+2026-09-16T06:08:25.5997097Z ##[group]Fetching the repository
+2026-09-16T06:08:25.6012457Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=2 origin 8a221c08642ebdd1264a04ebfaf6093d838cf60e
+2026-09-16T06:08:27.5053179Z From https://github.com/timcgha/Webmaster
+2026-09-16T06:08:27.5053960Z  * branch            8a221c08642ebdd1264a04ebfaf6093d838cf60e -> FETCH_HEAD
+2026-09-16T06:08:27.5107153Z ##[endgroup]
+2026-09-16T06:08:27.5107812Z ##[group]Determining the checkout info
+2026-09-16T06:08:27.5109832Z ##[endgroup]
+2026-09-16T06:08:27.5123970Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-09-16T06:08:27.5528762Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-09-16T06:08:27.5872380Z ##[group]Checking out the ref
+2026-09-16T06:08:27.5886540Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force 8a221c08642ebdd1264a04ebfaf6093d838cf60e
+2026-09-16T06:08:28.0459228Z Note: switching to '8a221c08642ebdd1264a04ebfaf6093d838cf60e'.
+2026-09-16T06:08:28.0459774Z 
+2026-09-16T06:08:28.0460108Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-09-16T06:08:28.0460883Z changes and commit them, and you can discard any commits you make in this
+2026-09-16T06:08:28.0461684Z state without impacting any branches by switching back to a branch.
+2026-09-16T06:08:28.0462103Z 
+2026-09-16T06:08:28.0463508Z If you want to create a new branch to retain commits you create, you may
+2026-09-16T06:08:28.0464216Z do so (now or later) by using -c with the switch command. Example:
+2026-09-16T06:08:28.0464638Z 
+2026-09-16T06:08:28.0464813Z   git switch -c <new-branch-name>
+2026-09-16T06:08:28.0465102Z 
+2026-09-16T06:08:28.0465263Z Or undo this operation with:
+2026-09-16T06:08:28.0465590Z 
+2026-09-16T06:08:28.0465740Z   git switch -
+2026-09-16T06:08:28.0466162Z 
+2026-09-16T06:08:28.0466508Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-09-16T06:08:28.0467075Z 
+2026-09-16T06:08:28.0467799Z HEAD is now at 8a221c0 WM-005 correction 1: preserve momentum and clearance, repair HUD and bound rounded geometry cost
+2026-09-16T06:08:28.0633915Z ##[endgroup]
+2026-09-16T06:08:28.1003346Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-09-16T06:08:28.1310175Z 8a221c08642ebdd1264a04ebfaf6093d838cf60e
+2026-09-16T06:08:28.1357279Z ##[group]Removing auth
+2026-09-16T06:08:28.1367621Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-16T06:08:28.1714009Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-16T06:08:28.7853242Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-16T06:08:28.8169503Z http.https://github.com/.extraheader
+2026-09-16T06:08:28.8223304Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-09-16T06:08:28.8574474Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-16T06:08:29.5146603Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-16T06:08:29.5566731Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-16T06:08:30.1819762Z ##[endgroup]
+2026-09-16T06:08:30.2225951Z ##[group]Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+2026-09-16T06:08:30.2226403Z with:
+2026-09-16T06:08:30.2226590Z   path: baseline
+2026-09-16T06:08:30.2226825Z   ref: a63ad0e05ce12d2b42ff22e97d39de4af51d4b08
+2026-09-16T06:08:30.2227112Z   persist-credentials: false
+2026-09-16T06:08:30.2227348Z   repository: timcgha/Webmaster
+2026-09-16T06:08:30.2230181Z   token: ***
+2026-09-16T06:08:30.2230373Z   ssh-strict: true
+2026-09-16T06:08:30.2230564Z   ssh-user: git
+2026-09-16T06:08:30.2230747Z   clean: true
+2026-09-16T06:08:30.2230944Z   sparse-checkout-cone-mode: true
+2026-09-16T06:08:30.2231180Z   fetch-depth: 1
+2026-09-16T06:08:30.2231379Z   fetch-tags: false
+2026-09-16T06:08:30.2231569Z   show-progress: true
+2026-09-16T06:08:30.2231757Z   lfs: false
+2026-09-16T06:08:30.2231924Z   submodules: false
+2026-09-16T06:08:30.2232118Z   set-safe-directory: true
+2026-09-16T06:08:30.2232346Z   allow-unsafe-pr-checkout: false
+2026-09-16T06:08:30.2232629Z ##[endgroup]
+2026-09-16T06:08:30.3891814Z Syncing repository: timcgha/Webmaster
+2026-09-16T06:08:30.3903312Z ##[group]Getting Git version info
+2026-09-16T06:08:30.3904046Z Working directory is 'D:\a\Webmaster\Webmaster\baseline'
+2026-09-16T06:08:30.4783810Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-16T06:08:30.5131070Z git version 2.55.0.windows.5
+2026-09-16T06:08:30.5181475Z ##[endgroup]
+2026-09-16T06:08:30.5195606Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\96840424-82f5-4a0d-a460-76635175d9aa\.gitconfig'
+2026-09-16T06:08:30.5220433Z Temporarily overriding HOME='D:\a\_temp\96840424-82f5-4a0d-a460-76635175d9aa' before making global git config changes
+2026-09-16T06:08:30.5221982Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-16T06:08:30.5233052Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Webmaster\Webmaster\baseline
+2026-09-16T06:08:30.5570937Z ##[group]Initializing the repository
+2026-09-16T06:08:30.5582387Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\Webmaster\Webmaster\baseline
+2026-09-16T06:08:30.5958633Z Initialized empty Git repository in D:/a/Webmaster/Webmaster/baseline/.git/
+2026-09-16T06:08:30.6023250Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/timcgha/Webmaster
+2026-09-16T06:08:30.6545732Z ##[endgroup]
+2026-09-16T06:08:30.6547088Z ##[group]Disabling automatic garbage collection
+2026-09-16T06:08:30.6550985Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-09-16T06:08:30.6895080Z ##[endgroup]
+2026-09-16T06:08:30.6895762Z ##[group]Setting up auth
+2026-09-16T06:08:30.6911930Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-16T06:08:30.7322865Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-16T06:08:31.3891807Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-16T06:08:31.4244242Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-16T06:08:32.0924683Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-16T06:08:32.1286330Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-16T06:08:32.7591044Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-09-16T06:08:32.7951005Z ##[endgroup]
+2026-09-16T06:08:32.7954414Z ##[group]Fetching the repository
+2026-09-16T06:08:32.7965517Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin a63ad0e05ce12d2b42ff22e97d39de4af51d4b08
+2026-09-16T06:08:34.2011932Z From https://github.com/timcgha/Webmaster
+2026-09-16T06:08:34.2012626Z  * branch            a63ad0e05ce12d2b42ff22e97d39de4af51d4b08 -> FETCH_HEAD
+2026-09-16T06:08:34.2068313Z ##[endgroup]
+2026-09-16T06:08:34.2068890Z ##[group]Determining the checkout info
+2026-09-16T06:08:34.2071924Z ##[endgroup]
+2026-09-16T06:08:34.2082529Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-09-16T06:08:34.2458057Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-09-16T06:08:34.2806266Z ##[group]Checking out the ref
+2026-09-16T06:08:34.2817816Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force a63ad0e05ce12d2b42ff22e97d39de4af51d4b08
+2026-09-16T06:08:34.7579990Z Note: switching to 'a63ad0e05ce12d2b42ff22e97d39de4af51d4b08'.
+2026-09-16T06:08:34.7580698Z 
+2026-09-16T06:08:34.7581200Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-09-16T06:08:34.7581957Z changes and commit them, and you can discard any commits you make in this
+2026-09-16T06:08:34.7582699Z state without impacting any branches by switching back to a branch.
+2026-09-16T06:08:34.7583165Z 
+2026-09-16T06:08:34.7583456Z If you want to create a new branch to retain commits you create, you may
+2026-09-16T06:08:34.7584140Z do so (now or later) by using -c with the switch command. Example:
+2026-09-16T06:08:34.7584534Z 
+2026-09-16T06:08:34.7584683Z   git switch -c <new-branch-name>
+2026-09-16T06:08:34.7585344Z 
+2026-09-16T06:08:34.7585491Z Or undo this operation with:
+2026-09-16T06:08:34.7585735Z 
+2026-09-16T06:08:34.7585858Z   git switch -
+2026-09-16T06:08:34.7586029Z 
+2026-09-16T06:08:34.7586366Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-09-16T06:08:34.7586851Z 
+2026-09-16T06:08:34.7587493Z HEAD is now at a63ad0e Merge PR #4: sponsor-accepted WM-004
+2026-09-16T06:08:34.7803991Z ##[endgroup]
+2026-09-16T06:08:34.8169491Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-09-16T06:08:34.8479558Z a63ad0e05ce12d2b42ff22e97d39de4af51d4b08
+2026-09-16T06:08:34.8529277Z ##[group]Removing auth
+2026-09-16T06:08:34.8539644Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-16T06:08:34.8950424Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-16T06:08:35.5740279Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-16T06:08:35.6117577Z http.https://github.com/.extraheader
+2026-09-16T06:08:35.6179733Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-09-16T06:08:35.6540397Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-16T06:08:36.2721472Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-16T06:08:36.3087218Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-16T06:08:36.9059905Z ##[endgroup]
+2026-09-16T06:08:36.9507940Z ##[group]Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+2026-09-16T06:08:36.9508416Z with:
+2026-09-16T06:08:36.9508615Z   path: save-baseline
+2026-09-16T06:08:36.9508863Z   ref: 3962446ca00c6e1db6bd8b250335b24619a0aeab
+2026-09-16T06:08:36.9509155Z   persist-credentials: false
+2026-09-16T06:08:36.9509393Z   repository: timcgha/Webmaster
+2026-09-16T06:08:36.9512599Z   token: ***
+2026-09-16T06:08:36.9512799Z   ssh-strict: true
+2026-09-16T06:08:36.9512994Z   ssh-user: git
+2026-09-16T06:08:36.9513178Z   clean: true
+2026-09-16T06:08:36.9513380Z   sparse-checkout-cone-mode: true
+2026-09-16T06:08:36.9513623Z   fetch-depth: 1
+2026-09-16T06:08:36.9513808Z   fetch-tags: false
+2026-09-16T06:08:36.9514003Z   show-progress: true
+2026-09-16T06:08:36.9514202Z   lfs: false
+2026-09-16T06:08:36.9514375Z   submodules: false
+2026-09-16T06:08:36.9514569Z   set-safe-directory: true
+2026-09-16T06:08:36.9514804Z   allow-unsafe-pr-checkout: false
+2026-09-16T06:08:36.9515112Z ##[endgroup]
+2026-09-16T06:08:37.0875115Z Syncing repository: timcgha/Webmaster
+2026-09-16T06:08:37.0885832Z ##[group]Getting Git version info
+2026-09-16T06:08:37.0887031Z Working directory is 'D:\a\Webmaster\Webmaster\save-baseline'
+2026-09-16T06:08:37.1800751Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-16T06:08:37.2174351Z git version 2.55.0.windows.5
+2026-09-16T06:08:37.2245429Z ##[endgroup]
+2026-09-16T06:08:37.2262544Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\b4afd53c-3c41-45af-9cd6-f238a8de1bea\.gitconfig'
+2026-09-16T06:08:37.2294479Z Temporarily overriding HOME='D:\a\_temp\b4afd53c-3c41-45af-9cd6-f238a8de1bea' before making global git config changes
+2026-09-16T06:08:37.2295984Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-16T06:08:37.2310411Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Webmaster\Webmaster\save-baseline
+2026-09-16T06:08:37.2895480Z ##[group]Initializing the repository
+2026-09-16T06:08:37.2910102Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\Webmaster\Webmaster\save-baseline
+2026-09-16T06:08:37.3364930Z Initialized empty Git repository in D:/a/Webmaster/Webmaster/save-baseline/.git/
+2026-09-16T06:08:37.3431919Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/timcgha/Webmaster
+2026-09-16T06:08:37.3872007Z ##[endgroup]
+2026-09-16T06:08:37.3872695Z ##[group]Disabling automatic garbage collection
+2026-09-16T06:08:37.3890577Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-09-16T06:08:37.4303299Z ##[endgroup]
+2026-09-16T06:08:37.4303905Z ##[group]Setting up auth
+2026-09-16T06:08:37.4323488Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-16T06:08:37.4682071Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-16T06:08:38.0966963Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-16T06:08:38.1373852Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-16T06:08:38.7640977Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-16T06:08:38.7998032Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-16T06:08:39.4504094Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-09-16T06:08:39.4921882Z ##[endgroup]
+2026-09-16T06:08:39.4924939Z ##[group]Fetching the repository
+2026-09-16T06:08:39.4937374Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 3962446ca00c6e1db6bd8b250335b24619a0aeab
+2026-09-16T06:08:41.2236479Z From https://github.com/timcgha/Webmaster
+2026-09-16T06:08:41.2237166Z  * branch            3962446ca00c6e1db6bd8b250335b24619a0aeab -> FETCH_HEAD
+2026-09-16T06:08:41.2285716Z ##[endgroup]
+2026-09-16T06:08:41.2286279Z ##[group]Determining the checkout info
+2026-09-16T06:08:41.2288806Z ##[endgroup]
+2026-09-16T06:08:41.2303897Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-09-16T06:08:41.2743417Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-09-16T06:08:41.3099601Z ##[group]Checking out the ref
+2026-09-16T06:08:41.3110593Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force 3962446ca00c6e1db6bd8b250335b24619a0aeab
+2026-09-16T06:08:41.7680126Z Note: switching to '3962446ca00c6e1db6bd8b250335b24619a0aeab'.
+2026-09-16T06:08:41.7680698Z 
+2026-09-16T06:08:41.7681137Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-09-16T06:08:41.7682220Z changes and commit them, and you can discard any commits you make in this
+2026-09-16T06:08:41.7683441Z state without impacting any branches by switching back to a branch.
+2026-09-16T06:08:41.7683889Z 
+2026-09-16T06:08:41.7684185Z If you want to create a new branch to retain commits you create, you may
+2026-09-16T06:08:41.7684861Z do so (now or later) by using -c with the switch command. Example:
+2026-09-16T06:08:41.7685255Z 
+2026-09-16T06:08:41.7685413Z   git switch -c <new-branch-name>
+2026-09-16T06:08:41.7685670Z 
+2026-09-16T06:08:41.7685818Z Or undo this operation with:
+2026-09-16T06:08:41.7686070Z 
+2026-09-16T06:08:41.7686189Z   git switch -
+2026-09-16T06:08:41.7686376Z 
+2026-09-16T06:08:41.7686700Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-09-16T06:08:41.7687550Z 
+2026-09-16T06:08:41.7687901Z HEAD is now at 3962446 Merge PR #3: sponsor-accepted WM-003 Climb, Stick and Pull
+2026-09-16T06:08:41.7862075Z ##[endgroup]
+2026-09-16T06:08:41.8273262Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-09-16T06:08:41.8581760Z 3962446ca00c6e1db6bd8b250335b24619a0aeab
+2026-09-16T06:08:41.8628595Z ##[group]Removing auth
+2026-09-16T06:08:41.8639811Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-16T06:08:41.8980316Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-16T06:08:42.5384504Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-16T06:08:42.5674470Z http.https://github.com/.extraheader
+2026-09-16T06:08:42.5721527Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-09-16T06:08:42.6074497Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-16T06:08:43.2189907Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-16T06:08:43.2584531Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-16T06:08:43.8876176Z ##[endgroup]
+2026-09-16T06:08:43.9244326Z ##[group]Run actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+2026-09-16T06:08:43.9244808Z with:
+2026-09-16T06:08:43.9244998Z   node-version: 24.19.0
+2026-09-16T06:08:43.9245228Z   package-manager-cache: false
+2026-09-16T06:08:43.9245493Z   always-auth: false
+2026-09-16T06:08:43.9245688Z   check-latest: false
+2026-09-16T06:08:43.9248456Z   token: ***
+2026-09-16T06:08:43.9248647Z ##[endgroup]
+2026-09-16T06:08:44.1260663Z Attempting to download 24.19.0...
+2026-09-16T06:08:44.1457947Z (node:8652) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-16T06:08:44.1459114Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-16T06:08:44.7231481Z Acquiring 24.19.0 - x64 from https://github.com/actions/node-versions/releases/download/24.19.0-30872449280/node-24.19.0-win32-x64.7z
+2026-09-16T06:08:45.1100326Z Extracting ...
+2026-09-16T06:08:47.5685391Z Adding to the cache ...
+2026-09-16T06:08:51.3167326Z ##[group]Environment details
+2026-09-16T06:08:52.6962920Z node: v24.19.0
+2026-09-16T06:08:52.6963296Z npm: 11.17.0
+2026-09-16T06:08:52.6963562Z yarn: 1.22.22
+2026-09-16T06:08:52.6964135Z ##[endgroup]
+2026-09-16T06:08:52.7353420Z ##[group]Run set -euo pipefail
+2026-09-16T06:08:52.7353824Z [36;1mset -euo pipefail[0m
+2026-09-16T06:08:52.7354055Z [36;1mcorepack enable[0m
+2026-09-16T06:08:52.7354314Z [36;1mcorepack prepare pnpm@11.19.0 --activate[0m
+2026-09-16T06:08:52.7354630Z [36;1mmkdir -p evidence/wm-005[0m
+2026-09-16T06:08:52.7355070Z [36;1mpnpm install --frozen-lockfile 2>&1 | tee evidence/wm-005/install.log[0m
+2026-09-16T06:08:52.7355653Z [36;1mpnpm --dir ../baseline install --frozen-lockfile 2>&1 | tee evidence/wm-005/baseline-install.log[0m
+2026-09-16T06:08:52.7356161Z [36;1mnode scripts/wm005-source-integrity.mjs[0m
+2026-09-16T06:08:52.7373044Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-09-16T06:08:52.7373440Z ##[endgroup]
+2026-09-16T06:08:53.3763580Z Preparing pnpm@11.19.0 for immediate activation...
+2026-09-16T06:09:09.6748657Z ? Verifying lockfile against supply-chain policies (91 entries)...
+2026-09-16T06:09:09.6902753Z Lockfile is up to date, resolution step is skipped
+2026-09-16T06:09:09.8371274Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2026-09-16T06:09:09.8512557Z Packages: +47
+2026-09-16T06:09:09.8631492Z +++++++++++++++++++++++++++++++++++++++++++++++
+2026-09-16T06:09:10.8358225Z Progress: resolved 47, reused 0, downloaded 20, added 0
+2026-09-16T06:09:10.8653796Z Packages are hard linked from the content-addressable store to the virtual store.
+2026-09-16T06:09:10.8663147Z   Content-addressable store is at: D:\.pnpm-store\v11
+2026-09-16T06:09:10.8664824Z   Virtual store is at:             node_modules/.pnpm
+2026-09-16T06:09:11.8506738Z Progress: resolved 47, reused 0, downloaded 46, added 35
+2026-09-16T06:09:12.7097467Z ✓ Lockfile passes supply-chain policies (91 entries in 3s)
+2026-09-16T06:09:12.8512282Z Progress: resolved 47, reused 0, downloaded 46, added 46
+2026-09-16T06:09:14.8481864Z Progress: resolved 47, reused 0, downloaded 47, added 46
+2026-09-16T06:09:16.2301725Z Progress: resolved 47, reused 0, downloaded 47, added 47
+2026-09-16T06:09:16.2309739Z Progress: resolved 47, reused 0, downloaded 47, added 47, done
+2026-09-16T06:09:16.3537390Z 
+2026-09-16T06:09:16.3538333Z dependencies:
+2026-09-16T06:09:16.3542110Z + @babylonjs/core 9.26.0
+2026-09-16T06:09:16.3543160Z + @babylonjs/havok 1.3.14
+2026-09-16T06:09:16.3544023Z 
+2026-09-16T06:09:16.3544186Z devDependencies:
+2026-09-16T06:09:16.3545215Z + @playwright/test 1.63.0
+2026-09-16T06:09:16.3545700Z + @types/node 22.20.2
+2026-09-16T06:09:16.3546675Z + typescript 7.0.2
+2026-09-16T06:09:16.3547014Z + vite 8.3.0
+2026-09-16T06:09:16.3547317Z + vitest 5.0.0
+2026-09-16T06:09:16.3547497Z 
+2026-09-16T06:09:16.3881527Z Done in 7.5s using pnpm v11.19.0
+2026-09-16T06:09:17.3755216Z ✓ Lockfile passes supply-chain policies (verified 4s ago)
+2026-09-16T06:09:17.3916070Z Lockfile is up to date, resolution step is skipped
+2026-09-16T06:09:17.4557112Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2026-09-16T06:09:17.4678475Z Packages: +47
+2026-09-16T06:09:17.4685852Z +++++++++++++++++++++++++++++++++++++++++++++++
+2026-09-16T06:09:17.6928914Z Packages are hard linked from the content-addressable store to the virtual store.
+2026-09-16T06:09:17.7006357Z   Content-addressable store is at: D:\.pnpm-store\v11
+2026-09-16T06:09:17.7151017Z   Virtual store is at:             node_modules/.pnpm
+2026-09-16T06:09:18.4149524Z Progress: resolved 47, reused 47, downloaded 0, added 46
+2026-09-16T06:09:19.1366592Z Progress: resolved 47, reused 47, downloaded 0, added 47, done
+2026-09-16T06:09:19.2760181Z 
+2026-09-16T06:09:19.2761814Z dependencies:
+2026-09-16T06:09:19.2763698Z + @babylonjs/core 9.26.0
+2026-09-16T06:09:19.2764287Z + @babylonjs/havok 1.3.14
+2026-09-16T06:09:19.2764900Z 
+2026-09-16T06:09:19.2765628Z devDependencies:
+2026-09-16T06:09:19.2766707Z + @playwright/test 1.63.0
+2026-09-16T06:09:19.2768035Z + @types/node 22.20.2
+2026-09-16T06:09:19.2769656Z + typescript 7.0.2
+2026-09-16T06:09:19.2770021Z + vite 8.3.0
+2026-09-16T06:09:19.2776077Z + vitest 5.0.0
+2026-09-16T06:09:19.2776372Z 
+2026-09-16T06:09:19.3079749Z Done in 2.5s using pnpm v11.19.0
+2026-09-16T06:09:19.6550960Z {"source":"8a221c08642ebdd1264a04ebfaf6093d838cf60e","tree":"e2260133f48d5bff7a61586922b67ce11c7550c7","baseline":"a63ad0e05ce12d2b42ff22e97d39de4af51d4b08","checked":459,"status":"PASS"}
+2026-09-16T06:09:19.6969420Z ##[group]Run set -euo pipefail
+2026-09-16T06:09:19.6970010Z [36;1mset -euo pipefail[0m
+2026-09-16T06:09:19.6970479Z [36;1mpnpm test 2>&1 | tee evidence/wm-005/unit.log[0m
+2026-09-16T06:09:19.6971146Z [36;1mpnpm exec tsc --noEmit 2>&1 | tee evidence/wm-005/typescript.log[0m
+2026-09-16T06:09:19.6972045Z [36;1mnode --test scripts/wm005-storage.test.mjs 2>&1 | tee evidence/wm-005/storage.log[0m
+2026-09-16T06:09:19.6992545Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-09-16T06:09:19.6993202Z ##[endgroup]
+2026-09-16T06:09:20.5159759Z $ vitest run
+2026-09-16T06:09:21.0057243Z 
+2026-09-16T06:09:21.0061717Z [1m[30m[46m RUN [49m[39m[22m [36mv5.0.0 [39m[90mD:/a/Webmaster/Webmaster/candidate[39m
+2026-09-16T06:09:21.0062765Z 
+2026-09-16T06:09:21.4669535Z  [32m✓[39m tests/actions.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+2026-09-16T06:09:21.8629336Z  [32m✓[39m tests/save.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-09-16T06:09:22.0483046Z  [32m✓[39m tests/swing.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 552[2mms[22m[39m
+2026-09-16T06:09:22.4930685Z  [32m✓[39m tests/traversal.test.ts [2m([22m[2m96 tests[22m[2m)[22m[33m 890[2mms[22m[39m
+2026-09-16T06:09:22.4942077Z    [32m✓[39m save-safe phases and earned route state [2m(31)[22m
+2026-09-16T06:09:22.5021267Z      [33m[2m✓[22m[39m completes genuine semantic route under {"schedule":[0.03333333333333333]} timing[33m 304[2mms[22m[39m
+2026-09-16T06:09:22.9106518Z  [32m✓[39m tests/remediation.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 122[2mms[22m[39m
+2026-09-16T06:09:23.2034572Z  [32m✓[39m tests/motion.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+2026-09-16T06:09:25.4253379Z  [32m✓[39m tests/street-visual.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 1744[2mms[22m[39m
+2026-09-16T06:09:25.4407651Z    [32m✓[39m WM004 bounded opaque street rendering [2m(2)[22m
+2026-09-16T06:09:25.4493001Z      [33m[2m✓[22m[39m covers the entire unchanged solid exactly once, with no overlapping depth layers or holes[33m 1720[2mms[22m[39m
+2026-09-16T06:09:25.8791908Z  [32m✓[39m tests/wm005-geometry-review.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 16[2mms[22m[39m
+2026-09-16T06:09:26.1418127Z  [32m✓[39m tests/presentation-clearance.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-09-16T06:09:26.4813140Z  [32m✓[39m tests/settings.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-09-16T06:09:26.8186613Z  [32m✓[39m tests/wm005-review-regression.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+2026-09-16T06:09:29.4614551Z  [32m✓[39m tests/course.test.ts [2m([22m[2m37 tests[22m[2m)[22m[33m 7225[2mms[22m[39m
+2026-09-16T06:09:29.4616733Z    [32m✓[39m WM004 actual connected course and street recovery [2m(29)[22m
+2026-09-16T06:09:29.4738203Z      [33m[2m✓[22m[39m earns all twenty anchors and finish using real physics at 0.016666666666666666[33m 1054[2mms[22m[39m
+2026-09-16T06:09:29.4745795Z      [33m[2m✓[22m[39m earns all twenty anchors and finish using real physics at 0.03333333333333333[33m 862[2mms[22m[39m
+2026-09-16T06:09:29.4748037Z      [33m[2m✓[22m[39m earns all twenty anchors and finish using real physics at 0.008333333333333333[33m 859[2mms[22m[39m
+2026-09-16T06:09:29.4750281Z      [33m[2m✓[22m[39m earns all twenty anchors and finish using real physics at 0.012[33m 801[2mms[22m[39m
+2026-09-16T06:09:29.4752087Z      [33m[2m✓[22m[39m misses a ring, walks and climbs from street, then rejoins and earns all20 using real physics at 0.016666666666666666[33m 998[2mms[22m[39m
+2026-09-16T06:09:29.4754056Z      [33m[2m✓[22m[39m misses a ring, walks and climbs from street, then rejoins and earns all20 using real physics at 0.03333333333333333[33m 715[2mms[22m[39m
+2026-09-16T06:09:29.4785149Z      [33m[2m✓[22m[39m misses a ring, walks and climbs from street, then rejoins and earns all20 using real physics at 0.012[33m 738[2mms[22m[39m
+2026-09-16T06:09:29.4891620Z  [32m✓[39m tests/wm005.test.ts [2m([22m[2m178 tests[22m[2m)[22m[33m 6919[2mms[22m[39m
+2026-09-16T06:09:29.4893094Z    [32m✓[39m WM005 genuine continuous circuit [2m(5)[22m
+2026-09-16T06:09:29.4894978Z      [33m[2m✓[22m[39m earns two laps including final-to-first using ordinary inputs 0.016666666666666666[33m 2002[2mms[22m[39m
+2026-09-16T06:09:29.4912888Z      [33m[2m✓[22m[39m earns two laps including final-to-first using ordinary inputs 0.03333333333333333[33m 1794[2mms[22m[39m
+2026-09-16T06:09:29.4915966Z      [33m[2m✓[22m[39m earns two laps including final-to-first using ordinary inputs 0.008333333333333333[33m 1260[2mms[22m[39m
+2026-09-16T06:09:29.4917490Z      [33m[2m✓[22m[39m earns two laps including final-to-first using ordinary inputs 0.012[33m 1359[2mms[22m[39m
+2026-09-16T06:09:29.4918194Z 
+2026-09-16T06:09:29.4918663Z [2m Test Files [22m [1m[32m13 passed[39m[22m[90m (13)[39m
+2026-09-16T06:09:29.4919510Z [2m      Tests [22m [1m[32m395 passed[39m[22m[90m (395)[39m
+2026-09-16T06:09:29.4920156Z [2m   Start at [22m 06:09:21
+2026-09-16T06:09:29.4920878Z [2m   Duration [22m 8.48s[2m (tests 91%, import 4%, transform 4%, worker 1%)[22m
+2026-09-16T06:09:29.4921352Z 
+2026-09-16T06:09:29.4922186Z [2m    Isolate [22m [33m13 workers spawned[39m[2m · ~247ms startup each (spawn + environment, per file)[22m
+2026-09-16T06:09:29.4923850Z [2m            [22m [2mat least ~824ms faster with [22m[33misolate: false[39m[2m — reuses workers across files instead of one per file[22m
+2026-09-16T06:09:29.4924635Z 
+2026-09-16T06:09:31.6044144Z ✔ root and earlier preview saves cannot be read or overwritten by WM005 (1.1926ms)
+2026-09-16T06:09:31.6045239Z ✔ clear and remove only touch current preview (0.3095ms)
+2026-09-16T06:09:31.6046016Z ✔ enumeration does not expose other keys (0.201ms)
+2026-09-16T06:09:31.6046707Z ✔ reopen retains exact isolated generations (1.4344ms)
+2026-09-16T06:09:31.6048188Z ✔ installation is non-replaceable and failure never falls through (0.4855ms)
+2026-09-16T06:09:31.6049164Z ✔ failed writes and special names remain isolated (0.3204ms)
+2026-09-16T06:09:31.6202636Z ℹ tests 6
+2026-09-16T06:09:31.6204029Z ℹ suites 0
+2026-09-16T06:09:31.6204662Z ℹ pass 6
+2026-09-16T06:09:31.6205182Z ℹ fail 0
+2026-09-16T06:09:31.6206272Z ℹ cancelled 0
+2026-09-16T06:09:31.6207284Z ℹ skipped 0
+2026-09-16T06:09:31.6210930Z ℹ todo 0
+2026-09-16T06:09:31.6211692Z ℹ duration_ms 104.7595
+2026-09-16T06:09:31.6503872Z ##[group]Run set -euo pipefail
+2026-09-16T06:09:31.6504461Z [36;1mset -euo pipefail[0m
+2026-09-16T06:09:31.6504915Z [36;1mpnpm build 2>&1 | tee evidence/wm-005/build.log[0m
+2026-09-16T06:09:31.6505620Z [36;1mnode scripts/wm005-build.mjs 2>&1 | tee evidence/wm-005/pages-build.log[0m
+2026-09-16T06:09:31.6506362Z [36;1mpnpm audit --json > evidence/wm-005/audit-all.json[0m
+2026-09-16T06:09:31.6507053Z [36;1mpnpm audit --prod --json > evidence/wm-005/audit-production.json[0m
+2026-09-16T06:09:31.6507661Z [36;1mnode scripts/wm005-package.mjs[0m
+2026-09-16T06:09:31.6527984Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-09-16T06:09:31.6528614Z ##[endgroup]
+2026-09-16T06:09:32.4776791Z $ tsc --noEmit && vite build
+2026-09-16T06:09:33.8666853Z [36mvite v8.3.0 [32mbuilding client environment for production...[36m[39m
+2026-09-16T06:09:33.9017600Z transforming...
+2026-09-16T06:09:34.2019010Z ✓ 535 modules transformed.
+2026-09-16T06:09:34.2970087Z rendering chunks...
+2026-09-16T06:09:34.6071503Z computing gzip size...
+2026-09-16T06:09:34.6447217Z dist/index.html                                                     2.41 kB │ gzip:   0.81 kB
+2026-09-16T06:09:34.6450585Z dist/.vite/manifest.json                                           31.88 kB │ gzip:   2.86 kB
+2026-09-16T06:09:34.6451905Z dist/assets/HavokPhysics-BqNY-4N9.wasm                          2,094.56 kB │ gzip: 668.98 kB
+2026-09-16T06:09:34.6453084Z dist/assets/index-DH3qTPJD.css                                      7.57 kB │ gzip:   2.53 kB
+2026-09-16T06:09:34.6455020Z dist/assets/dds.pure-CFtXUYz5.js                                    0.06 kB │ gzip:   0.08 kB
+2026-09-16T06:09:34.6455981Z dist/assets/thinEngine.pure-DXuNxQlg.js                             0.07 kB │ gzip:   0.08 kB
+2026-09-16T06:09:34.6456764Z dist/assets/kernelBlurVaryingDeclaration-DP2Wr9Oc.js                0.21 kB │ gzip:   0.17 kB
+2026-09-16T06:09:34.6457534Z dist/assets/dumpTools.pure-CWSO0swM.js                              0.22 kB │ gzip:   0.16 kB
+2026-09-16T06:09:34.6458616Z dist/assets/kernelBlurVaryingDeclaration-g2Ge9lzd.js                0.22 kB │ gzip:   0.18 kB
+2026-09-16T06:09:34.6459327Z dist/assets/pass.fragment-Cvd2TCWC.js                               0.31 kB │ gzip:   0.25 kB
+2026-09-16T06:09:34.6460587Z dist/assets/shadowMapFragmentSoftTransparentShadow-R_iOKnyx.js      0.37 kB │ gzip:   0.26 kB
+2026-09-16T06:09:34.6461970Z dist/assets/shadowMapFragmentSoftTransparentShadow-B6k0i9Au.js      0.40 kB │ gzip:   0.28 kB
+2026-09-16T06:09:34.6463254Z dist/assets/postprocess.vertex-DJCmMhI8.js                          0.46 kB │ gzip:   0.30 kB
+2026-09-16T06:09:34.6464341Z dist/assets/shaderStore-D-XQlhUT.js                                 0.46 kB │ gzip:   0.17 kB
+2026-09-16T06:09:34.6465908Z dist/assets/performanceConfigurator-UtxC_Odd.js                     0.50 kB │ gzip:   0.25 kB
+2026-09-16T06:09:34.6466996Z dist/assets/rgbdDecode.fragment-Cdz2Tveq.js                         0.52 kB │ gzip:   0.34 kB
+2026-09-16T06:09:34.6468003Z dist/assets/packingFunctions-DpGwbupU.js                            0.52 kB │ gzip:   0.29 kB
+2026-09-16T06:09:34.6468972Z dist/assets/depthBoxBlur.fragment-CLEAG5DG.js                       0.53 kB │ gzip:   0.35 kB
+2026-09-16T06:09:34.6469967Z dist/assets/packingFunctions-CINwVZs6.js                            0.56 kB │ gzip:   0.31 kB
+2026-09-16T06:09:34.6471028Z dist/assets/postprocess.vertex-CmVXXq2T.js                          0.58 kB │ gzip:   0.35 kB
+2026-09-16T06:09:34.6473764Z dist/assets/meshUboDeclaration-DYEo1Glw.js                          0.65 kB │ gzip:   0.35 kB
+2026-09-16T06:09:34.6475183Z dist/assets/meshUboDeclaration-ClF6XIke.js                          0.65 kB │ gzip:   0.35 kB
+2026-09-16T06:09:34.6476468Z dist/assets/rgbdDecode.fragment-DXl2fYur.js                         0.66 kB │ gzip:   0.38 kB
+2026-09-16T06:09:34.6477718Z dist/assets/math.scalar.functions-Bcxiuh2E.js                       0.70 kB │ gzip:   0.39 kB
+2026-09-16T06:09:34.6482330Z dist/assets/depthBoxBlur.fragment-D2KJPEQv.js                       0.71 kB │ gzip:   0.41 kB
+2026-09-16T06:09:34.6483938Z dist/assets/kernelBlur.vertex-C2dESVl-.js                           0.88 kB │ gzip:   0.46 kB
+2026-09-16T06:09:34.6485855Z dist/assets/color.fragment-CxH-oW8C.js                              0.92 kB │ gzip:   0.43 kB
+2026-09-16T06:09:34.6487133Z dist/assets/mesh.vertexData.functions-CD4JOR2q.js                   0.93 kB │ gzip:   0.48 kB
+2026-09-16T06:09:34.6488386Z dist/assets/color.fragment-CbJP31yK.js                              1.03 kB │ gzip:   0.47 kB
+2026-09-16T06:09:34.6489602Z dist/assets/kernelBlur.vertex-Cr8ljakh.js                           1.05 kB │ gzip:   0.50 kB
+2026-09-16T06:09:34.6490779Z dist/assets/fogFragment-CISE_m3s.js                                 1.08 kB │ gzip:   0.49 kB
+2026-09-16T06:09:34.6491971Z dist/assets/clipPlaneFragment-DVK0wgyZ.js                           1.17 kB │ gzip:   0.35 kB
+2026-09-16T06:09:34.6493288Z dist/assets/fogFragment-EikOP4pH.js                                 1.21 kB │ gzip:   0.54 kB
+2026-09-16T06:09:34.6494509Z dist/assets/ddsTextureLoader-AZvr7N5M.js                            1.26 kB │ gzip:   0.61 kB
+2026-09-16T06:09:34.6495746Z dist/assets/clipPlaneFragment-Ct2VqHzk.js                           1.27 kB │ gzip:   0.37 kB
+2026-09-16T06:09:34.6497516Z dist/assets/halfFloat-Cfx5m4ll.js                                   1.37 kB │ gzip:   0.63 kB
+2026-09-16T06:09:34.6498608Z dist/assets/color.vertex-CCPwwuPF.js                                1.40 kB │ gzip:   0.62 kB
+2026-09-16T06:09:34.6499651Z dist/assets/color.vertex-mQCzlXqp.js                                1.46 kB │ gzip:   0.63 kB
+2026-09-16T06:09:34.6501003Z dist/assets/logDepthDeclaration-CTCYTVLm.js                         1.60 kB │ gzip:   0.69 kB
+2026-09-16T06:09:34.6502153Z dist/assets/vertexColorMixing-ZPzHOsPb.js                           1.63 kB │ gzip:   0.56 kB
+2026-09-16T06:09:34.6503217Z dist/assets/logger-CuBYPcDK.js                                      1.88 kB │ gzip:   0.82 kB
+2026-09-16T06:09:34.6504600Z dist/assets/logDepthDeclaration-BKlEAogj.js                         1.98 kB │ gzip:   0.67 kB
+2026-09-16T06:09:34.6505692Z dist/assets/vertexColorMixing-BkEiY65E.js                           1.99 kB │ gzip:   0.63 kB
+2026-09-16T06:09:34.6506749Z dist/assets/kernelBlur.fragment-BvT73mHN.js                         2.29 kB │ gzip:   0.77 kB
+2026-09-16T06:09:34.6507830Z dist/assets/hdrTextureLoader-BQVwkxK1.js                            2.31 kB │ gzip:   1.13 kB
+2026-09-16T06:09:34.6508950Z dist/assets/iesTextureLoader-DkRm2YN5.js                            2.47 kB │ gzip:   1.08 kB
+2026-09-16T06:09:34.6510073Z dist/assets/kernelBlur.fragment-DGoy5K5D.js                         2.83 kB │ gzip:   0.85 kB
+2026-09-16T06:09:34.6511201Z dist/assets/shadowMap.fragment-DX4Yo1bp.js                          3.30 kB │ gzip:   1.16 kB
+2026-09-16T06:09:34.6512339Z dist/assets/tgaTextureLoader-CqhhocF6.js                            3.40 kB │ gzip:   1.35 kB
+2026-09-16T06:09:34.6513485Z dist/assets/engineStore-Bn2tApal.js                                 3.51 kB │ gzip:   1.21 kB
+2026-09-16T06:09:34.6514593Z dist/assets/decorators-CsN2eWor.js                                  3.57 kB │ gzip:   1.52 kB
+2026-09-16T06:09:34.6515841Z dist/assets/cubemapToSphericalPolynomial-Dk2nXs7D.js                3.67 kB │ gzip:   1.61 kB
+2026-09-16T06:09:34.6517032Z dist/assets/dumpTools.pure-Bjss7UYe.js                              3.79 kB │ gzip:   1.83 kB
+2026-09-16T06:09:34.6518118Z dist/assets/shadowMap.fragment-DUFTmQJ_.js                          3.86 kB │ gzip:   1.25 kB
+2026-09-16T06:09:34.6518927Z dist/assets/morphTargetsVertex-6N5r7oF1.js                          4.37 kB │ gzip:   0.98 kB
+2026-09-16T06:09:34.6519630Z dist/assets/shadowMap.vertex-BAMalKfR.js                            4.71 kB │ gzip:   1.52 kB
+2026-09-16T06:09:34.6520620Z dist/assets/shadowMap.vertex-BVP18Zja.js                            4.88 kB │ gzip:   1.62 kB
+2026-09-16T06:09:34.6522140Z dist/assets/sphericalPolynomial.pure-FtwgJ5uO.js                    5.73 kB │ gzip:   1.35 kB
+2026-09-16T06:09:34.6522899Z dist/assets/morphTargetsVertex-OlIh-Lzh.js                          6.40 kB │ gzip:   1.15 kB
+2026-09-16T06:09:34.6523626Z dist/assets/helperFunctions-BH8P-eyq.js                             6.48 kB │ gzip:   2.18 kB
+2026-09-16T06:09:34.6524310Z dist/assets/helperFunctions-gEnZbjN3.js                             6.81 kB │ gzip:   2.31 kB
+2026-09-16T06:09:34.6524959Z dist/assets/dds.pure-TNYRMEKn.js                                    6.92 kB │ gzip:   2.53 kB
+2026-09-16T06:09:34.6525599Z dist/assets/internalTexture-Dlz1Grf0.js                             7.68 kB │ gzip:   1.99 kB
+2026-09-16T06:09:34.6526254Z dist/assets/envTextureLoader-DjTtC_RT.js                            8.05 kB │ gzip:   3.22 kB
+2026-09-16T06:09:34.6526941Z dist/assets/basisTextureLoader-CIp9PROt.js                          8.15 kB │ gzip:   3.17 kB
+2026-09-16T06:09:34.6527634Z dist/assets/clipPlaneVertex-Cqy6RCeP.js                             8.82 kB │ gzip:   1.80 kB
+2026-09-16T06:09:34.6528305Z dist/assets/clipPlaneVertex-Bxgq6IpG.js                             9.79 kB │ gzip:   1.80 kB
+2026-09-16T06:09:34.6528976Z dist/assets/exrTextureLoader-Dlr7Fs1r.js                           13.14 kB │ gzip:   4.81 kB
+2026-09-16T06:09:34.6529631Z dist/assets/timingTools-BfV6cIZn.js                                13.26 kB │ gzip:   4.69 kB
+2026-09-16T06:09:34.6530292Z dist/assets/default.vertex-B7KyPJZN.js                             15.47 kB │ gzip:   3.71 kB
+2026-09-16T06:09:34.6530960Z dist/assets/ktxTextureLoader-BvmcoXCI.js                           16.41 kB │ gzip:   4.79 kB
+2026-09-16T06:09:34.6531646Z dist/assets/effectRenderer.pure-BMXFTeP5.js                        17.41 kB │ gzip:   5.44 kB
+2026-09-16T06:09:34.6532324Z dist/assets/postProcess.pure-y44XvkuW.js                           19.47 kB │ gzip:   5.35 kB
+2026-09-16T06:09:34.6532985Z dist/assets/baseTexture.pure-BolroSNj.js                           20.46 kB │ gzip:   5.63 kB
+2026-09-16T06:09:34.6533859Z dist/assets/texture.pure-p5M5lFsr.js                               21.10 kB │ gzip:   5.96 kB
+2026-09-16T06:09:34.6534510Z dist/assets/tools.pure-DWLmcBDV.js                                 29.44 kB │ gzip:   9.83 kB
+2026-09-16T06:09:34.6535160Z dist/assets/default.vertex-DqE26LIp.js                             31.87 kB │ gzip:   5.47 kB
+2026-09-16T06:09:34.6535811Z dist/assets/math.color.pure-Dweur9o_.js                            76.93 kB │ gzip:  18.43 kB
+2026-09-16T06:09:34.6536483Z dist/assets/default.fragment-Bzxfwqck.js                          106.63 kB │ gzip:  21.96 kB
+2026-09-16T06:09:34.6537147Z dist/assets/default.fragment-TDArePlg.js                          114.19 kB │ gzip:  22.13 kB
+2026-09-16T06:09:34.6537811Z dist/assets/thinEngine.pure-DE4lYyY5.js                           126.08 kB │ gzip:  30.49 kB
+2026-09-16T06:09:34.6538472Z dist/assets/index-D2KbhkBH.js                                   1,069.06 kB │ gzip: 258.13 kB
+2026-09-16T06:09:34.6538778Z 
+2026-09-16T06:09:34.6538940Z [32m✓ built in 778ms[39m
+2026-09-16T06:09:34.6539323Z [33m[plugin builtin:vite-reporter] 
+2026-09-16T06:09:34.6539748Z (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-09-16T06:09:34.6540211Z - Using dynamic import() to code-split the application
+2026-09-16T06:09:34.6541326Z - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+2026-09-16T06:09:34.6542192Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+2026-09-16T06:09:35.2316660Z [36mvite v8.3.0 [32mbuilding client environment for production...[36m[39m
+2026-09-16T06:09:35.2490188Z transforming...
+2026-09-16T06:09:35.5329729Z ✓ 535 modules transformed.
+2026-09-16T06:09:35.6284054Z rendering chunks...
+2026-09-16T06:09:35.9300875Z computing gzip size...
+2026-09-16T06:09:35.9637412Z .wm005-pages/index.html                                                     2.87 kB │ gzip:   0.83 kB
+2026-09-16T06:09:35.9640049Z .wm005-pages/.vite/manifest.json                                           31.88 kB │ gzip:   2.86 kB
+2026-09-16T06:09:35.9641703Z .wm005-pages/assets/HavokPhysics-BqNY-4N9.wasm                          2,094.56 kB │ gzip: 668.98 kB
+2026-09-16T06:09:35.9643458Z .wm005-pages/assets/index-DH3qTPJD.css                                      7.57 kB │ gzip:   2.53 kB
+2026-09-16T06:09:35.9644753Z .wm005-pages/assets/dds.pure-CFtXUYz5.js                                    0.06 kB │ gzip:   0.08 kB
+2026-09-16T06:09:35.9646006Z .wm005-pages/assets/thinEngine.pure-DXuNxQlg.js                             0.07 kB │ gzip:   0.08 kB
+2026-09-16T06:09:35.9647292Z .wm005-pages/assets/kernelBlurVaryingDeclaration-DP2Wr9Oc.js                0.21 kB │ gzip:   0.17 kB
+2026-09-16T06:09:35.9648609Z .wm005-pages/assets/dumpTools.pure-Bhs4aawr.js                              0.22 kB │ gzip:   0.16 kB
+2026-09-16T06:09:35.9650641Z .wm005-pages/assets/kernelBlurVaryingDeclaration-g2Ge9lzd.js                0.22 kB │ gzip:   0.18 kB
+2026-09-16T06:09:35.9652234Z .wm005-pages/assets/pass.fragment-Cvd2TCWC.js                               0.31 kB │ gzip:   0.25 kB
+2026-09-16T06:09:35.9653486Z .wm005-pages/assets/shadowMapFragmentSoftTransparentShadow-R_iOKnyx.js      0.37 kB │ gzip:   0.26 kB
+2026-09-16T06:09:35.9654842Z .wm005-pages/assets/shadowMapFragmentSoftTransparentShadow-B6k0i9Au.js      0.40 kB │ gzip:   0.28 kB
+2026-09-16T06:09:35.9656184Z .wm005-pages/assets/postprocess.vertex-DJCmMhI8.js                          0.46 kB │ gzip:   0.30 kB
+2026-09-16T06:09:35.9657374Z .wm005-pages/assets/shaderStore-D-XQlhUT.js                                 0.46 kB │ gzip:   0.17 kB
+2026-09-16T06:09:35.9658671Z .wm005-pages/assets/performanceConfigurator-UtxC_Odd.js                     0.50 kB │ gzip:   0.25 kB
+2026-09-16T06:09:35.9660546Z .wm005-pages/assets/rgbdDecode.fragment-Cdz2Tveq.js                         0.52 kB │ gzip:   0.34 kB
+2026-09-16T06:09:35.9661664Z .wm005-pages/assets/packingFunctions-DpGwbupU.js                            0.52 kB │ gzip:   0.29 kB
+2026-09-16T06:09:35.9663109Z .wm005-pages/assets/depthBoxBlur.fragment-CLEAG5DG.js                       0.53 kB │ gzip:   0.35 kB
+2026-09-16T06:09:35.9664180Z .wm005-pages/assets/packingFunctions-CINwVZs6.js                            0.56 kB │ gzip:   0.31 kB
+2026-09-16T06:09:35.9665230Z .wm005-pages/assets/postprocess.vertex-CmVXXq2T.js                          0.58 kB │ gzip:   0.35 kB
+2026-09-16T06:09:35.9666268Z .wm005-pages/assets/meshUboDeclaration-DYEo1Glw.js                          0.65 kB │ gzip:   0.35 kB
+2026-09-16T06:09:35.9667349Z .wm005-pages/assets/meshUboDeclaration-ClF6XIke.js                          0.65 kB │ gzip:   0.35 kB
+2026-09-16T06:09:35.9669033Z .wm005-pages/assets/rgbdDecode.fragment-DXl2fYur.js                         0.66 kB │ gzip:   0.38 kB
+2026-09-16T06:09:35.9670265Z .wm005-pages/assets/math.scalar.functions-Bcxiuh2E.js                       0.70 kB │ gzip:   0.39 kB
+2026-09-16T06:09:35.9671734Z .wm005-pages/assets/depthBoxBlur.fragment-D2KJPEQv.js                       0.71 kB │ gzip:   0.41 kB
+2026-09-16T06:09:35.9672936Z .wm005-pages/assets/kernelBlur.vertex-C2dESVl-.js                           0.88 kB │ gzip:   0.46 kB
+2026-09-16T06:09:35.9674060Z .wm005-pages/assets/color.fragment-CxH-oW8C.js                              0.92 kB │ gzip:   0.43 kB
+2026-09-16T06:09:35.9675221Z .wm005-pages/assets/mesh.vertexData.functions-CD4JOR2q.js                   0.93 kB │ gzip:   0.48 kB
+2026-09-16T06:09:35.9676834Z .wm005-pages/assets/color.fragment-CbJP31yK.js                              1.03 kB │ gzip:   0.47 kB
+2026-09-16T06:09:35.9679841Z .wm005-pages/assets/kernelBlur.vertex-Cr8ljakh.js                           1.05 kB │ gzip:   0.50 kB
+2026-09-16T06:09:35.9680611Z .wm005-pages/assets/fogFragment-CISE_m3s.js                                 1.08 kB │ gzip:   0.49 kB
+2026-09-16T06:09:35.9681676Z .wm005-pages/assets/clipPlaneFragment-DVK0wgyZ.js                           1.17 kB │ gzip:   0.35 kB
+2026-09-16T06:09:35.9682499Z .wm005-pages/assets/fogFragment-EikOP4pH.js                                 1.21 kB │ gzip:   0.54 kB
+2026-09-16T06:09:35.9683255Z .wm005-pages/assets/ddsTextureLoader-AZvr7N5M.js                            1.26 kB │ gzip:   0.61 kB
+2026-09-16T06:09:35.9684005Z .wm005-pages/assets/clipPlaneFragment-Ct2VqHzk.js                           1.27 kB │ gzip:   0.37 kB
+2026-09-16T06:09:35.9684723Z .wm005-pages/assets/halfFloat-Cfx5m4ll.js                                   1.37 kB │ gzip:   0.63 kB
+2026-09-16T06:09:35.9685432Z .wm005-pages/assets/color.vertex-CCPwwuPF.js                                1.40 kB │ gzip:   0.62 kB
+2026-09-16T06:09:35.9686155Z .wm005-pages/assets/color.vertex-mQCzlXqp.js                                1.46 kB │ gzip:   0.63 kB
+2026-09-16T06:09:35.9686918Z .wm005-pages/assets/logDepthDeclaration-CTCYTVLm.js                         1.60 kB │ gzip:   0.69 kB
+2026-09-16T06:09:35.9687684Z .wm005-pages/assets/vertexColorMixing-ZPzHOsPb.js                           1.63 kB │ gzip:   0.56 kB
+2026-09-16T06:09:35.9688411Z .wm005-pages/assets/logger-CuBYPcDK.js                                      1.88 kB │ gzip:   0.82 kB
+2026-09-16T06:09:35.9689119Z .wm005-pages/assets/logDepthDeclaration-BKlEAogj.js                         1.98 kB │ gzip:   0.67 kB
+2026-09-16T06:09:35.9689870Z .wm005-pages/assets/vertexColorMixing-BkEiY65E.js                           1.99 kB │ gzip:   0.63 kB
+2026-09-16T06:09:35.9690608Z .wm005-pages/assets/kernelBlur.fragment-BvT73mHN.js                         2.29 kB │ gzip:   0.77 kB
+2026-09-16T06:09:35.9691686Z .wm005-pages/assets/hdrTextureLoader-BQVwkxK1.js                            2.31 kB │ gzip:   1.13 kB
+2026-09-16T06:09:35.9692439Z .wm005-pages/assets/iesTextureLoader-DkRm2YN5.js                            2.47 kB │ gzip:   1.08 kB
+2026-09-16T06:09:35.9693185Z .wm005-pages/assets/kernelBlur.fragment-DGoy5K5D.js                         2.83 kB │ gzip:   0.85 kB
+2026-09-16T06:09:35.9693945Z .wm005-pages/assets/shadowMap.fragment-DX4Yo1bp.js                          3.30 kB │ gzip:   1.16 kB
+2026-09-16T06:09:35.9694939Z .wm005-pages/assets/tgaTextureLoader-CqhhocF6.js                            3.40 kB │ gzip:   1.35 kB
+2026-09-16T06:09:35.9695688Z .wm005-pages/assets/engineStore-Bn2tApal.js                                 3.51 kB │ gzip:   1.21 kB
+2026-09-16T06:09:35.9696395Z .wm005-pages/assets/decorators-CsN2eWor.js                                  3.57 kB │ gzip:   1.52 kB
+2026-09-16T06:09:35.9697173Z .wm005-pages/assets/cubemapToSphericalPolynomial-Dk2nXs7D.js                3.67 kB │ gzip:   1.61 kB
+2026-09-16T06:09:35.9697950Z .wm005-pages/assets/dumpTools.pure-CPPI9EC6.js                              3.79 kB │ gzip:   1.83 kB
+2026-09-16T06:09:35.9698681Z .wm005-pages/assets/shadowMap.fragment-DUFTmQJ_.js                          3.86 kB │ gzip:   1.25 kB
+2026-09-16T06:09:35.9699470Z .wm005-pages/assets/morphTargetsVertex-6N5r7oF1.js                          4.37 kB │ gzip:   0.98 kB
+2026-09-16T06:09:35.9700250Z .wm005-pages/assets/shadowMap.vertex-BAMalKfR.js                            4.71 kB │ gzip:   1.52 kB
+2026-09-16T06:09:35.9700998Z .wm005-pages/assets/shadowMap.vertex-BVP18Zja.js                            4.88 kB │ gzip:   1.62 kB
+2026-09-16T06:09:35.9701760Z .wm005-pages/assets/sphericalPolynomial.pure-FtwgJ5uO.js                    5.73 kB │ gzip:   1.35 kB
+2026-09-16T06:09:35.9702522Z .wm005-pages/assets/morphTargetsVertex-OlIh-Lzh.js                          6.40 kB │ gzip:   1.15 kB
+2026-09-16T06:09:35.9703261Z .wm005-pages/assets/helperFunctions-BH8P-eyq.js                             6.48 kB │ gzip:   2.18 kB
+2026-09-16T06:09:35.9703983Z .wm005-pages/assets/helperFunctions-gEnZbjN3.js                             6.81 kB │ gzip:   2.31 kB
+2026-09-16T06:09:35.9704684Z .wm005-pages/assets/dds.pure-TNYRMEKn.js                                    6.92 kB │ gzip:   2.53 kB
+2026-09-16T06:09:35.9706480Z .wm005-pages/assets/internalTexture-Dlz1Grf0.js                             7.68 kB │ gzip:   1.99 kB
+2026-09-16T06:09:35.9707256Z .wm005-pages/assets/envTextureLoader-DNrSWqYG.js                            8.05 kB │ gzip:   3.22 kB
+2026-09-16T06:09:35.9708051Z .wm005-pages/assets/basisTextureLoader-CIp9PROt.js                          8.15 kB │ gzip:   3.17 kB
+2026-09-16T06:09:35.9708807Z .wm005-pages/assets/clipPlaneVertex-Cqy6RCeP.js                             8.82 kB │ gzip:   1.80 kB
+2026-09-16T06:09:35.9709535Z .wm005-pages/assets/clipPlaneVertex-Bxgq6IpG.js                             9.79 kB │ gzip:   1.80 kB
+2026-09-16T06:09:35.9710266Z .wm005-pages/assets/exrTextureLoader-Dlr7Fs1r.js                           13.14 kB │ gzip:   4.81 kB
+2026-09-16T06:09:35.9710981Z .wm005-pages/assets/timingTools-BfV6cIZn.js                                13.26 kB │ gzip:   4.69 kB
+2026-09-16T06:09:35.9712133Z .wm005-pages/assets/default.vertex-B7KyPJZN.js                             15.47 kB │ gzip:   3.71 kB
+2026-09-16T06:09:35.9712908Z .wm005-pages/assets/ktxTextureLoader-BvmcoXCI.js                           16.41 kB │ gzip:   4.79 kB
+2026-09-16T06:09:35.9713664Z .wm005-pages/assets/effectRenderer.pure-HgMoUzdA.js                        17.44 kB │ gzip:   5.46 kB
+2026-09-16T06:09:35.9714404Z .wm005-pages/assets/postProcess.pure-DEto80Dx.js                           19.47 kB │ gzip:   5.35 kB
+2026-09-16T06:09:35.9715132Z .wm005-pages/assets/baseTexture.pure-BolroSNj.js                           20.46 kB │ gzip:   5.63 kB
+2026-09-16T06:09:35.9715849Z .wm005-pages/assets/texture.pure-p5M5lFsr.js                               21.10 kB │ gzip:   5.96 kB
+2026-09-16T06:09:35.9716541Z .wm005-pages/assets/tools.pure-DWLmcBDV.js                                 29.44 kB │ gzip:   9.83 kB
+2026-09-16T06:09:35.9717236Z .wm005-pages/assets/default.vertex-DqE26LIp.js                             31.87 kB │ gzip:   5.47 kB
+2026-09-16T06:09:35.9717942Z .wm005-pages/assets/math.color.pure-Dweur9o_.js                            76.93 kB │ gzip:  18.43 kB
+2026-09-16T06:09:35.9718712Z .wm005-pages/assets/default.fragment-Bzxfwqck.js                          106.63 kB │ gzip:  21.96 kB
+2026-09-16T06:09:35.9719639Z .wm005-pages/assets/default.fragment-TDArePlg.js                          114.19 kB │ gzip:  22.13 kB
+2026-09-16T06:09:35.9720361Z .wm005-pages/assets/thinEngine.pure-DE4lYyY5.js                           126.08 kB │ gzip:  30.49 kB
+2026-09-16T06:09:35.9721058Z .wm005-pages/assets/index-7ot1-gNm.js                                   1,069.09 kB │ gzip: 258.15 kB
+2026-09-16T06:09:35.9721365Z 
+2026-09-16T06:09:35.9721521Z [32m✓ built in 733ms[39m
+2026-09-16T06:09:35.9776939Z [33m[plugin builtin:vite-reporter] 
+2026-09-16T06:09:35.9777677Z (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-09-16T06:09:35.9778416Z - Using dynamic import() to code-split the application
+2026-09-16T06:09:35.9779712Z - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+2026-09-16T06:09:35.9781215Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+2026-09-16T06:09:38.1376496Z {"change":"WM-005","kind":"isolated sponsor playtest preview","source":"8a221c08642ebdd1264a04ebfaf6093d838cf60e","tree":"e2260133f48d5bff7a61586922b67ce11c7550c7","base":"/Webmaster/wm005-preview/","saveNamespace":"webmaster.wm005-preview.v1:","build":"clean Vite8.3.0 / exact pnpm lock / Node24.19.0","payloadSha256":"5e6eabd779bd51cfd9029921d069887427da46beb7687726f8bbfe2eac07c5c3","hashMethod":"SHA256(sorted UTF8 path NUL SHA256 NUL byteLength LF), excluding provenance and manifest","runtimeFiles":85,"rawBytes":3958472,"gzip9Bytes":1126270,"priorRoot":"b4a583116fc0823434f11788e5ab0bec36358f4d","mergeOrRootRelease":false}
+2026-09-16T06:09:38.1723635Z ##[group]Run pnpm exec playwright install chromium
+2026-09-16T06:09:38.1724122Z [36;1mpnpm exec playwright install chromium[0m
+2026-09-16T06:09:38.1738176Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-09-16T06:09:38.1738582Z ##[endgroup]
+2026-09-16T06:09:39.6536703Z Downloading Chrome for Testing 153.0.8010.12 (playwright chromium v1243)[2m from https://cdn.playwright.dev/builds/cft/153.0.8010.12/win64/chrome-win64.zip[22m
+2026-09-16T06:09:40.1809748Z |                                                                                |   0% of 195.6 MiB
+2026-09-16T06:09:40.4526129Z |■■■■■■■■                                                                        |  10% of 195.6 MiB
+2026-09-16T06:09:40.6100785Z |■■■■■■■■■■■■■■■■                                                                |  20% of 195.6 MiB
+2026-09-16T06:09:40.8462430Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 195.6 MiB
+2026-09-16T06:09:41.0477821Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 195.6 MiB
+2026-09-16T06:09:41.2796883Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 195.6 MiB
+2026-09-16T06:09:41.5249477Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 195.6 MiB
+2026-09-16T06:09:41.7766705Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 195.6 MiB
+2026-09-16T06:09:42.0198212Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 195.6 MiB
+2026-09-16T06:09:42.2373178Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 195.6 MiB
+2026-09-16T06:09:42.4599327Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 195.6 MiB
+2026-09-16T06:09:48.9102823Z Chrome for Testing 153.0.8010.12 (playwright chromium v1243) downloaded to C:\Users\runneradmin\AppData\Local\ms-playwright\chromium-1243
+2026-09-16T06:09:48.9114542Z Downloading FFmpeg (playwright ffmpeg v1011)[2m from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-win64.zip[22m
+2026-09-16T06:09:49.3732567Z |                                                                                |   1% of 1.3 MiB
+2026-09-16T06:09:49.3765560Z |■■■■■■■■                                                                        |  10% of 1.3 MiB
+2026-09-16T06:09:49.3781730Z |■■■■■■■■■■■■■■■■                                                                |  20% of 1.3 MiB
+2026-09-16T06:09:49.3799974Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 1.3 MiB
+2026-09-16T06:09:49.3821268Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 1.3 MiB
+2026-09-16T06:09:49.3839702Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 1.3 MiB
+2026-09-16T06:09:49.3859415Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 1.3 MiB
+2026-09-16T06:09:49.3963093Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 1.3 MiB
+2026-09-16T06:09:49.3998281Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 1.3 MiB
+2026-09-16T06:09:49.4012289Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 1.3 MiB
+2026-09-16T06:09:49.4035835Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 1.3 MiB
+2026-09-16T06:09:49.4927808Z FFmpeg (playwright ffmpeg v1011) downloaded to C:\Users\runneradmin\AppData\Local\ms-playwright\ffmpeg-1011
+2026-09-16T06:09:49.4937982Z Downloading Chrome Headless Shell 153.0.8010.12 (playwright chromium-headless-shell v1243)[2m from https://cdn.playwright.dev/builds/cft/153.0.8010.12/win64/chrome-headless-shell-win64.zip[22m
+2026-09-16T06:09:50.0039092Z |                                                                                |   0% of 114.6 MiB
+2026-09-16T06:09:50.1521184Z |■■■■■■■■                                                                        |  10% of 114.6 MiB
+2026-09-16T06:09:50.2792961Z |■■■■■■■■■■■■■■■■                                                                |  20% of 114.6 MiB
+2026-09-16T06:09:50.3664680Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 114.6 MiB
+2026-09-16T06:09:50.4874793Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 114.6 MiB
+2026-09-16T06:09:50.5733880Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 114.6 MiB
+2026-09-16T06:09:50.7322002Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 114.6 MiB
+2026-09-16T06:09:50.9174664Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 114.6 MiB
+2026-09-16T06:09:51.0601344Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 114.6 MiB
+2026-09-16T06:09:51.2073874Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 114.6 MiB
+2026-09-16T06:09:51.3405645Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 114.6 MiB
+2026-09-16T06:09:55.6728423Z Chrome Headless Shell 153.0.8010.12 (playwright chromium-headless-shell v1243) downloaded to C:\Users\runneradmin\AppData\Local\ms-playwright\chromium_headless_shell-1243
+2026-09-16T06:09:55.6737037Z Downloading Winldd (playwright winldd v1007)[2m from https://cdn.playwright.dev/dbazure/download/playwright/builds/winldd/1007/winldd-win64.zip[22m
+2026-09-16T06:09:56.1037534Z |■■■■■■■■                                                                        |  12% of 0.1 MiB
+2026-09-16T06:09:56.1040183Z |■■■■■■■■■■■■■■■■                                                                |  25% of 0.1 MiB
+2026-09-16T06:09:56.1053642Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  38% of 0.1 MiB
+2026-09-16T06:09:56.1058506Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  51% of 0.1 MiB
+2026-09-16T06:09:56.1060304Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 0.1 MiB
+2026-09-16T06:09:56.1065800Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  82% of 0.1 MiB
+2026-09-16T06:09:56.1069183Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 0.1 MiB
+2026-09-16T06:09:56.1371745Z Winldd (playwright winldd v1007) downloaded to C:\Users\runneradmin\AppData\Local\ms-playwright\winldd-1007
+2026-09-16T06:09:56.2119483Z ##[group]Run set -euo pipefail
+2026-09-16T06:09:56.2119888Z [36;1mset -euo pipefail[0m
+2026-09-16T06:09:56.2120424Z [36;1mpnpm exec playwright test -c playwright.wm005.config.ts e2e/wm005 2>&1 | tee evidence/wm-005/new-browser.log[0m
+2026-09-16T06:09:56.2134951Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-09-16T06:09:56.2135346Z env:
+2026-09-16T06:09:56.2135527Z   WM005_SUITE: new
+2026-09-16T06:09:56.2135722Z ##[endgroup]
+2026-09-16T06:09:59.0175323Z 
+2026-09-16T06:09:59.0176562Z Running 16 tests using 1 worker
+2026-09-16T06:09:59.0177202Z 
+2026-09-16T06:10:28.3726447Z   ok  1 [chromium] › e2e\wm005-climb.spec.ts:7:30 › WM005 unmarked east facade street-to-roof keyboard-mouse (28.3s)
+2026-09-16T06:11:06.1489349Z   ok  2 [chromium] › e2e\wm005-climb.spec.ts:7:30 › WM005 unmarked east facade street-to-roof semantic-controller (37.8s)
+2026-09-16T06:11:38.0522099Z   ok  3 [chromium] › e2e\wm005-climb.spec.ts:21:30 › WM005 visible face-up head-first ceiling and challenge top-out keyboard-mouse (31.9s)
+2026-09-16T06:12:17.1462370Z   ok  4 [chromium] › e2e\wm005-climb.spec.ts:21:30 › WM005 visible face-up head-first ceiling and challenge top-out semantic-controller (39.1s)
+2026-09-16T06:16:48.0646984Z   ok  5 [chromium] › e2e\wm005.spec.ts:54:31 › WM005 two complete circuit laps plus ground recovery keyboard-mouse (4.5m)
+2026-09-16T06:22:26.3661567Z   ok  6 [chromium] › e2e\wm005.spec.ts:54:31 › WM005 two complete circuit laps plus ground recovery semantic-controller (5.6m)
+2026-09-16T06:22:40.2457385Z   ok  7 [chromium] › e2e\wm005.spec.ts:61:1 › WM005 street safe save reopen Continue preserves position and generations (13.9s)
+2026-09-16T06:23:24.4734714Z   ok  8 [chromium] › e2e\wm005.spec.ts:75:60 › WM005 insufficient momentum vertical orbit keyboard-mouse (44.2s)
+2026-09-16T06:23:52.7861545Z   ok  9 [chromium] › e2e\wm005.spec.ts:75:60 › WM005 sufficient momentum vertical orbit keyboard-mouse (28.3s)
+2026-09-16T06:24:40.5628878Z   ok 10 [chromium] › e2e\wm005.spec.ts:75:60 › WM005 insufficient momentum vertical orbit semantic-controller (47.8s)
+2026-09-16T06:25:12.7268576Z   ok 11 [chromium] › e2e\wm005.spec.ts:75:60 › WM005 sufficient momentum vertical orbit semantic-controller (32.1s)
+2026-09-16T06:25:24.3483450Z   ok 12 [chromium] › e2e\wm005.spec.ts:93:30 › WM005 held web survives rooftop contact keyboard-mouse (11.6s)
+2026-09-16T06:25:40.1767889Z   ok 13 [chromium] › e2e\wm005.spec.ts:93:30 › WM005 held web survives rooftop contact semantic-controller (15.8s)
+2026-09-16T06:26:05.3024819Z   ok 14 [chromium] › e2e\wm005-hero.spec.ts:10:103 › WM005 hero rear idle walking running jump and stop transitions (24.1s)
+2026-09-16T06:26:35.1049502Z   ok 15 [chromium] › e2e\wm005-hero.spec.ts:10:103 › WM005 hero front idle walking running jump and stop transitions (29.7s)
+2026-09-16T06:26:57.0589519Z   ok 16 [chromium] › e2e\wm005-hero.spec.ts:10:103 › WM005 hero side idle walking running jump and stop transitions (21.9s)
+2026-09-16T06:26:57.5738654Z 
+2026-09-16T06:26:57.5739907Z   Slow test file: [chromium] › e2e\wm005.spec.ts (13.4m)
+2026-09-16T06:26:57.5741075Z   Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+2026-09-16T06:26:57.5741915Z   16 passed (17.0m)
+2026-09-16T06:26:57.6570168Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-16T06:26:57.6572082Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-09-16T06:26:57.6572574Z with:
+2026-09-16T06:26:57.6572919Z   name: wm005-rendered-8a221c08642ebdd1264a04ebfaf6093d838cf60e
+2026-09-16T06:26:57.6573416Z   path: candidate/evidence/wm-005/
+candidate/test-results-wm005/new/
+
+2026-09-16T06:26:57.6573847Z   include-hidden-files: true
+2026-09-16T06:26:57.6574180Z   retention-days: 90
+2026-09-16T06:26:57.6574452Z   if-no-files-found: warn
+2026-09-16T06:26:57.6574739Z   compression-level: 6
+2026-09-16T06:26:57.6575030Z   overwrite: false
+2026-09-16T06:26:57.6575298Z ##[endgroup]
+2026-09-16T06:26:57.8775679Z (node:8544) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-16T06:26:57.8777092Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-16T06:26:57.9155771Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-09-16T06:26:57.9159782Z The least common ancestor is D:\a\Webmaster\Webmaster\candidate. This will be the root directory of the artifact
+2026-09-16T06:26:57.9160902Z With the provided path, there will be 114 files uploaded
+2026-09-16T06:26:57.9165489Z Artifact name is valid!
+2026-09-16T06:26:57.9167310Z Root directory input is valid!
+2026-09-16T06:26:58.1683756Z Beginning upload of artifact content to blob storage
+2026-09-16T06:26:58.6942809Z (node:8544) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-09-16T06:26:59.0949609Z Uploaded bytes 8388608
+2026-09-16T06:26:59.2248706Z Uploaded bytes 12828306
+2026-09-16T06:26:59.2549557Z Finished uploading artifact content to blob storage!
+2026-09-16T06:26:59.2551644Z SHA256 digest of uploaded artifact zip is 28ce72d5aa712860ff739cfc18863bc22028faa6d25502f86bbcb2445dec7ae8
+2026-09-16T06:26:59.2554278Z Finalizing artifact upload
+2026-09-16T06:26:59.4755332Z Artifact wm005-rendered-8a221c08642ebdd1264a04ebfaf6093d838cf60e.zip successfully finalized. Artifact ID 10433361448
+2026-09-16T06:26:59.4757884Z Artifact wm005-rendered-8a221c08642ebdd1264a04ebfaf6093d838cf60e has been successfully uploaded! Final size is 12828306 bytes. Artifact ID is 10433361448
+2026-09-16T06:26:59.4767298Z Artifact download URL: https://github.com/timcgha/Webmaster/actions/runs/35062375370/artifacts/10433361448
+2026-09-16T06:26:59.5125412Z ##[group]Run set -euo pipefail
+2026-09-16T06:26:59.5125916Z [36;1mset -euo pipefail[0m
+2026-09-16T06:26:59.5126368Z [36;1mnode scripts/wm005-compiled.mjs 2>&1 | tee evidence/wm-005/compiled.log[0m
+2026-09-16T06:26:59.5140502Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-09-16T06:26:59.5140953Z ##[endgroup]
+2026-09-16T06:27:00.7300496Z (node:8420) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+2026-09-16T06:27:00.7301425Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-09-16T06:27:49.4256892Z {"status":"PASS","cases":["WM-001","WM-002","WM-003","WM-003-obsolete-support","WM-004-completed-course","new-street"]}
+2026-09-16T06:27:49.4798847Z ##[group]Run set -euo pipefail
+2026-09-16T06:27:49.4799266Z [36;1mset -euo pipefail[0m
+2026-09-16T06:27:49.4800055Z [36;1mpnpm exec playwright test -c playwright.wm005.config.ts e2e/wm001.spec.ts e2e/wm002.spec.ts e2e/wm003.spec.ts e2e/wm003-remediation.spec.ts 2>&1 | tee evidence/wm-005/inherited-browser.log[0m
+2026-09-16T06:27:49.4814711Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-09-16T06:27:49.4815127Z env:
+2026-09-16T06:27:49.4815325Z   WM005_SUITE: inherited
+2026-09-16T06:27:49.4815547Z ##[endgroup]
+2026-09-16T06:27:51.9504121Z 
+2026-09-16T06:27:51.9504794Z Running 40 tests using 1 worker
+2026-09-16T06:27:51.9505193Z 
+2026-09-16T06:28:15.6778339Z   x   1 [chromium] › e2e\wm001.spec.ts:166:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route (22.5s)
+2026-09-16T06:28:25.6822086Z   ok  2 [chromium] › e2e\wm001.spec.ts:269:3 › WM-001 rendered keyboard and mouse journey › recovers outside the bounded street, reduces health, and performs a clean zero-health retry (9.2s)
+2026-09-16T06:28:38.3503106Z   ok  3 [chromium] › e2e\wm001.spec.ts:283:3 › WM-001 rendered keyboard and mouse journey › explains and enforces safe-state saving while airborne (12.4s)
+2026-09-16T06:28:56.9400168Z   ok  4 [chromium] › e2e\wm001.spec.ts:304:3 › WM-001 rendered simulated Gamepad journey › uses gamepad alone for new game, movement, camera, pause, save, save-and-quit, Continue, and Load (18.6s)
+2026-09-16T06:29:04.2707725Z   ok  5 [chromium] › e2e\wm001.spec.ts:363:3 › WM-001 rendered simulated Gamepad journey › disconnect releases motion and reconnect requires neutral then fresh input (7.3s)
+2026-09-16T06:29:08.8693759Z   ok  6 [chromium] › e2e\wm001.spec.ts:394:3 › WM-001 rendered simulated Gamepad journey › shows PlayStation-style prompts without changing standard semantic actions (4.6s)
+2026-09-16T06:29:29.2938713Z   ok  7 [chromium] › e2e\wm001.spec.ts:402:3 › WM-001 rendered simulated Gamepad journey › operates persisted main and pause settings without mouse or typing (20.4s)
+2026-09-16T06:29:38.9179609Z   ok  8 [chromium] › e2e\wm001.spec.ts:439:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › makes exposure, release, ready, HUD status, and local copy diagnostics persistent (9.6s)
+2026-09-16T06:29:43.1176616Z   ok  9 [chromium] › e2e\wm001.spec.ts:474:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps keyboard available when the Gamepad API is unavailable (4.2s)
+2026-09-16T06:29:46.3285595Z   ok 10 [chromium] › e2e\wm001.spec.ts:488:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › rejects an unsupported mapping visibly while keyboard remains available (3.2s)
+2026-09-16T06:29:53.2488354Z   ok 11 [chromium] › e2e\wm001.spec.ts:500:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › selects active index 1 over idle index 0 and ignores noisy extra axes (6.9s)
+2026-09-16T06:30:00.5225493Z   ok 12 [chromium] › e2e\wm001.spec.ts:524:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › supports connection after load, disconnect cleanup, keyboard fallback, and deliberate replacement (7.2s)
+2026-09-16T06:30:06.5733351Z   ok 13 [chromium] › e2e\wm001.spec.ts:561:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › cleans up held movement on blur/focus and requires neutral then fresh input (6.0s)
+2026-09-16T06:30:15.4423052Z   ok 14 [chromium] › e2e\wm001.spec.ts:588:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps controller status and local diagnostics usable at a representative iPad landscape viewport (8.8s)
+2026-09-16T06:30:28.3595179Z   ok 15 [chromium] › e2e\wm001.spec.ts:608:1 › keeps occupied-slot bytes unchanged when replacement is cancelled (12.9s)
+2026-09-16T06:30:40.3006437Z   ok 16 [chromium] › e2e\wm001.spec.ts:625:1 › keeps the prior committed save and remains paused when Save & Quit write fails (11.9s)
+2026-09-16T06:30:51.8463759Z   ok 17 [chromium] › e2e\wm001.spec.ts:647:1 › loads only the prior commit after pointer verification fails, then permits a clean retry (11.5s)
+2026-09-16T06:31:01.5672417Z   ok 18 [chromium] › e2e\wm001.spec.ts:706:1 › renders storage-unavailable records explicitly and refuses destructive replacement (9.7s)
+2026-09-16T06:31:09.9369678Z   ok 19 [chromium] › e2e\wm001.spec.ts:738:1 › remains controllable under a second real-time CPU/frame profile (8.3s)
+2026-09-16T06:31:23.5624371Z   ok 20 [chromium] › e2e\wm001.spec.ts:763:1 › persists a Hard run after closing and reopening the same browser profile and exact origin (13.6s)
+2026-09-16T06:31:30.7070704Z   ok 21 [chromium] › e2e\wm001.spec.ts:815:1 › labels corrupt and incompatible save fixtures without hiding valid choices (7.1s)
+2026-09-16T06:32:01.2057415Z   ok 22 [chromium] › e2e\wm002.spec.ts:126:1 › WM-002 keyboard continuous four-gap route, safe save and same-origin reopen (30.5s)
+2026-09-16T06:32:29.4335422Z   ok 23 [chromium] › e2e\wm002.spec.ts:349:1 › WM-002 simulated PlayStation controller-only complete route and safe save/load (28.2s)
+2026-09-16T06:32:45.9784279Z   ok 24 [chromium] › e2e\wm002.spec.ts:388:1 › WM-002 targeted anchor, unsafe save, pause, focus, fall recovery, invalid finish and replay cleanup (16.5s)
+2026-09-16T06:32:56.9947416Z   ok 25 [chromium] › e2e\wm002.spec.ts:454:1 › WM-002 LT disconnect clears web, reconnect needs neutral and diagnostics retain swing mapping (11.0s)
+2026-09-16T06:33:20.6840028Z   ok 26 [chromium] › e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under near-30fps render schedule (23.7s)
+2026-09-16T06:33:44.9653264Z   ok 27 [chromium] › e2e\wm002.spec.ts:496:3 › WM-002 continuous keyboard route under uneven render schedule (24.2s)
+2026-09-16T06:34:10.7251531Z   ok 28 [chromium] › e2e\wm002.spec.ts:544:1 › WM-002 repeated pause, replay, save and load keeps runtime resources bounded (25.7s)
+2026-09-16T06:34:29.8030475Z   ok 29 [chromium] › e2e\wm003-remediation.spec.ts:22:1 › WM003 R1 genuine roof2 checkpoint and manual save survive reload (19.0s)
+2026-09-16T06:34:37.9484428Z   ok 30 [chromium] › e2e\wm003-remediation.spec.ts:77:1 › WM003 R1 standing on dynamic step still disables both save actions (8.1s)
+2026-09-16T06:35:36.4174010Z   ok 31 [chromium] › e2e\wm003.spec.ts:20:1 › WM003 ordinary keyboard combined swing climb ceiling pull route (58.4s)
+2026-09-16T06:36:29.9128488Z   ok 32 [chromium] › e2e\wm003.spec.ts:59:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback (53.5s)
+2026-09-16T06:36:32.8015609Z   ok 33 [chromium] › e2e\wm003.spec.ts:123:3 › WM003 loads exact historical WM-001 writer records without changing old generations (2.9s)
+2026-09-16T06:36:35.3533882Z   ok 34 [chromium] › e2e\wm003.spec.ts:123:3 › WM003 loads exact historical WM-002 writer records without changing old generations (2.5s)
+2026-09-16T06:37:35.8372065Z   ok 35 [chromium] › e2e\wm003.spec.ts:167:1 › WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen (1.0m)
+2026-09-16T06:38:32.3823946Z   x  36 [chromium] › e2e\wm003.spec.ts:282:1 › WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web (56.2s)
+2026-09-16T06:38:57.7304006Z   ok 37 [chromium] › e2e\wm003.spec.ts:395:1 › WM003 RB and LB disconnect cleanup with neutral reconnect and keyboard fallback (24.3s)
+2026-09-16T06:39:36.7921253Z   ok 38 [chromium] › e2e\wm003.spec.ts:542:3 › WM003 complete route under near-30 rendered timing (39.0s)
+2026-09-16T06:40:23.9864233Z   ok 39 [chromium] › e2e\wm003.spec.ts:542:3 › WM003 complete route under uneven rendered timing (47.2s)
+2026-09-16T06:41:10.3674578Z   ok 40 [chromium] › e2e\wm003.spec.ts:599:1 › WM003 repeated replay pause save load clears transients and bounds resources (46.3s)
+2026-09-16T06:41:10.8627526Z 
+2026-09-16T06:41:10.8630760Z 
+2026-09-16T06:41:10.8634786Z   1) [chromium] › e2e\wm001.spec.ts:166:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route 
+2026-09-16T06:41:10.8636809Z 
+2026-09-16T06:41:10.8637377Z     Error: expect(received).toBe(expected) // Object.is equality
+2026-09-16T06:41:10.8637970Z 
+2026-09-16T06:41:10.8638205Z     Expected: 3
+2026-09-16T06:41:10.8638730Z     Received: 2
+2026-09-16T06:41:10.8639015Z 
+2026-09-16T06:41:10.8639286Z     Call Log:
+2026-09-16T06:41:10.8639973Z     - Timeout 4000ms exceeded while waiting on the predicate
+2026-09-16T06:41:10.8640487Z 
+2026-09-16T06:41:10.8640848Z       244 |     await page.keyboard.down("w");
+2026-09-16T06:41:10.8641605Z       245 |     await page.keyboard.down("Shift");
+2026-09-16T06:41:10.8642819Z     > 246 |     await expect.poll(async () => (await state(page)).progress, { timeout: 4_000, intervals: [50] }).toBe(3);
+2026-09-16T06:41:10.8644048Z           |                                                                                                      ^
+2026-09-16T06:41:10.8644932Z       247 |     await page.keyboard.up("Shift");
+2026-09-16T06:41:10.8645646Z       248 |     await page.keyboard.up("w");
+2026-09-16T06:41:10.8646360Z       249 |     await page.waitForTimeout(100);
+2026-09-16T06:41:10.8647260Z         at D:\a\Webmaster\Webmaster\candidate\e2e\wm001.spec.ts:246:102
+2026-09-16T06:41:10.8647797Z 
+2026-09-16T06:41:10.8649399Z     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+2026-09-16T06:41:10.8651013Z     test-results-wm005\inherited\wm001-WM-001-rendered-keyb-bc063-tes-the-real-practice-route-chromium\test-failed-1.png
+2026-09-16T06:41:10.8652613Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-09-16T06:41:10.8654326Z 
+2026-09-16T06:41:10.8655366Z     Error Context: test-results-wm005\inherited\wm001-WM-001-rendered-keyb-bc063-tes-the-real-practice-route-chromium\error-context.md
+2026-09-16T06:41:10.8656766Z 
+2026-09-16T06:41:10.8657978Z   2) [chromium] › e2e\wm003.spec.ts:282:1 › WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web 
+2026-09-16T06:41:10.8659000Z 
+2026-09-16T06:41:10.8659487Z     TimeoutError: page.waitForFunction: Timeout 20000ms exceeded.
+2026-09-16T06:41:10.8660037Z 
+2026-09-16T06:41:10.8660352Z        at routes\wm003-route.ts:7
+2026-09-16T06:41:10.8660760Z 
+2026-09-16T06:41:10.8661141Z        5 |   p.evaluate(() => window.__WM_DEBUG__!.getState());
+2026-09-16T06:41:10.8662207Z        6 | export async function wait(p: Page, fn: (s: any) => boolean, timeout = 20000) {
+2026-09-16T06:41:10.8663105Z     >  7 |   await p.waitForFunction(
+2026-09-16T06:41:10.8663755Z          |           ^
+2026-09-16T06:41:10.8664262Z        8 |     ({ body }) =>
+2026-09-16T06:41:10.8665083Z        9 |       new Function("s", `return (${body})(s)`)(window.__WM_DEBUG__!.getState()),
+2026-09-16T06:41:10.8666048Z       10 |     { body: fn.toString() },
+2026-09-16T06:41:10.8666928Z         at wait (D:\a\Webmaster\Webmaster\candidate\e2e\routes\wm003-route.ts:7:11)
+2026-09-16T06:41:10.8667918Z         at D:\a\Webmaster\Webmaster\candidate\e2e\wm003.spec.ts:328:9
+2026-09-16T06:41:10.8668487Z 
+2026-09-16T06:41:10.8669277Z     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+2026-09-16T06:41:10.8670822Z     test-results-wm005\inherited\wm003-WM003-negative-lifec-fa287-vy-feedback-and-blocked-web-chromium\test-failed-1.png
+2026-09-16T06:41:10.8672456Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-09-16T06:41:10.8675471Z 
+2026-09-16T06:41:10.8676859Z     Error Context: test-results-wm005\inherited\wm003-WM003-negative-lifec-fa287-vy-feedback-and-blocked-web-chromium\error-context.md
+2026-09-16T06:41:10.8678039Z 
+2026-09-16T06:41:10.8678308Z   2 failed
+2026-09-16T06:41:10.8680357Z     [chromium] › e2e\wm001.spec.ts:166:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route 
+2026-09-16T06:41:10.8682703Z     [chromium] › e2e\wm003.spec.ts:282:1 › WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web 
+2026-09-16T06:41:10.8683881Z   38 passed (13.3m)
+2026-09-16T06:41:10.9326735Z ##[error]Process completed with exit code 1.
+2026-09-16T06:41:10.9539825Z ##[group]Run node scripts/wm005-source-integrity.mjs
+2026-09-16T06:41:10.9540455Z [36;1mnode scripts/wm005-source-integrity.mjs[0m
+2026-09-16T06:41:10.9554713Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-09-16T06:41:10.9555209Z ##[endgroup]
+2026-09-16T06:41:11.1595421Z node:internal/modules/run_main:107
+2026-09-16T06:41:11.1596394Z     triggerUncaughtException(
+2026-09-16T06:41:11.1597045Z     ^
+2026-09-16T06:41:11.1597295Z 
+2026-09-16T06:41:11.1597752Z AssertionError [ERR_ASSERTION]: evidence/wm-002/timing-profiles.json
+2026-09-16T06:41:11.1598459Z + actual - expected
+2026-09-16T06:41:11.1598660Z 
+2026-09-16T06:41:11.1598901Z + 'd2675dec5669685d1b5a505844aa966873101374'
+2026-09-16T06:41:11.1599364Z - '6064075210bb286837e8238cf5b0498a174f9188'
+2026-09-16T06:41:11.1599593Z 
+2026-09-16T06:41:11.1599959Z     at file:///D:/a/Webmaster/Webmaster/candidate/scripts/wm005-source-integrity.mjs:7:10
+2026-09-16T06:41:11.1600754Z     at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+2026-09-16T06:41:11.1601242Z     at async node:internal/modules/esm/loader:643:26
+2026-09-16T06:41:11.1601789Z     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+2026-09-16T06:41:11.1602323Z   generatedMessage: false,
+2026-09-16T06:41:11.1602644Z   code: 'ERR_ASSERTION',
+2026-09-16T06:41:11.1602999Z   actual: 'd2675dec5669685d1b5a505844aa966873101374',
+2026-09-16T06:41:11.1603455Z   expected: '6064075210bb286837e8238cf5b0498a174f9188',
+2026-09-16T06:41:11.1603807Z   operator: 'strictEqual',
+2026-09-16T06:41:11.1604088Z   diff: 'simple'
+2026-09-16T06:41:11.1604404Z }
+2026-09-16T06:41:11.1604524Z 
+2026-09-16T06:41:11.1604658Z Node.js v24.19.0
+2026-09-16T06:41:11.1749487Z ##[error]Process completed with exit code 1.
+2026-09-16T06:41:11.1998927Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-16T06:41:11.2001625Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-09-16T06:41:11.2002421Z with:
+2026-09-16T06:41:11.2002897Z   name: wm005-8a221c08642ebdd1264a04ebfaf6093d838cf60e
+2026-09-16T06:41:11.2003806Z   path: candidate/evidence/wm-005/
+candidate/test-results-wm005/
+candidate/.wm005-payload/
+
+2026-09-16T06:41:11.2004687Z   include-hidden-files: true
+2026-09-16T06:41:11.2005141Z   retention-days: 90
+2026-09-16T06:41:11.2005516Z   if-no-files-found: warn
+2026-09-16T06:41:11.2005928Z   compression-level: 6
+2026-09-16T06:41:11.2006378Z   overwrite: false
+2026-09-16T06:41:11.2006772Z ##[endgroup]
+2026-09-16T06:41:11.4776029Z (node:8624) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-16T06:41:11.4780890Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-16T06:41:12.0055583Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-09-16T06:41:12.0060080Z The least common ancestor is D:\a\Webmaster\Webmaster\candidate. This will be the root directory of the artifact
+2026-09-16T06:41:12.0061339Z With the provided path, there will be 1571 files uploaded
+2026-09-16T06:41:12.0070560Z Artifact name is valid!
+2026-09-16T06:41:12.0072273Z Root directory input is valid!
+2026-09-16T06:41:12.3397152Z Beginning upload of artifact content to blob storage
+2026-09-16T06:41:12.9686140Z (node:8624) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-09-16T06:41:13.3652038Z Uploaded bytes 8388608
+2026-09-16T06:41:13.5835527Z Uploaded bytes 16777216
+2026-09-16T06:41:14.0473796Z Uploaded bytes 25165824
+2026-09-16T06:41:14.6498333Z Uploaded bytes 33554432
+2026-09-16T06:41:16.2086823Z Uploaded bytes 41943040
+2026-09-16T06:41:17.5609112Z Uploaded bytes 50331648
+2026-09-16T06:41:18.0460630Z Uploaded bytes 53954297
+2026-09-16T06:41:18.0772532Z Finished uploading artifact content to blob storage!
+2026-09-16T06:41:18.0777838Z SHA256 digest of uploaded artifact zip is 8d368fafdd8960b6732d667e0efe8257b32ac805b7c06642a6ce85fbc0d0add9
+2026-09-16T06:41:18.0780567Z Finalizing artifact upload
+2026-09-16T06:41:18.3225087Z Artifact wm005-8a221c08642ebdd1264a04ebfaf6093d838cf60e.zip successfully finalized. Artifact ID 10433733031
+2026-09-16T06:41:18.3226916Z Artifact wm005-8a221c08642ebdd1264a04ebfaf6093d838cf60e has been successfully uploaded! Final size is 53954297 bytes. Artifact ID is 10433733031
+2026-09-16T06:41:18.3240458Z Artifact download URL: https://github.com/timcgha/Webmaster/actions/runs/35062375370/artifacts/10433733031
+2026-09-16T06:41:18.3716175Z Post job cleanup.
+2026-09-16T06:41:18.5864442Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-16T06:41:18.6238651Z git version 2.55.0.windows.5
+2026-09-16T06:41:18.6319625Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\e2e62ed8-06a6-4f09-b2e0-25d768a1cff9\.gitconfig'
+2026-09-16T06:41:18.6349070Z Temporarily overriding HOME='D:\a\_temp\e2e62ed8-06a6-4f09-b2e0-25d768a1cff9' before making global git config changes
+2026-09-16T06:41:18.6350788Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-16T06:41:18.6364895Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Webmaster\Webmaster\save-baseline
+2026-09-16T06:41:18.6838182Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-16T06:41:18.7217790Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-16T06:41:19.3587992Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-16T06:41:19.4037900Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-16T06:41:20.0410233Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-16T06:41:20.0748604Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-16T06:41:20.7599697Z Post job cleanup.
+2026-09-16T06:41:20.9687465Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-16T06:41:21.0031217Z git version 2.55.0.windows.5
+2026-09-16T06:41:21.0107129Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\7dcc5a25-d321-42b0-9964-96d192cbc64a\.gitconfig'
+2026-09-16T06:41:21.0135494Z Temporarily overriding HOME='D:\a\_temp\7dcc5a25-d321-42b0-9964-96d192cbc64a' before making global git config changes
+2026-09-16T06:41:21.0137092Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-16T06:41:21.0147875Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Webmaster\Webmaster\baseline
+2026-09-16T06:41:21.0565986Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-16T06:41:21.0939425Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-16T06:41:21.7215001Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-16T06:41:21.7582603Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-16T06:41:22.4327990Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-16T06:41:22.4695091Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-16T06:41:23.1508438Z Post job cleanup.
+2026-09-16T06:41:23.3754929Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-16T06:41:23.4074218Z git version 2.55.0.windows.5
+2026-09-16T06:41:23.4144951Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\0fabf6f6-db16-4233-90db-08fe93794666\.gitconfig'
+2026-09-16T06:41:23.4168317Z Temporarily overriding HOME='D:\a\_temp\0fabf6f6-db16-4233-90db-08fe93794666' before making global git config changes
+2026-09-16T06:41:23.4169902Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-16T06:41:23.4183438Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Webmaster\Webmaster\candidate
+2026-09-16T06:41:23.4549518Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-16T06:41:23.4908255Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-16T06:41:24.1659927Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-16T06:41:24.2018438Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-16T06:41:24.8677570Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-16T06:41:24.9044574Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-16T06:41:25.5590523Z Cleaning up orphan processes
+2026-09-16T06:41:25.6220515Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
