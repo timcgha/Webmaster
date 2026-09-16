@@ -1,12 +1,12 @@
 import { COURSE_ANCHORS, COURSE_NODES, COURSE_ROOFS, COURSE_START, RECOVERY_WALLS, STREET, CITY_SOLIDS, advanceCourse, newCourse } from "../src/core/course";
-import { ROOFS, advanceSkyline, newSkyline } from "../src/core/skyline";
+import { ROOFS, advanceSkyline, newSkyline, onRoof } from "../src/core/skyline";
 import { TRAINING_SOLIDS, SURFACES, newPullObjects, newTraversal, stepTraversal, type TraversalInput } from "../src/core/traversal";
 import { newSwing } from "../src/core/swing";
 import type { MotionState } from "../src/core/types";
 
 export const COURSE_SOLIDS = [...ROOFS,...TRAINING_SOLIDS,...COURSE_ROOFS,STREET,...CITY_SOLIDS];
 /** Ordinary authored course start, then only inputs through the real motion state machine. */
-export function driveCourse(profile: number[] = [1/60], omit = -1, recoverMiss = false) {
+export function driveCourse(profile: number[] = [1/60], omit = -1, recoverMiss = false, laps = 1) {
   let motion:MotionState={position:{...COURSE_START},velocity:{x:0,y:0,z:0},grounded:true,facingYaw:0};
   let web=newSwing(),traversal=newTraversal(),objects=newPullObjects(),course=newCourse(),skyline=newSkyline();
   let forward={x:0,y:0,z:1}, elapsed=0, frame=0, accumulator=0, pendingJump=false;
@@ -35,26 +35,27 @@ export function driveCourse(profile: number[] = [1/60], omit = -1, recoverMiss =
   function go(z:number){until(()=>motion.position.z>=z,{moveY:1},`go ${z}`);}
   function launch(){advance({moveY:1,jumpPressed:true,swingHeld:true});}
   function fly(z:number){until(()=>motion.position.z>=z,{moveY:1,swingHeld:true},`fly ${z}`);}
-  rest(.1);go(-39);advance({moveY:1,jumpPressed:true});until(()=>motion.position.y>1.25,{moveY:1},"first jump");fly(-23.5);until(()=>motion.grounded,{moveY:1},"first landing");
-  go(21);launch();fly(37);until(()=>skyline.stage===1,{moveY:1},"legacy 1");
-  go(53);launch();fly(76.5);until(()=>skyline.stage===2,{moveY:1},"legacy 2");
-  go(95);launch();fly(122);go(123.2);fly(152);until(()=>skyline.stage===3,{moveY:1},"legacy 3");
+  lapsLoop: for(let lap=0;lap<=laps;lap++){
+  rest(.1);forward={x:0,y:0,z:1};go(-39);advance({moveY:1,jumpPressed:true});until(()=>motion.position.y>1.25,{moveY:1},"first jump");fly(-23.5);if(lap===laps)break;until(()=>motion.grounded,{moveY:1},"first landing");
+  go(21);launch();fly(37);until(()=>onRoof(motion,1),{moveY:1},"legacy 1");
+  go(53);launch();fly(76.5);until(()=>onRoof(motion,2),{moveY:1},"legacy 2");
+  go(95);launch();fly(122);go(123.2);fly(152);until(()=>onRoof(motion,3),{moveY:1},"legacy 3");
   go(165.5);rest();forward={x:1,y:0,z:0};until(()=>motion.position.x>=5,{moveY:1},"legacy turn");launch();
   until(()=>motion.position.x>=20,{moveY:1,swingHeld:true},"legacy 5");
-  until(()=>skyline.stage===4,{moveY:1},"legacy finish");
+  until(()=>onRoof(motion,4),{moveY:1},"legacy finish");
   until(()=>motion.position.x>=34.5,{moveY:1},"extension entry");rest();
   for(let n=0;n<14;n++) {
     const a=COURSE_NODES[n]!,b=COURSE_NODES[n+1]!;
-    const dx=Math.sign(b.x-a.x),dz=Math.sign(b.z-a.z);forward={x:dx,y:0,z:dz};
+    const length=Math.hypot(b.x-a.x,b.z-a.z),dx=(b.x-a.x)/length,dz=(b.z-a.z)/length;forward={x:dx,y:0,z:dz};
     const along=()=>dx*(motion.position.x-a.x)+dz*(motion.position.z-a.z);
     until(()=>along()>=5,{moveY:1},`takeoff ${n}`);
     advance({moveY:1,jumpPressed:true});
     until(()=>motion.position.y>2.25,{moveY:1},`jump ${n}`);
-    until(()=>along()>=18,{moveY:1,swingHeld:n!==omit||recovered},`gap ${n}`);
+    until(()=>along()>=Math.max(18,length-14),{moveY:1,swingHeld:n!==omit||recovered},`gap ${n}`);
     until(()=>motion.grounded,{moveY:-1},`landing ${n}`);
     rest(.9);
     if(motion.position.y < -1 && omit===n){
-      if(!recoverMiss)break;
+      if(!recoverMiss)break lapsLoop;
       if(n!==0)throw Error("Recovery demonstration uses first extension's marked old roof4 wall");
       const landed={...motion.position},progress=course.next;
       forward={x:0,y:0,z:1};until(()=>motion.position.z>=181,{moveY:1,run:false},"street north");rest();
@@ -74,5 +75,7 @@ export function driveCourse(profile: number[] = [1/60], omit = -1, recoverMiss =
     }
     rest(.4);
   }
+  }
   return {motion,web,traversal,course,skyline,events,recoveries,elapsed};
 }
+
