@@ -641,6 +641,11 @@ test("WM003 repeated replay pause save load clears transients and bounds resourc
     expect(s.surfaceCameraBlend).toBe(0);
     expect(s.pullObjects.every((o) => o.speed === 0)).toBe(true);
     await page.waitForTimeout(350);
+    // Compare identical quiescent pause screens. During play the HUD replaces
+    // eleven text nodes between GC and the separate DOM-counter RPC, producing
+    // 254/265-node oscillation without retained growth. Preserve the same limits.
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("heading",{name:"Paused",exact:true})).toBeVisible();
     await cdp.send("HeapProfiler.collectGarbage");
     const heap = await cdp.send("Runtime.getHeapUsage"),
       dom = await cdp.send("Memory.getDOMCounters");
@@ -649,14 +654,17 @@ test("WM003 repeated replay pause save load clears transients and bounds resourc
       heap: heap.usedSize,
       nodes: dom.nodes,
       listeners: dom.jsEventListeners,
+      screen: "paused",
+      connectedElements: await page.locator("*").count(),
     });
+    await page.getByRole("button",{name:/Resume/}).click();
   }
   await writeFile(
     info.outputPath("resources.json"),
     JSON.stringify(
       {
         method:
-          "12 ordinary S3 replay/pause/save/Continue cycles; 350ms settled UI then post-GC heap and DOM/listeners; finite warmup bounds",
+          "12 ordinary S3 replay/pause/save/Continue cycles; same ordinary paused UI then post-GC heap and DOM/listeners; unchanged finite warmup bounds",
         measurements,
       },
       null,
@@ -673,7 +681,7 @@ test("WM003 repeated replay pause save load clears transients and bounds resourc
     JSON.stringify(
       {
         method:
-          "12 ordinary S3 replay/pause/save/Continue cycles; post-GC heap and DOM/listeners; finite warmup bounds",
+          "12 ordinary S3 replay/pause/save/Continue cycles; same ordinary paused UI, post-GC heap and DOM/listeners; unchanged finite warmup bounds",
         measurements,
       },
       null,

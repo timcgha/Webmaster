@@ -35,8 +35,10 @@ for(const pad of[false,true])test(`WM005 visible face-up head-first ceiling and 
  for(const mesh of viewReversed.meshes){expect(mesh.min.z,mesh.name).toBeGreaterThanOrEqual(-61);expect(mesh.max.y,mesh.name).toBeLessThanOrEqual(11.005);}
  expect(viewReversed.shadowPass.proxiesExcludedFromCamera).toBe(true);
  expect(viewReversed.shadowPass.proxiesInShadowPass).toBe(true);expect(viewReversed.shadowPass.visibleBlocksExcludedFromShadowPass).toBe(true);
- expect(viewReversed.shadowPass.proxyCount).toBe(16);
- expect(viewReversed.shadowPass.proxyTriangles).toBeLessThan(viewReversed.shadowPass.visibleTriangles/8);
+ expect(viewReversed.shadowPass.proxyCount).toBe(24);
+ expect(viewReversed.shadowPass.jointCount).toBe(8);
+ expect(viewReversed.shadowPass.jointTriangles).toBeLessThanOrEqual(1152);
+ expect(viewReversed.shadowPass.proxyTriangles).toBeLessThan((viewReversed.shadowPass.visibleTriangles+viewReversed.shadowPass.jointTriangles)/8);
  await page.screenshot({path:`${out}/${label}-ceiling-reversed.png`});
  await saveHeroRecording(page,`${out}/${label}-ceiling-climb.webm`);
  // Continuous held crawl reaches the outer fascia; ordinary forward/up input tops out.

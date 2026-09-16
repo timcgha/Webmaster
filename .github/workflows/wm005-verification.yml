@@ -26,7 +26,7 @@ jobs:
           path: candidate
           ref: ${{ github.sha }}
           persist-credentials: false
-          fetch-depth: 2
+          fetch-depth: 3
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: baseline
@@ -37,6 +37,24 @@ jobs:
           path: save-baseline
           ref: 3962446ca00c6e1db6bd8b250335b24619a0aeab
           persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: prior-c2
+          ref: bff98139d8f08cf1f8587c5387beac9bffaabc89
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /evidence/wm-005/a5ef60b893b746f1b1792cbec270872783ffa128/35065467172/evidence/wm-005/source-integrity.json
+            /evidence/wm-005/a5ef60b893b746f1b1792cbec270872783ffa128/35065467172/evidence/wm-005/new-browser-results.json
+            /evidence/wm-005/a5ef60b893b746f1b1792cbec270872783ffa128/35065467172/evidence/wm-005/inherited-browser-results.json
+            /evidence/wm-005/a5ef60b893b746f1b1792cbec270872783ffa128/35065467172/evidence/wm-005/compiled/results.json
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: prior-c1
+          ref: 85396f7bc071c8873860fa9634d72e1dc9801c12
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: /evidence/wm-005/8a221c08642ebdd1264a04ebfaf6093d838cf60e/35062375370/evidence/wm-005/new-browser-results.json
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: '24.19.0'
@@ -50,6 +68,8 @@ jobs:
           pnpm install --frozen-lockfile 2>&1 | tee evidence/wm-005/install.log
           pnpm --dir ../baseline install --frozen-lockfile 2>&1 | tee evidence/wm-005/baseline-install.log
           node scripts/wm005-source-integrity.mjs
+      - name: Prove exact bounded reuse of unaffected completed evidence
+        run: node scripts/wm005-reuse.mjs
       - name: Full deterministic, TypeScript and isolated-storage gates
         run: |
           set -euo pipefail
@@ -92,14 +112,14 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/wm005-compiled.mjs 2>&1 | tee evidence/wm-005/compiled.log
-      - name: Complete affected inherited rendered regressions
+      - name: Fresh recheck of the three retained inherited failures
         if: ${{ !cancelled() && steps.builds.outcome == 'success' }}
         timeout-minutes: 30
         env:
           WM005_SUITE: inherited
         run: |
           set -euo pipefail
-          pnpm exec playwright test -c playwright.wm005.config.ts e2e/wm001.spec.ts e2e/wm002.spec.ts e2e/wm003.spec.ts e2e/wm003-remediation.spec.ts 2>&1 | tee evidence/wm-005/inherited-browser.log
+          pnpm exec playwright test -c playwright.wm005.config.ts e2e/wm001.spec.ts e2e/wm003.spec.ts --grep "moves, jumps, orbits|supports connection after load|WM003 repeated replay" 2>&1 | tee evidence/wm-005/inherited-browser.log
       - name: Final exact-source integrity
         if: always()
         run: node scripts/wm005-source-integrity.mjs

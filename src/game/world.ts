@@ -1506,6 +1506,8 @@ export class GameWorld {
       head:copyVec3(Vector3.TransformNormal(new Vector3(0,1,0),matrix).normalize()),
       shadowPass:{
         visibleTriangles:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.surfaceArtwork).reduce((n,m)=>n+m.getTotalIndices()/3,0),
+        jointTriangles:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.heroJoint).reduce((n,m)=>n+m.getTotalIndices()/3,0),
+        jointCount:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.heroJoint).length,
         proxyTriangles:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).reduce((n,m)=>n+m.getTotalIndices()/3,0),
         proxiesInShadowPass:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).every(m=>casters.includes(m)),
         visibleBlocksExcludedFromShadowPass:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.surfaceArtwork).every(m=>!casters.includes(m)),
@@ -1584,4 +1586,3 @@ export class GameWorld {
     this.engine.dispose();
   }
 }
-

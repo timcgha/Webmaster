@@ -63,8 +63,12 @@ export function createBlockHero(scene: Scene, root: TransformNode, shadows: Shad
     mesh.isPickable=false; addBlockShadow(mesh,size,shadows,shadowMaterial); return mesh;
   }
   function joint(name: string, radius: number, parent: TransformNode, material = blue) {
-    const mesh = CreateSphere(name,{diameter:radius*2,segments:8},scene); mesh.parent=parent; mesh.material=material;
-    mesh.isPickable=false; shadows.addShadowCaster(mesh,false); return mesh;
+    // Small smooth joints need 144 rather than 400 triangles at gameplay size.
+    // Keep the same radius, poles and hip/shoulder contact envelope. Their
+    // subpixel shadow-map detail uses the same opaque proxy as the limbs.
+    const mesh = CreateSphere(name,{diameter:radius*2,segments:4},scene); mesh.parent=parent; mesh.material=material;
+    mesh.metadata={originalProcedural:true,visualOnly:true,heroJoint:true};
+    mesh.isPickable=false; addBlockShadow(mesh,[radius*2,radius*2,radius*2],shadows,shadowMaterial); return mesh;
   }
   block("webmaster-pelvis",[0.72,0.44,0.46],[0,1.50,0],root);
   block("webmaster-torso",[0.90,1.10,0.48],[0,2.09,0],root,chest);
@@ -92,4 +96,3 @@ export function createBlockHero(scene: Scene, root: TransformNode, shadows: Shad
   }
   return {hips,knees,ankles,arms,elbows};
 }
-

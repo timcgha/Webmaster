@@ -236,18 +236,32 @@ test.describe("WM-001 rendered keyboard and mouse journey", () => {
     expect(blocked.position.z).toBeLessThan(-2.05);
 
     await page.evaluate(() => window.__WM_DEBUG__!.setFixturePosition({ x: 0, y: 0, z: -8 }, "route start only"));
-    // Observe actual route coordinates rather than relying on wall-clock travel
-    // distances, which vary on software rendering and can miss the finish lane.
-    await page.keyboard.down("Shift");await page.keyboard.down("w");
-    await page.waitForFunction(()=>window.__WM_DEBUG__!.getState().position.z>3,null,{timeout:15000});
-    expect((await state(page)).progress).toBeGreaterThanOrEqual(1);
-    await page.keyboard.down("d");
-    await page.waitForFunction(()=>window.__WM_DEBUG__!.getState().progress===2,null,{timeout:15000});
-    await page.keyboard.up("w");await page.keyboard.up("d");await page.keyboard.down("a");
-    await page.waitForFunction(()=>window.__WM_DEBUG__!.getState().position.x < -3.5,null,{timeout:15000});
-    await page.keyboard.up("a");await page.keyboard.down("w");
-    await page.waitForFunction(()=>window.__WM_DEBUG__!.getState().progress===3,null,{timeout:15000});
-    await page.keyboard.up("Shift");await page.keyboard.up("w");await page.waitForTimeout(100);
+    // Release keys in the same browser frame as the waypoint. A remote RPC
+    // after observing X can arrive late enough to walk into the cyan obstacle.
+    const routeSamples=await page.evaluate(async()=>{
+      const held=new Set<string>(),samples:any[]=[];
+      const keys=(...wanted:string[])=>{const next=new Set(wanted);
+        for(const k of new Set([...held,...next]))if(held.has(k)!==next.has(k))
+          window.dispatchEvent(new KeyboardEvent(next.has(k)?'keydown':'keyup',{key:k,code:k==='Shift'?'ShiftLeft':`Key${k.toUpperCase()}`,bubbles:true}));
+        held.clear();for(const k of next)held.add(k);
+      };
+      const until=async(check:(s:any)=>boolean,label:string)=>{const begun=performance.now();
+        while(!check(window.__WM_DEBUG__!.getState())){if(performance.now()-begun>15000)throw new Error(`${label}: ${JSON.stringify(window.__WM_DEBUG__!.getState())}`);await new Promise(requestAnimationFrame);}
+        samples.push({label,state:window.__WM_DEBUG__!.getState()});
+      };
+      try{
+        keys('Shift','w');await until(s=>s.position.z>3,'first gate');
+        keys('Shift','w','d');await until(s=>s.progress===2,'sun pad');
+        keys('Shift','a');await until(s=>s.position.x < -2.6,'finish lane');
+        keys();await until(s=>s.velocity.x===0&&s.velocity.z===0,'braked before obstacle');
+        keys('Shift','w');await until(s=>s.progress===3,'finish earned');
+        keys();await until(s=>s.velocity.x===0&&s.velocity.z===0,'finish stopped');
+      }finally{keys();}
+      return samples;
+    });
+    await writeFile(`${captures}/${browserName}-practice-route-frame-inputs.json`,JSON.stringify({method:'Same-frame ordinary DOM keyboard waypoint input; position/progress/time read-only, route-start fixture remains labelled',routeSamples},null,2));
+    const lane=routeSamples.find(x=>x.label==='braked before obstacle')!.state.position;
+    expect(lane.x).toBeGreaterThan(-4.8);expect(lane.x).toBeLessThan(-2.2);
     expect((await state(page)).progress).toBe(3);
     expect((await state(page)).grounded).toBe(true);
     await page.screenshot({ path: `${captures}/${browserName}-route-complete.png` });
@@ -538,12 +552,17 @@ test.describe("WM-001 controller remediation lifecycle (simulated Gamepad API)",
     await setPad(page, { axes: [0, -1, 0, 0] });
     await page.waitForTimeout(250);
     await setPad(page, { connected: false });
+    await page.waitForFunction(()=>window.__WM_DEBUG__!.getControllerStatus().lifecycle==='CONTROLLER_DISCONNECTED');
+    const brakingAt=(await state(page)).position;
+    await page.waitForFunction(()=>{const v=window.__WM_DEBUG__!.getState().velocity;return v.x===0&&v.z===0;},undefined,{timeout:500});
     const disconnectedAt = (await state(page)).position;
+    expect(Math.hypot(disconnectedAt.x-brakingAt.x,disconnectedAt.z-brakingAt.z)).toBeLessThan(.5);
     await page.waitForTimeout(350);
     expect((await state(page)).position).toEqual(disconnectedAt);
     await expect(page.locator(".controller-hud-card")).toContainText("Controller disconnected");
 
     await hold(page, ["w"], 250);
+    await page.waitForFunction(()=>{const v=window.__WM_DEBUG__!.getState().velocity;return v.x===0&&v.z===0;},undefined,{timeout:500});
     const keyboardAt = (await state(page)).position;
     expect(keyboardAt.z).toBeGreaterThan(disconnectedAt.z);
 

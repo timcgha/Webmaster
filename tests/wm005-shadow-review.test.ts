@@ -8,6 +8,19 @@ import {ShadowGenerator} from '@babylonjs/core/Lights/Shadows/shadowGenerator';
 import {StandardMaterial} from '@babylonjs/core/Materials/standardMaterial';
 import {createRoundedBlock} from '../src/game/rounded-block';
 import {addBlockShadow} from '../src/game/shadow-proxy';
+import {CreateSphere} from '@babylonjs/core/Meshes/Builders/sphereBuilder.pure';
+it('lower joint tessellation preserves the accepted contact envelope and smooth unit normals',()=>{
+ const engine=new NullEngine(),scene=new Scene(engine);
+ for(const radius of [.145,.18,.195,.21]){
+  const old=CreateSphere('accepted',{diameter:radius*2,segments:8},scene),joint=CreateSphere('bounded',{diameter:radius*2,segments:4},scene);
+  expect(joint.getBoundingInfo().boundingBox.minimum.asArray()).toEqual(old.getBoundingInfo().boundingBox.minimum.asArray());
+  expect(joint.getBoundingInfo().boundingBox.maximum.asArray()).toEqual(old.getBoundingInfo().boundingBox.maximum.asArray());
+  const normals=joint.getVerticesData('normal')!;
+  for(let i=0;i<normals.length;i+=3)expect(Math.hypot(normals[i]!,normals[i+1]!,normals[i+2]!)).toBeCloseTo(1,6);
+  expect(joint.getTotalIndices()).toBeLessThan(old.getTotalIndices()/2);
+ }
+ scene.dispose();engine.dispose();
+});
 it('opaque low-poly shadow follows the rounded costume while remaining excluded from the camera',()=>{
  const engine=new NullEngine(),scene=new Scene(engine),camera=new FreeCamera('camera',Vector3.Zero(),scene);
  const shadow=new ShadowGenerator(256,new DirectionalLight('sun',new Vector3(-.4,-1,.35),scene));
