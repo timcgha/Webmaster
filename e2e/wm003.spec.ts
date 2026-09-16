@@ -16,7 +16,7 @@ import {
 } from "./routes/wm003-route";
 import { test, expect, type Page } from "@playwright/test";
 import { writeFile, readFile } from "node:fs/promises";
-const out = "evidence/wm-003/captures";
+const out = process.env.WM_EVIDENCE_ROOT ? `${process.env.WM_EVIDENCE_ROOT}/wm003` : "evidence/wm-003/captures";
 test("WM003 ordinary keyboard combined swing climb ceiling pull route", async ({
   page,
 }, info) => {
@@ -171,9 +171,10 @@ test("WM003 historical WM002 save to full swing plus climb route, safe save and 
   const profile = info.outputPath("wm003-persistent-profile"),
     options = {
       headless: true,
+      ...(process.env.WM_BROWSER_CHANNEL ? {channel:process.env.WM_BROWSER_CHANNEL} : {}),
       baseURL: "http://127.0.0.1:4173",
       viewport: { width: 1280, height: 720 },
-      recordVideo: { dir: info.outputPath("persistent-video") },
+      ...(process.env.WM_EVIDENCE_ROOT ? {} : {recordVideo: { dir: info.outputPath("persistent-video") }}),
       ...(process.env.WM_CHROMIUM_PATH
         ? { executablePath: process.env.WM_CHROMIUM_PATH }
         : {}),

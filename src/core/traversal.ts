@@ -46,6 +46,8 @@ export interface Surface extends Solid {
   role: AuthoredRole;
   normal: Vec3Data;
   transition?: string;
+  /** Street recovery walls allow a continuous climb above the lip and onto the roof. */
+  topOut?: boolean;
 }
 export interface PullObject {
   id: string;
@@ -332,9 +334,9 @@ export function selectWall(
           m.position.x > s.minX + HERO_RADIUS &&
           m.position.x < s.maxX - HERO_RADIUS &&
           m.position.y >= s.minY - 0.1 &&
-          m.position.y + HERO_HEIGHT <= s.maxY + 0.03 &&
+          m.position.y + (s.topOut ? 0 : HERO_HEIGHT) <= s.maxY + 0.03 &&
           m.position.z >= s.maxZ + HERO_RADIUS - 0.03 &&
-          m.position.z - s.maxZ <= LIMITS.attachDistance &&
+          m.position.z - s.maxZ <= (s.topOut ? HERO_RADIUS + 0.12 : LIMITS.attachDistance) &&
           dot(facing, s.normal) <= -LIMITS.facingCosine &&
           clearAttachmentPath(
             m.position,
@@ -498,13 +500,22 @@ export function stepTraversal(
         y: clamp(
           m.position.y + moveY * LIMITS.climbSpeed * step,
           surface.minY,
-          surface.maxY - HERO_HEIGHT,
+          surface.maxY - (surface.topOut ? 0 : HERO_HEIGHT),
         ),
       };
       if (!allSolids().some((b) => b.id !== surface!.id && heroOverlaps(p, b)))
         m.position = p;
       m.facingYaw = Math.PI;
       if (s.phaseTime === 0) s.phase = "WALL_CLIMBING";
+      if (surface.topOut && p.y >= surface.maxY - 0.001 && moveY > 0.2) {
+        const onTop = { ...m.position, z: m.position.z - moveY * LIMITS.climbSpeed * step };
+        if (!allSolids().some(b => heroOverlaps(onTop, b))) m.position = onTop;
+        if (m.position.z <= surface.maxZ - HERO_RADIUS - 0.05) {
+          s = clearTraversal(s, "LANDING");
+          s.message = "Back on the rooftop! Follow the numbered rings.";
+          m.grounded = true;
+        }
+      }
       const ceiling = surfaces.find(
         (c) => c.id === surface!.transition && c.role === "CLIMBABLE_CEILING",
       );
