@@ -1,0 +1,117 @@
+--- a/src/core/swing.ts
++++ b/src/core/swing.ts
+@@ -351,7 +351,8 @@
+   }
+   m.velocity.y -= GRAVITY * dt;
+   const speed = Math.hypot(m.velocity.x, m.velocity.y, m.velocity.z);
+-  const limit=s.web ? ((s.web.age??0)>3.5 ? MAX_SWING_SPEED : 26) : Math.min(MAX_SWING_SPEED,Math.max(26,Math.hypot(motion.velocity.x,motion.velocity.y,motion.velocity.z)));
++  const incomingLimit=Math.min(MAX_SWING_SPEED,Math.max(26,Math.hypot(motion.velocity.x,motion.velocity.y,motion.velocity.z)));
++  const limit=s.web && (s.web.age??0)>3.5 ? MAX_SWING_SPEED : incomingLimit;
+   if (speed > limit) {
+     const scale = limit / speed;
+     for (const axis of ["x", "y", "z"] as const) m.velocity[axis] *= scale;
+--- a/src/core/presentation.ts
++++ b/src/core/presentation.ts
+@@ -137,6 +137,6 @@
+   const wave=Math.sin(phase*Math.PI*2)*weight;
+   return {arms:[-2.3+.1*wave,-2.3-.1*wave] as [number,number],
+     elbows:[.35+.05*wave,.35-.05*wave] as [number,number],
+-    hips:[-1.0-.12*wave,-1.0+.12*wave] as [number,number],
++    hips:[-1.0-.08*wave,-1.0+.08*wave] as [number,number],
+     knees:[.5+.1*wave,.5-.1*wave] as [number,number]};
+ }
+--- a/src/game/world.ts
++++ b/src/game/world.ts
+@@ -1496,6 +1496,22 @@
+     this.restart();
+   }
+ 
++  /** Read-only verification view, only exposed by the existing ?test=1 API.
++   * Actual transformed vertices avoid conservative rotated-box false positives. */
++  heroViewForTests() {
++    const matrix=this.heroRoot.computeWorldMatrix(true);
++    return {root:copyVec3(this.heroRoot.position),
++      front:copyVec3(Vector3.TransformNormal(new Vector3(0,0,1),matrix).normalize()),
++      head:copyVec3(Vector3.TransformNormal(new Vector3(0,1,0),matrix).normalize()),
++      meshes:this.heroRoot.getChildMeshes().map(mesh=>{
++        const matrix=mesh.computeWorldMatrix(true),vertices=mesh.getVerticesData("position")??[],
++          min={x:Infinity,y:Infinity,z:Infinity},max={x:-Infinity,y:-Infinity,z:-Infinity};
++        for(let i=0;i<vertices.length;i+=3){const p=Vector3.TransformCoordinates(new Vector3(vertices[i]!,vertices[i+1]!,vertices[i+2]!),matrix);
++          for(const a of["x","y","z"] as const){min[a]=Math.min(min[a],p[a]);max[a]=Math.max(max[a],p[a]);}}
++        return {name:mesh.name,min,max};
++      })};
++  }
++
+   stateForTests(): WorldFrame {
+     return {
+       active: this.active,
+--- a/src/main.ts
++++ b/src/main.ts
+@@ -35,6 +35,7 @@
+   interface Window {
+     __WM_DEBUG__?: {
+       getState: () => WorldFrame;
++      getHeroView: () => ReturnType<GameWorld["heroViewForTests"]>;
+       getScreen: () => Screen;
+       getCurrentRun: () => { slot: SlotId; difficulty: Difficulty } | null;
+       setFixturePosition: (position: Vec3Data, label: string) => void;
+@@ -910,6 +911,7 @@
+ if (new URLSearchParams(location.search).has("test")) {
+   window.__WM_DEBUG__ = {
+     getState: () => world.stateForTests(),
++    getHeroView: () => world.heroViewForTests(),
+     getScreen: () => app!.getScreen(),
+     getCurrentRun: () => app!.getCurrentRun(),
+     setFixturePosition: (position, label) =>
+@@ -926,3 +928,4 @@
+   app?.dispose();
+   world.dispose();
+ });
++
+--- a/e2e/wm005-climb.spec.ts
++++ b/e2e/wm005-climb.spec.ts
+@@ -10,8 +10,9 @@
+  await page.evaluate(async()=>{const c=(window as any).__wm005Controls;await c.look(Math.PI,1.1);c.keys('w');await c.at('x',16);c.keys();await c.until((s:any)=>s.grounded&&s.position.y===-18,'street');});
+  await page.screenshot({path:`${out}/${label}-unmarked-east-street.png`});
+  await page.evaluate(async()=>{const c=(window as any).__wm005Controls;await c.look(0,1.1);c.keys('w','c');await c.until((s:any)=>s.traversal.surfaceId==='practice:face-2','unmarked east');await c.until((s:any)=>s.position.y>-12,'mid wall');c.keys('c');});
+- await startHeroRecording(page);const climbing=page.evaluate(async()=>{const c=(window as any).__wm005Controls,frames=[];c.keys('w','c');const start=performance.now();while(performance.now()-start<1800)frames.push(await c.frame());c.keys('c');return frames;});
++ await startHeroRecording(page);const climbing=page.evaluate(async()=>{const c=(window as any).__wm005Controls,frames=[];c.keys('w','c');const start=performance.now();while(performance.now()-start<1800)frames.push({state:await c.frame(),view:(window as any).__WM_DEBUG__.getHeroView()});c.keys('c');return frames;});
+  await page.waitForTimeout(600);await page.screenshot({path:`${out}/${label}-unmarked-east-climbing.png`});const frames=await climbing;
++ for(const f of frames)for(const mesh of f.view.meshes)expect(mesh.min.x,mesh.name).toBeGreaterThanOrEqual(14-.005);
+  await saveHeroRecording(page,`${out}/${label}-wall-climbing.webm`);
+  await page.evaluate(async()=>{const c=(window as any).__wm005Controls;c.keys('w','c');await c.until((s:any)=>s.grounded&&s.position.y===0,'east topout');c.keys();await c.rest();});
+  const finish=await state(page);expect(finish.grounded).toBe(true);expect(finish.position.y).toBe(0);expect(finish.health).toBe(100);expect(finish.traversal.surfaceId).toBeNull();
+@@ -23,9 +24,13 @@
+  await c.look(Math.PI/2,1.08);await c.down('d');await wait(page,s=>s.position.x<-2.7);await c.up('d');await page.waitForTimeout(250);await c.down('w');await wait(page,s=>s.position.z<-57.5);await c.up('w');await page.waitForTimeout(250);await c.down('a');await wait(page,s=>s.position.x>-.1);await c.up('a');await page.waitForTimeout(250);await c.down('w');await wait(page,s=>s.position.z<-60.1);await c.up('w');await page.waitForTimeout(300);await c.down('c');await wait(page,s=>s.traversal.surfaceId==='climb-wall');
+  await c.down('w');await wait(page,s=>s.position.y>6);await c.up('w');await page.screenshot({path:`${out}/${label}-challenge-wall.png`});await c.down('d');await wait(page,s=>s.position.x<-6);await c.up('d');
+  await startHeroRecording(page);await c.down('w');await wait(page,s=>s.traversal.surfaceId==='climb-ceiling');await c.up('w');await page.waitForTimeout(800);await page.screenshot({path:`${out}/${label}-ceiling-face-up.png`});
+- expect((await state(page)).heroPitch).toBeLessThan(-1.4);const first=await state(page);await c.down('s');await page.waitForTimeout(1500);await c.up('s');const moved=await state(page);expect(moved.position.z).toBeGreaterThan(first.position.z+3);await page.screenshot({path:`${out}/${label}-ceiling-head-first.png`});await saveHeroRecording(page,`${out}/${label}-ceiling-climb.webm`);
++ expect((await state(page)).heroPitch).toBeLessThan(-1.4);const first=await state(page);const viewBefore=await page.evaluate(()=>window.__WM_DEBUG__!.getHeroView());expect(viewBefore.front.y).toBeGreaterThan(.99);
++ for(const mesh of viewBefore.meshes)expect(mesh.max.y,mesh.name).toBeLessThanOrEqual(11.005);
++ await c.down('s');await page.waitForTimeout(1500);await c.up('s');const moved=await state(page);const viewAfter=await page.evaluate(()=>window.__WM_DEBUG__!.getHeroView());expect(viewAfter.head.z).toBeGreaterThan(.99);
++ for(const mesh of viewAfter.meshes)expect(mesh.max.y,mesh.name).toBeLessThanOrEqual(11.005);
++ expect(moved.position.z).toBeGreaterThan(first.position.z+3);await page.screenshot({path:`${out}/${label}-ceiling-head-first.png`});await saveHeroRecording(page,`${out}/${label}-ceiling-climb.webm`);
+  // Continuous held crawl reaches the outer fascia; ordinary forward/up input tops out.
+  await c.down('s');await wait(page,s=>s.traversal.surfaceId==='climb-ceiling:face-0'&&s.traversal.cameraMode==='wall',15000);await c.up('s');
+  await c.down('w');await wait(page,s=>s.grounded&&s.position.y===11.5);await stop(page,c);const finish=await state(page);await page.screenshot({path:`${out}/${label}-challenge-platform-top.png`});
+- await writeFile(`${out}/${label}-ceiling-topout.json`,JSON.stringify({method:'Earned entry swing, real vertical/lateral wall climb, face-up head-first ceiling traversal and actual fascia/top-out',first,moved,finish},null,2));
++ await writeFile(`${out}/${label}-ceiling-topout.json`,JSON.stringify({method:'Earned entry swing, real vertical/lateral wall climb, face-up head-first ceiling traversal and actual fascia/top-out',first,moved,viewBefore,viewAfter,finish},null,2));
+ });
+--- /dev/null
++++ b/tests/wm005-review-regression.test.ts
+@@ -0,0 +1,15 @@
++import {it,expect} from 'vitest';
++import {newSwing,stepSwing} from '../src/core/swing';
++import {climbLimbPose} from '../src/core/presentation';
++it('F-WM005-SR-01 retains earned tangential momentum on a new attachment',()=>{
++ const m={position:{x:0,y:0,z:0},velocity:{x:0,y:0,z:40},grounded:false,facingYaw:0};
++ const a={id:'next-loop',position:{x:.56,y:14.03,z:.71},eligible:true,visible:true};
++ const r=stepSwing(m,newSwing(),{moveX:0,moveY:0,run:false,jumpPressed:false,swingHeld:true,cameraForward:{x:0,y:0,z:1},aim:{origin:{x:0,y:0,z:0},direction:{x:0,y:1,z:1}}},[a],[]);
++ expect(r.swing.web?.anchorId).toBe(a.id);expect(r.motion.velocity.z).toBeGreaterThan(39);
++});
++it('F-WM005-SR-02 keeps the full climbing boot clear of wall and ceiling',()=>{
++ for(let phase=0;phase<1;phase+=.01){const p=climbLimbPose(phase,1);for(const i of[0,1]){
++  const toe=-.66*Math.sin(p.hips[i]!)-.66*Math.sin(p.hips[i]!+p.knees[i]!)+.055+.235;
++  expect(toe).toBeLessThan(.495+.7-.005);expect(7.6+2.2+toe).toBeLessThan(11-.005);
++ }}
++});
