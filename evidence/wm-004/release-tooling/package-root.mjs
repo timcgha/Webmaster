@@ -1,0 +1,11 @@
+import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';import assert from 'node:assert/strict';import {execFileSync} from 'node:child_process';import {build} from 'vite';
+const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+assert.equal(execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),'886b56ac767ffb95c6b8bb3dff6cfe41ff2847be');
+await build({base:'/Webmaster/',build:{outDir:'.wm004-payload',emptyOutDir:true,manifest:true}});
+const out='.wm004-payload';fs.unlinkSync(out+'/.vite/manifest.json');fs.rmdirSync(out+'/.vite');fs.writeFileSync(out+'/.nojekyll','');
+const files=[];function scan(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const f=path.join(dir,e.name);if(e.isDirectory())scan(f);else{const b=fs.readFileSync(f);files.push({path:path.relative(out,f).replaceAll('\\','/'),bytes:b.length,sha256:hash(b)});}}scan(out);files.sort((a,b)=>a.path.localeCompare(b.path));
+const payloadSha256=hash(Buffer.from(files.map(x=>x.path+'\0'+x.sha256+'\0'+x.bytes+'\n').join('')));
+const p={change:'WM-004',kind:'sponsor-accepted normal public game',source:'504f6087beef67daf0a88e6de27a21a1b6b10a28',tree:'886b56ac767ffb95c6b8bb3dff6cfe41ff2847be',merge:'a63ad0e05ce12d2b42ff22e97d39de4af51d4b08',base:'/Webmaster/',savePrefix:'webmaster.save.v1',payloadSha256,previousPages:'e59b603d9ca1f4fd203b1a8ac1f021a0074141c2'};
+fs.writeFileSync(out+'/wm-provenance.json',JSON.stringify(p,null,2)+'\n');const b=fs.readFileSync(out+'/wm-provenance.json');files.push({path:'wm-provenance.json',bytes:b.length,sha256:hash(b)});
+fs.writeFileSync(out+'/wm-manifest.tsv','path\tbytes\tsha256\n'+files.map(x=>x.path+'\t'+x.bytes+'\t'+x.sha256).join('\n')+'\n');
+fs.mkdirSync('evidence/wm-004/root-release',{recursive:true});fs.writeFileSync('evidence/wm-004/root-release/packaging.json',JSON.stringify({provenance:p,files},null,2));console.log(JSON.stringify(p));
