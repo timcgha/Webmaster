@@ -1,0 +1,55 @@
+name: WM005 bounded C3 performance diagnosis
+on:
+  push:
+    branches: [verification/wm005-evidence]
+    paths: [.github/workflows/wm005-c3-profile.yml]
+permissions:
+  contents: read
+jobs:
+  profile:
+    runs-on: windows-2025
+    timeout-minutes: 12
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - run: git config --global core.autocrlf false
+        working-directory: ${{ github.workspace }}
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: a5ef60b893b746f1b1792cbec270872783ffa128
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline
+          ref: a63ad0e05ce12d2b42ff22e97d39de4af51d4b08
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: diagnosis
+          ref: ${{ github.sha }}
+          sparse-checkout: evidence/wm-005/correction3
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm --dir ../baseline install --frozen-lockfile
+          pnpm exec playwright install chromium
+          mkdir -p evidence/wm-005
+          cp ../diagnosis/evidence/wm-005/correction3/profile.mjs scripts/wm005-c3-profile.mjs
+          node scripts/wm005-c3-profile.mjs
+          node scripts/wm005-source-integrity.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: wm005-c3-diagnosis
+          path: candidate/evidence/wm-005
+          retention-days: 90
