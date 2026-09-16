@@ -28,9 +28,19 @@ for(const pad of[false,true])test(`WM005 visible face-up head-first ceiling and 
  for(const mesh of viewBefore.meshes)expect(mesh.max.y,mesh.name).toBeLessThanOrEqual(11.005);
  await c.down('s');await page.waitForTimeout(1500);await c.up('s');const moved=await state(page);const viewAfter=await page.evaluate(()=>window.__WM_DEBUG__!.getHeroView());expect(viewAfter.head.z).toBeGreaterThan(.99);
  for(const mesh of viewAfter.meshes)expect(mesh.max.y,mesh.name).toBeLessThanOrEqual(11.005);
- expect(moved.position.z).toBeGreaterThan(first.position.z+3);await page.screenshot({path:`${out}/${label}-ceiling-head-first.png`});await saveHeroRecording(page,`${out}/${label}-ceiling-climb.webm`);
+ expect(moved.position.z).toBeGreaterThan(first.position.z+3);await page.screenshot({path:`${out}/${label}-ceiling-head-first.png`});// Reverse toward the adjoining wall; inspect actual transformed geometry, not just the capsule.
+ await c.down('w');await wait(page,s=>s.position.z<-58);await c.up('w');await page.waitForTimeout(500);
+ const reversed=await state(page),viewReversed=await page.evaluate(()=>window.__WM_DEBUG__!.getHeroView());
+ expect(viewReversed.head.z).toBeLessThan(-.99);
+ for(const mesh of viewReversed.meshes){expect(mesh.min.z,mesh.name).toBeGreaterThanOrEqual(-61);expect(mesh.max.y,mesh.name).toBeLessThanOrEqual(11.005);}
+ expect(viewReversed.shadowPass.proxiesExcludedFromCamera).toBe(true);
+ expect(viewReversed.shadowPass.proxiesInShadowPass).toBe(true);expect(viewReversed.shadowPass.visibleBlocksExcludedFromShadowPass).toBe(true);
+ expect(viewReversed.shadowPass.proxyCount).toBe(16);
+ expect(viewReversed.shadowPass.proxyTriangles).toBeLessThan(viewReversed.shadowPass.visibleTriangles/8);
+ await page.screenshot({path:`${out}/${label}-ceiling-reversed.png`});
+ await saveHeroRecording(page,`${out}/${label}-ceiling-climb.webm`);
  // Continuous held crawl reaches the outer fascia; ordinary forward/up input tops out.
  await c.down('s');await wait(page,s=>s.traversal.surfaceId==='climb-ceiling:face-0'&&s.traversal.cameraMode==='wall',15000);await c.up('s');
  await c.down('w');await wait(page,s=>s.grounded&&s.position.y===11.5);await stop(page,c);const finish=await state(page);await page.screenshot({path:`${out}/${label}-challenge-platform-top.png`});
- await writeFile(`${out}/${label}-ceiling-topout.json`,JSON.stringify({method:'Earned entry swing, real vertical/lateral wall climb, face-up head-first ceiling traversal and actual fascia/top-out',first,moved,viewBefore,viewAfter,finish},null,2));
+ await writeFile(`${out}/${label}-ceiling-topout.json`,JSON.stringify({method:'Earned entry swing, real vertical/lateral wall climb, face-up head-first ceiling traversal and actual fascia/top-out',first,moved,viewBefore,viewAfter,reversed,viewReversed,finish},null,2));
 });

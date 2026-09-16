@@ -236,17 +236,18 @@ test.describe("WM-001 rendered keyboard and mouse journey", () => {
     expect(blocked.position.z).toBeLessThan(-2.05);
 
     await page.evaluate(() => window.__WM_DEBUG__!.setFixturePosition({ x: 0, y: 0, z: -8 }, "route start only"));
-    await hold(page, ["w", "Shift"], 1250);
+    // Observe actual route coordinates rather than relying on wall-clock travel
+    // distances, which vary on software rendering and can miss the finish lane.
+    await page.keyboard.down("Shift");await page.keyboard.down("w");
+    await page.waitForFunction(()=>window.__WM_DEBUG__!.getState().position.z>3,null,{timeout:15000});
     expect((await state(page)).progress).toBeGreaterThanOrEqual(1);
-    await hold(page, ["w", "d", "Shift"], 1350);
-    expect((await state(page)).progress).toBeGreaterThanOrEqual(2);
-    await hold(page, ["a", "Shift"], 1300);
-    await page.keyboard.down("w");
-    await page.keyboard.down("Shift");
-    await expect.poll(async () => (await state(page)).progress, { timeout: 4_000, intervals: [50] }).toBe(3);
-    await page.keyboard.up("Shift");
-    await page.keyboard.up("w");
-    await page.waitForTimeout(100);
+    await page.keyboard.down("d");
+    await page.waitForFunction(()=>window.__WM_DEBUG__!.getState().progress===2,null,{timeout:15000});
+    await page.keyboard.up("w");await page.keyboard.up("d");await page.keyboard.down("a");
+    await page.waitForFunction(()=>window.__WM_DEBUG__!.getState().position.x < -3.5,null,{timeout:15000});
+    await page.keyboard.up("a");await page.keyboard.down("w");
+    await page.waitForFunction(()=>window.__WM_DEBUG__!.getState().progress===3,null,{timeout:15000});
+    await page.keyboard.up("Shift");await page.keyboard.up("w");await page.waitForTimeout(100);
     expect((await state(page)).progress).toBe(3);
     expect((await state(page)).grounded).toBe(true);
     await page.screenshot({ path: `${captures}/${browserName}-route-complete.png` });

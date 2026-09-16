@@ -913,7 +913,7 @@ export class GameWorld {
     // Rotate the visual rig onto the ceiling while keeping its full authored
     // extent on the playable side of the wall. Physics stays at motion.position.
     if (this.heroRoot.rotation.x !== 0) {
-      const presentationOffset = ceilingClimbOffset(this.heroRoot.rotation.x);
+      const presentationOffset = ceilingClimbOffset(this.heroRoot.rotation.x, this.motion.facingYaw, this.traversal.wallNormal ?? undefined);
       this.heroRoot.position.x += presentationOffset.x;
       this.heroRoot.position.y += presentationOffset.y;
       this.heroRoot.position.z += presentationOffset.z;
@@ -1500,10 +1500,19 @@ export class GameWorld {
    * Actual transformed vertices avoid conservative rotated-box false positives. */
   heroViewForTests() {
     const matrix=this.heroRoot.computeWorldMatrix(true);
+    const casters=this.scene.getLightByName("sun")?.getShadowGenerator()?.getShadowMap()?.renderList??[];
     return {root:copyVec3(this.heroRoot.position),
       front:copyVec3(Vector3.TransformNormal(new Vector3(0,0,1),matrix).normalize()),
       head:copyVec3(Vector3.TransformNormal(new Vector3(0,1,0),matrix).normalize()),
-      meshes:this.heroRoot.getChildMeshes().map(mesh=>{
+      shadowPass:{
+        visibleTriangles:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.surfaceArtwork).reduce((n,m)=>n+m.getTotalIndices()/3,0),
+        proxyTriangles:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).reduce((n,m)=>n+m.getTotalIndices()/3,0),
+        proxiesInShadowPass:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).every(m=>casters.includes(m)),
+        visibleBlocksExcludedFromShadowPass:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.surfaceArtwork).every(m=>!casters.includes(m)),
+        proxyCount:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).length,
+        proxiesExcludedFromCamera:this.heroRoot.getChildMeshes().filter(m=>m.metadata?.shadowOnly).every(m=>(m.layerMask & this.camera.layerMask)===0),
+      },
+      meshes:this.heroRoot.getChildMeshes().filter(m=>!m.metadata?.shadowOnly).map(mesh=>{
         const matrix=mesh.computeWorldMatrix(true),vertices=mesh.getVerticesData("position")??[],
           min={x:Infinity,y:Infinity,z:Infinity},max={x:-Infinity,y:-Infinity,z:-Infinity};
         for(let i=0;i<vertices.length;i+=3){const p=Vector3.TransformCoordinates(new Vector3(vertices[i]!,vertices[i+1]!,vertices[i+2]!),matrix);

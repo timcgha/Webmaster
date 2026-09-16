@@ -295,9 +295,10 @@ describe("WM-002 continuous authored route and negative completion", () => {
     expect(Math.max(...firstSpeeds) - Math.min(...firstSpeeds)).toBeLessThan(
       1.5,
     );
-    mkdirSync("evidence/wm-002", { recursive: true });
+    const output=process.env.WM_TEST_EVIDENCE_ROOT ?? "test-results/unit";
+    mkdirSync(output, { recursive: true });
     writeFileSync(
-      "evidence/wm-002/timing-profiles.json",
+      `${output}/timing-profiles.json`,
       JSON.stringify(
         {
           method:
@@ -369,3 +370,4 @@ it("restores an earned grounded manual position and rejects airborne or wrong-ro
     z: 88,
   });
 });
+

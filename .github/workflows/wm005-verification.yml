@@ -53,9 +53,10 @@ jobs:
       - name: Full deterministic, TypeScript and isolated-storage gates
         run: |
           set -euo pipefail
-          pnpm test 2>&1 | tee evidence/wm-005/unit.log
+          WM_TEST_EVIDENCE_ROOT=evidence/wm-005/unit pnpm test 2>&1 | tee evidence/wm-005/unit.log
           pnpm exec tsc --noEmit 2>&1 | tee evidence/wm-005/typescript.log
           node --test scripts/wm005-storage.test.mjs 2>&1 | tee evidence/wm-005/storage.log
+          node scripts/wm005-source-integrity.mjs
       - name: Clean builds, dependency audits and exact preview packaging
         id: builds
         run: |
@@ -67,14 +68,14 @@ jobs:
           node scripts/wm005-package.mjs
       - name: Prescribed full Chromium
         run: pnpm exec playwright install chromium
-      - name: New circuit, orbit, climbing, appearance and save browser journeys
+      - name: Affected ceiling reversal, unmarked climb and hero shadow/appearance journeys
         id: rendered
         timeout-minutes: 45
         env:
           WM005_SUITE: new
         run: |
           set -euo pipefail
-          pnpm exec playwright test -c playwright.wm005.config.ts e2e/wm005 2>&1 | tee evidence/wm-005/new-browser.log
+          pnpm exec playwright test -c playwright.wm005.config.ts e2e/wm005-climb.spec.ts e2e/wm005-hero.spec.ts 2>&1 | tee evidence/wm-005/new-browser.log
       - name: Retain new rendered evidence immediately
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

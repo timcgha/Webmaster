@@ -324,9 +324,24 @@ test("WM003 negative lifecycle probes: wall pause focus pull interruption heavy 
   await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await fixture(page, -9, 0, -51, "negative pull pause");
   await look(page, Math.PI, 1.45);
-  await page.keyboard.down("q");
-  await wait(page, (s) => s.traversal.phase === "PULLING");
-  await page.keyboard.press("Escape");
+  // Arm the observer before pressing Q so a short valid PULLING phase cannot
+  // pass between remote browser calls. Escape is ordinary DOM keyboard input.
+  const pullAtPause=await page.evaluate(()=>new Promise<any>((resolve,reject)=>{
+    const begun=performance.now();
+    const frame=()=>{const s=window.__WM_DEBUG__!.getState();
+      if(s.traversal.phase==='PULLING'){
+        window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true}));
+        window.dispatchEvent(new KeyboardEvent('keyup',{key:'Escape',code:'Escape',bubbles:true}));resolve(s);return;
+      }
+      if(performance.now()-begun>5000){reject(new Error(`No moving pull observed: ${s.traversal.phase} ${s.traversal.message}`));return;}
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+    window.dispatchEvent(new KeyboardEvent('keydown',{key:'q',code:'KeyQ',bubbles:true}));
+  }));
+  expect(pullAtPause.traversal.pullId).toBe('route-step');
+  expect(pullAtPause.pullObjects.some((o:any)=>o.speed>0)).toBe(true);
+  await expect(page.getByRole('heading',{name:'Paused'})).toBeVisible();
   await expect(page.getByRole("button", { name: /^Save Game/ })).toBeDisabled();
   await shot(page, "save-unavailable-pulling");
   const pulled = (await state(page)).pullObjects;
@@ -384,6 +399,7 @@ test("WM003 negative lifecycle probes: wall pause focus pull interruption heavy 
       {
         method:
           "Explicitly labeled negative placements; no route completion evidence",
+        pullAtPause,
         recovered,
       },
       null,
@@ -665,3 +681,4 @@ test("WM003 repeated replay pause save load clears transients and bounds resourc
     ),
   );
 });
+
