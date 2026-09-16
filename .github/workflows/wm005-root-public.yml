@@ -1,0 +1,121 @@
+name: WM005 normal-root public verification
+on:
+  push:
+    branches: [verification/wm005-evidence]
+    paths: [.github/workflows/wm005-root-public.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-2025
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Preserve exact checkout bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: aec0b3e970368c0b70cdde5c18e0dab301c93383
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline
+          ref: a63ad0e05ce12d2b42ff22e97d39de4af51d4b08
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: save-baseline
+          ref: 3962446ca00c6e1db6bd8b250335b24619a0aeab
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: site
+          ref: 2b1a4bd0c94e7d226d6fc8388cafcb0ff0aff8f8
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: tooling
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: evidence/wm-005/root-tooling
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Locked browser verification environment
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install chromium
+          cp ../tooling/evidence/wm-005/root-tooling/*.mjs scripts/
+          node scripts/wm005-source-integrity.mjs
+      - name: Exact public bytes including preserved previews
+        run: node scripts/root-release.mjs public
+      - name: Ordinary root and browser process reopen
+        run: node scripts/root-smoke.mjs
+      - name: Historical root saves and new street save regression
+        run: node scripts/wm005-root-public-saves.mjs
+      - name: Final exact source integrity
+        if: always()
+        run: node scripts/wm005-source-integrity.mjs
+      - name: Retain public evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm005-root-public-${{ github.run_id }}
+          path: |
+            candidate/evidence/wm-005/root-release/
+            candidate/evidence/wm-005/source-integrity.json
+          retention-days: 90
+  archive:
+    if: always()
+    needs: verify
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: verification/wm005-evidence
+          path: archive
+          sparse-checkout: evidence/wm-005/root-release
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: wm005-root-public-${{ github.run_id }}
+          path: retained
+      - name: Preserve public verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="archive/evidence/wm-005/root-release/${GITHUB_RUN_ID}"
+          mkdir -p "$target"
+          cp -r retained/. "$target/"
+          git -C archive config user.name WEBMASTER_PRODUCT_OWNER
+          git -C archive config user.email webmaster-po@users.noreply.github.com
+          git -C archive add -f evidence/wm-005/root-release
+          git -C archive commit -m "WM-005 public normal-root verification ${GITHUB_RUN_ID} [skip ci]"
+          git -C archive push origin HEAD:verification/wm005-evidence
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: wm005-root-release-35118886916
+          run-id: 35118886916
+          github-token: ${{ github.token }}
+          path: retained-prepared
+      - name: Preserve tested prepared root package
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="archive/evidence/wm-005/root-release/35118886916"
+          mkdir -p "$target"
+          cp -r retained-prepared/. "$target/"
+          git -C archive add -f evidence/wm-005/root-release
+          git -C archive commit -m "WM-005 prepared normal-root package and save evidence [skip ci]"
+          git -C archive push origin HEAD:verification/wm005-evidence
