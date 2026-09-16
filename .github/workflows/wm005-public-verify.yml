@@ -1,0 +1,114 @@
+# Prepared only. Bind aec0b3e970368c0b70cdde5c18e0dab301c93383 and 32ef25495acec4a12a33c4375d74d9ae4018125b after exact-source PASS.
+name: WM005 public isolated preview verification
+on:
+  push:
+    branches: [verification/wm005-evidence]
+    paths: [.github/workflows/wm005-public-verify.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify:
+    runs-on: windows-2025
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Preserve checkout bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: aec0b3e970368c0b70cdde5c18e0dab301c93383
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline
+          ref: a63ad0e05ce12d2b42ff22e97d39de4af51d4b08
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: save-baseline
+          ref: 3962446ca00c6e1db6bd8b250335b24619a0aeab
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: site
+          ref: 32ef25495acec4a12a33c4375d74d9ae4018125b
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: prior
+          ref: b4a583116fc0823434f11788e5ab0bec36358f4d
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: tooling
+          ref: ${{ github.sha }}
+          sparse-checkout: evidence/wm-005/public-tooling
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Locked verification environment
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install chromium
+          cp ../tooling/evidence/wm-005/public-tooling/*.mjs scripts/
+          node scripts/wm005-source-integrity.mjs
+      - name: Verify every new and preserved public byte
+        run: node scripts/public-bytes.mjs
+      - name: Ordinary sponsor URL without debug mode
+        run: node scripts/public-smoke.mjs
+      - name: Public historical saves and real browser process reopen
+        run: |
+          node scripts/public-saves-adapter.mjs
+          node scripts/wm005-public-saves.mjs
+      - name: Final exact-source integrity
+        if: always()
+        run: |
+          node scripts/wm005-source-integrity.mjs
+          cp evidence/wm-005/source-integrity.json evidence/wm-005/public/source-integrity.json
+      - name: Retain public verification
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm005-public-${{ github.run_id }}
+          path: candidate/evidence/wm-005/public/
+          retention-days: 90
+  archive:
+    if: always()
+    needs: verify
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: verification/wm005-evidence
+          path: archive
+          sparse-checkout: evidence/wm-005/public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: wm005-public-${{ github.run_id }}
+          path: retained
+      - name: Preserve public evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="archive/evidence/wm-005/public/${GITHUB_RUN_ID}"
+          mkdir -p "$target"
+          cp -r retained/. "$target/"
+          git -C archive config user.name WEBMASTER_PRODUCT_OWNER
+          git -C archive config user.email webmaster-po@users.noreply.github.com
+          git -C archive add -f evidence/wm-005/public
+          git -C archive commit -m "WM-005 public verification ${GITHUB_RUN_ID} [skip ci]"
+          git -C archive push origin HEAD:verification/wm005-evidence
