@@ -1,0 +1,89 @@
+name: WM005 accepted normal-root release
+on:
+  push:
+    branches: [verification/wm005-evidence]
+    paths: [.github/workflows/wm005-root-release.yml]
+permissions:
+  contents: read
+jobs:
+  release:
+    runs-on: windows-2025
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Preserve exact bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: aec0b3e970368c0b70cdde5c18e0dab301c93383
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline
+          ref: a63ad0e05ce12d2b42ff22e97d39de4af51d4b08
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: save-baseline
+          ref: 3962446ca00c6e1db6bd8b250335b24619a0aeab
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: site
+          ref: gh-pages
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: tooling
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: evidence/wm-005/root-tooling
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Locked environment and release gates
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install chromium
+          cp ../tooling/evidence/wm-005/root-tooling/*.mjs scripts/
+          node scripts/wm005-source-integrity.mjs
+          pnpm exec tsc --noEmit
+          pnpm audit --audit-level low
+          pnpm audit --prod --audit-level low
+          node scripts/root-release.mjs prepare
+      - name: Prepared root historical save and reopen regression
+        run: node scripts/wm005-root-prepared-saves.mjs
+      - name: Verify source and preserve earlier previews
+        run: |
+          set -euo pipefail
+          node scripts/wm005-source-integrity.mjs
+          node scripts/root-release.mjs stage
+      - name: Publish sponsor-authorized normal root
+        if: ${{ false }}
+        run: |
+          set -euo pipefail
+          git -C ../site config user.name WEBMASTER_PRODUCT_OWNER
+          git -C ../site config user.email webmaster-po@users.noreply.github.com
+          git -C ../site commit -m "WM-005 sponsor accepted normal-root publication"
+          git -C ../site push origin HEAD:gh-pages
+      - name: Retain exact release package and results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm005-root-release-${{ github.run_id }}
+          path: |
+            candidate/evidence/wm-005/root-release/
+            candidate/evidence/wm-005/source-integrity.json
+            candidate/.wm005-payload/
+          include-hidden-files: true
+          retention-days: 90
