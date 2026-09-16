@@ -1,0 +1,134 @@
+{
+  "status": "VISUAL_AND_NONPERFORMANCE_COMPONENT_PASS_PERFORMANCE_PENDING",
+  "role": "WEBMASTER_PRODUCT_OWNER",
+  "classification": "SELF_REVIEW, not independent QA",
+  "source": "aec0b3e970368c0b70cdde5c18e0dab301c93383",
+  "tree": "2d815a1d42d6e9da3d08175b286aa685acb06e72",
+  "run": 35068413857,
+  "fullArtifact": {
+    "id": 10435253847,
+    "bytes": 9916683,
+    "sha256": "d8bef38a3aeea872ae40f95632377628feb2f29967419fa0e75f6ea474bab682"
+  },
+  "observations": [
+    "Personally inspected original front/rear idle, walking side and both reversed-ceiling screenshots, plus front/rear/side, keyboard ceiling and controller unmarked wall native moving frames. Side transitions reviewed at4fps in addition to2fps overview; raw native videos retained, not fabricated animation.",
+    "Original flush white eyes/yellow sun-spider/gray webs readable on rounded costume surfaces; no separate plates or observed z-fighting. Smaller smooth joints preserve connected pelvis/torso/hips/knees/shoulders and movement silhouette at normal distance.",
+    "Walking frames alternate at hips and return to idle; jumping/landing transitions retain attached limbs and natural contact shadow. No observed disconnected block or new clipping.",
+    "Both reverse-ceiling views keep the full visible rig above wall-frontZ=-61 and belowceilingY=11; front faces ceiling and head follows travel. Both real fascia climbs reachplatformtopY=11.5.",
+    "Proxy casters remain camera-excluded and included inshadowpass;288proxytriangles and1152visiblejointtriangles versusC2shadow3392 andjoint3200. Defaultcanvas853x480 at1080viewport during recordings;15fpsrecordercap, nothardwareFPS qualification."
+  ],
+  "bounds": {
+    "keyboard": {
+      "minZ": -58.38544566539,
+      "maxY": 10.961836235195081,
+      "shadowPass": {
+        "visibleTriangles": 1728,
+        "jointTriangles": 1152,
+        "jointCount": 8,
+        "proxyTriangles": 288,
+        "proxiesInShadowPass": true,
+        "visibleBlocksExcludedFromShadowPass": true,
+        "proxyCount": 24,
+        "proxiesExcludedFromCamera": true
+      },
+      "topOutPosition": {
+        "x": -6.097357285074268,
+        "y": 11.5,
+        "z": -49.541666666666636
+      }
+    },
+    "controller": {
+      "minZ": -58.15426954095252,
+      "maxY": 10.96190200805664,
+      "shadowPass": {
+        "visibleTriangles": 1728,
+        "jointTriangles": 1152,
+        "jointCount": 8,
+        "proxyTriangles": 288,
+        "proxiesInShadowPass": true,
+        "visibleBlocksExcludedFromShadowPass": true,
+        "proxyCount": 24,
+        "proxiesExcludedFromCamera": true
+      },
+      "topOutPosition": {
+        "x": -6.121036184072428,
+        "y": 11.5,
+        "z": -49.541666666666636
+      }
+    }
+  },
+  "gates": {
+    "deterministic": "399/399PASS",
+    "typescript": "PASS",
+    "storage": "6/6PASS",
+    "builds": "clean production and PagesPASS",
+    "audits": "all/prod0vulnerabilities",
+    "source": "463/463 finaltrackedblobsPASS, discrepancies[]",
+    "freshRendered": "7/7 visual/climb +3/3 inherited repairsPASS, noflaky/skipped",
+    "compiled": "6/6 historicalwriter/persistentprofile save/reopenPASS",
+    "reuse": "37C2inherited+9C1functional cases original-source attribution and exact-diff/report-hash proofPASS",
+    "performance": "48paired fixedrun pending"
+  },
+  "findingClosures": {
+    "F-WM005-SR-08": "Second disconnect case passes observeddisconnect, zeroXZwithin500ms, residual<.5m, exactrest andneutral/fresh replacement withoutproductchange",
+    "F-WM005-SR-11": "Same-frame ordinaryinput practice driver earnedprogress1\u21922\u21923; safe finishlaneX=-4.0117749, nofixture/progress mutation beyond labelledroute-startfixture",
+    "F-WM005-SR-12": "12pausedsamples:244nodes/83listeners/87connectedelements constant; warmheap28,086,624\u219228,614,212bytes,527,588byteincreasebelowunchanged4MiB; exact10node/2listenerbounds preserved"
+  },
+  "inventory": [
+    {
+      "path": "captures/hero-idle-front.png",
+      "bytes": 367790,
+      "sha256": "06690f8d4878cb4a8a667502156f896da57ad48f37bc8290edf7ee1c60b526a3"
+    },
+    {
+      "path": "captures/hero-idle-rear.png",
+      "bytes": 237848,
+      "sha256": "a6662d7c6a7d0c200011c085d456f52a0be02a8339e5b167cdee3cf0af0861d4"
+    },
+    {
+      "path": "captures/hero-walking-side.png",
+      "bytes": 183313,
+      "sha256": "016e758322c8aaf86e2344c85d1561a5a0ed96e2187907f598c32d483d3b8480"
+    },
+    {
+      "path": "captures/keyboard-ceiling-reversed.png",
+      "bytes": 110005,
+      "sha256": "55403809579b004d4684bea7fdc9105d1658f1ee66bb4e8da66e209bd9e87b9e"
+    },
+    {
+      "path": "captures/controller-ceiling-reversed.png",
+      "bytes": 110796,
+      "sha256": "14c3fdf2ae7e19d36cecb38a64483ff6f137f06dd9a4a067c106757d9a113dd6"
+    },
+    {
+      "path": "captures/hero-front-native.webm",
+      "bytes": 182492,
+      "sha256": "d17cba4c973aae0265a0e19b855ac268a6b2e330dc46f1fdffb02a9f44679841"
+    },
+    {
+      "path": "captures/hero-rear-native.webm",
+      "bytes": 204892,
+      "sha256": "0198765d7c2e500c7ab17fd73a19aaa70a8f7461cb1055d47211f010281cc4aa"
+    },
+    {
+      "path": "captures/hero-side-native.webm",
+      "bytes": 245504,
+      "sha256": "fef53daf6fe9132b7a44bfb7b426b7dfc4b1af4b801fbd50cca6f808614ce291"
+    },
+    {
+      "path": "captures/keyboard-ceiling-climb.webm",
+      "bytes": 294777,
+      "sha256": "f2671908a501bc04692dfdc6c23579ef9ef552e232a021285607e8ef11d7d114"
+    },
+    {
+      "path": "captures/controller-wall-climbing.webm",
+      "bytes": 137526,
+      "sha256": "68bca866398c134c243fdf2aacf0b08ea7de997cfccb22e87ae274d6fab02fcc"
+    }
+  ],
+  "limitations": [
+    "Software-rendered Chromium and sampled recorded frames do not establish physical controller, iPad/Safari or real-device30FPS compatibility",
+    "Sponsor visual/play-feel judgment remains pending",
+    "Historical failedruns remainNOT_PASS. Legacy generatedfixture role strings are not current worker identities; currentsoleexecutor/reviewerWEBMASTER_PRODUCT_OWNER."
+  ]
+}
