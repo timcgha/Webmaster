@@ -1,0 +1,30 @@
+{
+  "input": "f4ce33f1a9c127d5833c699dd71892538e4f5f50a41ca89e0754029a6701f739",
+  "output": "21fe8f8cca823a4b1d15d63c4a04ae10b4c0fd39df6aa94cf10f5ffe74d68ece",
+  "replacements": [
+    [
+      "const base='/Webmaster/wm005-preview/',url='http://127.0.0.1:4177'+base+'?test=1&diagnostics=1',prefix='webmaster.wm005-preview.v1:';",
+      "const base='/Webmaster/',url='http://127.0.0.1:4177'+base+'?test=1',prefix='';"
+    ],
+    [
+      "reportDir='evidence/wm-005/compiled'",
+      "reportDir='evidence/wm-005/root-release/prepared-saves'"
+    ],
+    [
+      "...old[1].stored,'webmaster.wm003-preview.v1:sentinel'",
+      "'webmaster.wm005-preview.v1:sentinel':'keep S5 preview','webmaster.wm003-preview.v1:sentinel'"
+    ],
+    [
+      "assert.match(await page.locator('#wm-preview').innerText(),/WM-005 preview/);",
+      "assert.equal(await page.locator('#wm-preview').count(),0);"
+    ],
+    [
+      "filter(([k])=>!k.startsWith(prefix))",
+      "filter(([k])=>/^webmaster\\.wm00[345]-preview\\.v1:/.test(k))"
+    ],
+    [
+      "Compiled isolated preview; genuine menu actions",
+      "Prepared normal root; genuine menu actions"
+    ]
+  ]
+}
