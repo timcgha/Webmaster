@@ -1,0 +1,46 @@
+$ vitest run
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.0 [39m[90mD:/a/Webmaster/Webmaster/candidate[39m
+
+ [32m✓[39m tests/actions.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/swing.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 190[2mms[22m[39m
+ [32m✓[39m tests/save.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m tests/traversal.test.ts [2m([22m[2m96 tests[22m[2m)[22m[33m 366[2mms[22m[39m
+ [32m✓[39m tests/remediation.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m tests/motion.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/street-visual.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 737[2mms[22m[39m
+   [32m✓[39m WM004 bounded opaque street rendering [2m(2)[22m
+     [33m[2m✓[22m[39m covers the entire unchanged solid exactly once, with no overlapping depth layers or holes[33m 719[2mms[22m[39m
+[90mstdout[2m | tests/wm005-shadow-review.test.ts[2m > [22m[2mopaque low-poly shadow follows the rounded costume while remaining excluded from the camera
+[22m[39mBJS - [06:50:06]: Babylon.js v9.26.0 - Null engine
+
+ [32m✓[39m tests/wm005-shadow-review.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m tests/wm005-ceiling-reverse-review.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m tests/wm005-geometry-review.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/presentation-clearance.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/settings.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/wm005-review-regression.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/course.test.ts [2m([22m[2m37 tests[22m[2m)[22m[33m 3447[2mms[22m[39m
+   [32m✓[39m WM004 actual connected course and street recovery [2m(29)[22m
+     [33m[2m✓[22m[39m earns all twenty anchors and finish using real physics at 0.016666666666666666[33m 508[2mms[22m[39m
+     [33m[2m✓[22m[39m earns all twenty anchors and finish using real physics at 0.03333333333333333[33m 476[2mms[22m[39m
+     [33m[2m✓[22m[39m earns all twenty anchors and finish using real physics at 0.008333333333333333[33m 394[2mms[22m[39m
+     [33m[2m✓[22m[39m earns all twenty anchors and finish using real physics at 0.012[33m 360[2mms[22m[39m
+     [33m[2m✓[22m[39m misses a ring, walks and climbs from street, then rejoins and earns all20 using real physics at 0.016666666666666666[33m 395[2mms[22m[39m
+     [33m[2m✓[22m[39m misses a ring, walks and climbs from street, then rejoins and earns all20 using real physics at 0.03333333333333333[33m 384[2mms[22m[39m
+     [33m[2m✓[22m[39m misses a ring, walks and climbs from street, then rejoins and earns all20 using real physics at 0.012[33m 390[2mms[22m[39m
+ [32m✓[39m tests/wm005.test.ts [2m([22m[2m178 tests[22m[2m)[22m[33m 3577[2mms[22m[39m
+   [32m✓[39m WM005 genuine continuous circuit [2m(5)[22m
+     [33m[2m✓[22m[39m earns two laps including final-to-first using ordinary inputs 0.016666666666666666[33m 1196[2mms[22m[39m
+     [33m[2m✓[22m[39m earns two laps including final-to-first using ordinary inputs 0.03333333333333333[33m 868[2mms[22m[39m
+     [33m[2m✓[22m[39m earns two laps including final-to-first using ordinary inputs 0.008333333333333333[33m 799[2mms[22m[39m
+     [33m[2m✓[22m[39m earns two laps including final-to-first using ordinary inputs 0.012[33m 546[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m15 passed[39m[22m[90m (15)[39m
+[2m      Tests [22m [1m[32m398 passed[39m[22m[90m (398)[39m
+[2m   Start at [22m 06:50:03
+[2m   Duration [22m 4.54s[2m (tests 82%, transform 10%, import 7%, worker 1%)[22m
+
+[2m    Isolate [22m [33m15 workers spawned[39m[2m · ~145ms startup each (spawn + environment, per file)[22m
+[2m            [22m [2mat least ~579ms faster with [22m[33misolate: false[39m[2m — reuses workers across files instead of one per file[22m
+
