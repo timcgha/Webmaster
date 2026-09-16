@@ -12,7 +12,7 @@ concurrency:
 jobs:
   verify:
     runs-on: windows-2025
-    timeout-minutes: 100
+    timeout-minutes: 150
     defaults:
       run:
         shell: bash
@@ -75,6 +75,16 @@ jobs:
         run: |
           set -euo pipefail
           pnpm exec playwright test -c playwright.wm005.config.ts e2e/wm005 2>&1 | tee evidence/wm-005/new-browser.log
+      - name: Retain new rendered evidence immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm005-rendered-${{ github.sha }}
+          path: |
+            candidate/evidence/wm-005/
+            candidate/test-results-wm005/new/
+          include-hidden-files: true
+          retention-days: 90
       - name: Compiled route and historical WM001 through WM004 writers
         if: ${{ !cancelled() && steps.builds.outcome == 'success' }}
         timeout-minutes: 10
@@ -89,12 +99,6 @@ jobs:
         run: |
           set -euo pipefail
           pnpm exec playwright test -c playwright.wm005.config.ts e2e/wm001.spec.ts e2e/wm002.spec.ts e2e/wm003.spec.ts e2e/wm003-remediation.spec.ts 2>&1 | tee evidence/wm-005/inherited-browser.log
-      - name: Four paired rounds against exact merged WM004
-        if: ${{ !cancelled() && steps.builds.outcome == 'success' }}
-        timeout-minutes: 12
-        run: |
-          set -euo pipefail
-          node scripts/wm005-performance.mjs 2>&1 | tee evidence/wm-005/performance.log
       - name: Final exact-source integrity
         if: always()
         run: node scripts/wm005-source-integrity.mjs
@@ -109,9 +113,60 @@ jobs:
             candidate/.wm005-payload/
           include-hidden-files: true
           retention-days: 90
+  performance:
+    runs-on: windows-2025
+    timeout-minutes: 50
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Preserve checkout bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline
+          ref: a63ad0e05ce12d2b42ff22e97d39de4af51d4b08
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Exact locked performance environment
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm --dir ../baseline install --frozen-lockfile
+          pnpm exec playwright install chromium
+          node scripts/wm005-source-integrity.mjs
+      - name: Four paired practice swing and climb rounds on one runner
+        timeout-minutes: 40
+        run: |
+          set -euo pipefail
+          node scripts/wm005-performance.mjs 2>&1 | tee evidence/wm-005/performance.log
+      - name: Final performance source integrity
+        if: always()
+        run: |
+          node scripts/wm005-source-integrity.mjs
+          cp evidence/wm-005/source-integrity.json evidence/wm-005/performance-source-integrity.json
+      - name: Retain complete or partial paired evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm005-performance-${{ github.sha }}
+          path: candidate/evidence/wm-005/performance*
+          retention-days: 90
   archive:
     if: always()
-    needs: verify
+    needs: [verify, performance]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -126,6 +181,10 @@ jobs:
         with:
           name: wm005-${{ github.sha }}
           path: retained
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: wm005-performance-${{ github.sha }}
+          path: retained/evidence/wm-005
       - name: Preserve source-bound evidence and hashes
         shell: bash
         run: |

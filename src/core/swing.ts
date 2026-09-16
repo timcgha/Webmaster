@@ -351,7 +351,8 @@ export function stepSwing(
   }
   m.velocity.y -= GRAVITY * dt;
   const speed = Math.hypot(m.velocity.x, m.velocity.y, m.velocity.z);
-  const limit=s.web ? ((s.web.age??0)>3.5 ? MAX_SWING_SPEED : 26) : Math.min(MAX_SWING_SPEED,Math.max(26,Math.hypot(motion.velocity.x,motion.velocity.y,motion.velocity.z)));
+  const incomingLimit=Math.min(MAX_SWING_SPEED,Math.max(26,Math.hypot(motion.velocity.x,motion.velocity.y,motion.velocity.z)));
+  const limit=s.web && (s.web.age??0)>3.5 ? MAX_SWING_SPEED : incomingLimit;
   if (speed > limit) {
     const scale = limit / speed;
     for (const axis of ["x", "y", "z"] as const) m.velocity[axis] *= scale;

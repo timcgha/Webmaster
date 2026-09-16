@@ -328,12 +328,12 @@ export function selectWall(m: MotionState, held: boolean, surfaces: readonly Sur
     if (s.role !== "CLIMBABLE_WALL") return false;
     const n=s.normal, side=n.x ? m.position.z : m.position.x,
       low=n.x?s.minZ:s.minX, high=n.x?s.maxZ:s.maxX,
-      outward=n.x ? n.x*(m.position.x-(n.x>0?s.maxX:s.minX)) : n.z*(m.position.z-(n.z>0?s.maxZ:s.minZ)),
-      blockers=solids.filter(b=>b.id!==(s.solidId??s.id));
+      outward=n.x ? n.x*(m.position.x-(n.x>0?s.maxX:s.minX)) : n.z*(m.position.z-(n.z>0?s.maxZ:s.minZ));
     return side>low+HERO_RADIUS && side<high-HERO_RADIUS &&
       m.position.y>=s.minY-HERO_HEIGHT+.1 && m.position.y<=s.maxY+.03 &&
       outward>=HERO_RADIUS-.03 && outward<=(s.id!=="climb-wall"?HERO_RADIUS+.12:LIMITS.attachDistance) &&
-      dot(facing,n)<=-LIMITS.facingCosine && clearAttachmentPath(m.position,wallContact(m,s),blockers);
+      dot(facing,n)<=-LIMITS.facingCosine &&
+      clearAttachmentPath(m.position,wallContact(m,s),solids.filter(b=>b.id!==(s.solidId??s.id)));
   }).sort((a,b)=>a.id.localeCompare(b.id))[0]??null;
 }
 export interface PullSelection {
@@ -449,7 +449,7 @@ export function stepTraversal(
     };
     surface = undefined;
   }
-  const availableWall = selectWall(m, true, surfaces, allSolids());
+  const availableWall = surface ? null : selectWall(m, true, surfaces, allSolids());
   const wall = input.climbHeld && !s.freshClimb ? availableWall : null;
   if (!surface && wall && !input.swingHeld && !s.pullId) {
     sw = clearSwing(sw);
@@ -733,7 +733,7 @@ export function stepTraversal(
     s.phase === "FREE_OR_GROUNDED"
   ) {
     s.phase = "WALL_TARGET_AVAILABLE";
-    s.message = "Striped wall ready. Hold C / R1 / RB to stick.";
+    s.message = "Wall ready. Hold C / R1 / RB to stick. Arrows are optional guides.";
   }
   return { motion: m, traversal: s, swing: sw, objects: os };
 }
@@ -899,4 +899,3 @@ export function safeTraversal(
     ].includes(t.phase)
   );
 }
-

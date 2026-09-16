@@ -137,6 +137,6 @@ export function climbLimbPose(phase:number,weight:number){
   const wave=Math.sin(phase*Math.PI*2)*weight;
   return {arms:[-2.3+.1*wave,-2.3-.1*wave] as [number,number],
     elbows:[.35+.05*wave,.35-.05*wave] as [number,number],
-    hips:[-1.0-.12*wave,-1.0+.12*wave] as [number,number],
+    hips:[-1.0-.08*wave,-1.0+.08*wave] as [number,number],
     knees:[.5+.1*wave,.5-.1*wave] as [number,number]};
 }

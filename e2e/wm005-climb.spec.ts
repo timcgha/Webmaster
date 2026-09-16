@@ -10,8 +10,9 @@ for(const pad of[false,true])test(`WM005 unmarked east facade street-to-roof ${p
  await page.evaluate(async()=>{const c=(window as any).__wm005Controls;await c.look(Math.PI,1.1);c.keys('w');await c.at('x',16);c.keys();await c.until((s:any)=>s.grounded&&s.position.y===-18,'street');});
  await page.screenshot({path:`${out}/${label}-unmarked-east-street.png`});
  await page.evaluate(async()=>{const c=(window as any).__wm005Controls;await c.look(0,1.1);c.keys('w','c');await c.until((s:any)=>s.traversal.surfaceId==='practice:face-2','unmarked east');await c.until((s:any)=>s.position.y>-12,'mid wall');c.keys('c');});
- await startHeroRecording(page);const climbing=page.evaluate(async()=>{const c=(window as any).__wm005Controls,frames=[];c.keys('w','c');const start=performance.now();while(performance.now()-start<1800)frames.push(await c.frame());c.keys('c');return frames;});
+ await startHeroRecording(page);const climbing=page.evaluate(async()=>{const c=(window as any).__wm005Controls,frames=[];c.keys('w','c');const start=performance.now();while(performance.now()-start<1800)frames.push({state:await c.frame(),view:(window as any).__WM_DEBUG__.getHeroView()});c.keys('c');return frames;});
  await page.waitForTimeout(600);await page.screenshot({path:`${out}/${label}-unmarked-east-climbing.png`});const frames=await climbing;
+ for(const f of frames)for(const mesh of f.view.meshes)expect(mesh.min.x,mesh.name).toBeGreaterThanOrEqual(14-.005);
  await saveHeroRecording(page,`${out}/${label}-wall-climbing.webm`);
  await page.evaluate(async()=>{const c=(window as any).__wm005Controls;c.keys('w','c');await c.until((s:any)=>s.grounded&&s.position.y===0,'east topout');c.keys();await c.rest();});
  const finish=await state(page);expect(finish.grounded).toBe(true);expect(finish.position.y).toBe(0);expect(finish.health).toBe(100);expect(finish.traversal.surfaceId).toBeNull();
@@ -23,9 +24,13 @@ for(const pad of[false,true])test(`WM005 visible face-up head-first ceiling and 
  await c.look(Math.PI/2,1.08);await c.down('d');await wait(page,s=>s.position.x<-2.7);await c.up('d');await page.waitForTimeout(250);await c.down('w');await wait(page,s=>s.position.z<-57.5);await c.up('w');await page.waitForTimeout(250);await c.down('a');await wait(page,s=>s.position.x>-.1);await c.up('a');await page.waitForTimeout(250);await c.down('w');await wait(page,s=>s.position.z<-60.1);await c.up('w');await page.waitForTimeout(300);await c.down('c');await wait(page,s=>s.traversal.surfaceId==='climb-wall');
  await c.down('w');await wait(page,s=>s.position.y>6);await c.up('w');await page.screenshot({path:`${out}/${label}-challenge-wall.png`});await c.down('d');await wait(page,s=>s.position.x<-6);await c.up('d');
  await startHeroRecording(page);await c.down('w');await wait(page,s=>s.traversal.surfaceId==='climb-ceiling');await c.up('w');await page.waitForTimeout(800);await page.screenshot({path:`${out}/${label}-ceiling-face-up.png`});
- expect((await state(page)).heroPitch).toBeLessThan(-1.4);const first=await state(page);await c.down('s');await page.waitForTimeout(1500);await c.up('s');const moved=await state(page);expect(moved.position.z).toBeGreaterThan(first.position.z+3);await page.screenshot({path:`${out}/${label}-ceiling-head-first.png`});await saveHeroRecording(page,`${out}/${label}-ceiling-climb.webm`);
+ expect((await state(page)).heroPitch).toBeLessThan(-1.4);const first=await state(page);const viewBefore=await page.evaluate(()=>window.__WM_DEBUG__!.getHeroView());expect(viewBefore.front.y).toBeGreaterThan(.99);
+ for(const mesh of viewBefore.meshes)expect(mesh.max.y,mesh.name).toBeLessThanOrEqual(11.005);
+ await c.down('s');await page.waitForTimeout(1500);await c.up('s');const moved=await state(page);const viewAfter=await page.evaluate(()=>window.__WM_DEBUG__!.getHeroView());expect(viewAfter.head.z).toBeGreaterThan(.99);
+ for(const mesh of viewAfter.meshes)expect(mesh.max.y,mesh.name).toBeLessThanOrEqual(11.005);
+ expect(moved.position.z).toBeGreaterThan(first.position.z+3);await page.screenshot({path:`${out}/${label}-ceiling-head-first.png`});await saveHeroRecording(page,`${out}/${label}-ceiling-climb.webm`);
  // Continuous held crawl reaches the outer fascia; ordinary forward/up input tops out.
  await c.down('s');await wait(page,s=>s.traversal.surfaceId==='climb-ceiling:face-0'&&s.traversal.cameraMode==='wall',15000);await c.up('s');
  await c.down('w');await wait(page,s=>s.grounded&&s.position.y===11.5);await stop(page,c);const finish=await state(page);await page.screenshot({path:`${out}/${label}-challenge-platform-top.png`});
- await writeFile(`${out}/${label}-ceiling-topout.json`,JSON.stringify({method:'Earned entry swing, real vertical/lateral wall climb, face-up head-first ceiling traversal and actual fascia/top-out',first,moved,finish},null,2));
+ await writeFile(`${out}/${label}-ceiling-topout.json`,JSON.stringify({method:'Earned entry swing, real vertical/lateral wall climb, face-up head-first ceiling traversal and actual fascia/top-out',first,moved,viewBefore,viewAfter,finish},null,2));
 });

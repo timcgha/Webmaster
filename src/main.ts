@@ -35,6 +35,7 @@ declare global {
   interface Window {
     __WM_DEBUG__?: {
       getState: () => WorldFrame;
+      getHeroView: () => ReturnType<GameWorld["heroViewForTests"]>;
       getScreen: () => Screen;
       getCurrentRun: () => { slot: SlotId; difficulty: Difficulty } | null;
       setFixturePosition: (position: Vec3Data, label: string) => void;
@@ -728,10 +729,13 @@ class WebmasterApp {
     const healthPercent = Math.round((frame.health / frame.maxHealth) * 100);
     if (!hudLayer.querySelector(".objective-card")) {
       hudLayer.innerHTML = `
+      <div class="hud-top-left">
       <section class="hud-card objective-card" aria-label="Current objective">
         <span class="hud-kicker" data-hud="practice"></span>
         <strong data-hud="objective"></strong>
       </section>
+      <section class="hud-card swing-card" aria-label="Swing status"><span class="hud-kicker" data-hud="swing-prompt"></span><strong data-hud="swing-state"></strong><small data-hud="swing-message"></small></section>
+      </div>
       <section class="hud-card health-card">
         <span class="hud-kicker">HERO ENERGY</span>
         <div class="health-track"><i data-hud="health-bar"></i></div>
@@ -757,7 +761,6 @@ class WebmasterApp {
         <strong>Recenter</strong> R / RS
         <strong>Pause</strong> Esc / Menu / Options
       </section>
-      <section class="hud-card swing-card" aria-label="Swing status"><span class="hud-kicker" data-hud="swing-prompt"></span><strong data-hud="swing-state"></strong><small data-hud="swing-message"></small></section>
       <section class="hud-card traversal-card" aria-label="Climb and Pull status"><strong data-hud="traversal-state"></strong><small data-hud="traversal-message"></small></section>
       <p id="fixture-badge" class="fixture-badge hidden"></p>
       `;
@@ -785,10 +788,6 @@ class WebmasterApp {
       "[data-hud='swing-prompt']",
     )!.textContent =
       `SWING: Hold E / ${this.input.controllerStatus().family === "playstation" ? "L2" : "LT"} • release to let go`;
-    hudLayer.querySelector<HTMLElement>(".swing-card")!.style.top = frame
-      .training.active
-      ? "190px"
-      : "";
     hudLayer
       .querySelector<HTMLElement>(".swing-card")!
       .classList.toggle(
@@ -910,6 +909,7 @@ app = new WebmasterApp();
 if (new URLSearchParams(location.search).has("test")) {
   window.__WM_DEBUG__ = {
     getState: () => world.stateForTests(),
+    getHeroView: () => world.heroViewForTests(),
     getScreen: () => app!.getScreen(),
     getCurrentRun: () => app!.getCurrentRun(),
     setFixturePosition: (position, label) =>

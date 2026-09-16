@@ -1496,6 +1496,22 @@ export class GameWorld {
     this.restart();
   }
 
+  /** Read-only verification view, only exposed by the existing ?test=1 API.
+   * Actual transformed vertices avoid conservative rotated-box false positives. */
+  heroViewForTests() {
+    const matrix=this.heroRoot.computeWorldMatrix(true);
+    return {root:copyVec3(this.heroRoot.position),
+      front:copyVec3(Vector3.TransformNormal(new Vector3(0,0,1),matrix).normalize()),
+      head:copyVec3(Vector3.TransformNormal(new Vector3(0,1,0),matrix).normalize()),
+      meshes:this.heroRoot.getChildMeshes().map(mesh=>{
+        const matrix=mesh.computeWorldMatrix(true),vertices=mesh.getVerticesData("position")??[],
+          min={x:Infinity,y:Infinity,z:Infinity},max={x:-Infinity,y:-Infinity,z:-Infinity};
+        for(let i=0;i<vertices.length;i+=3){const p=Vector3.TransformCoordinates(new Vector3(vertices[i]!,vertices[i+1]!,vertices[i+2]!),matrix);
+          for(const a of["x","y","z"] as const){min[a]=Math.min(min[a],p[a]);max[a]=Math.max(max[a],p[a]);}}
+        return {name:mesh.name,min,max};
+      })};
+  }
+
   stateForTests(): WorldFrame {
     return {
       active: this.active,

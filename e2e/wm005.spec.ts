@@ -3,7 +3,7 @@ import {mkdir,writeFile} from "node:fs/promises";
 import {installCourseControls} from "./routes/wm005-route";
 import {COURSE_NODES} from "../src/core/course";
 import {state,start,controllerStart,keyboard,controller,padTap,look,hudLayout} from "./routes/wm003-route";
-const out="evidence/wm-004/captures";
+const out="evidence/wm-005/captures";
 type Controls=ReturnType<typeof keyboard>;
 async function until(p:Page,body:(s:any,a:any)=>boolean,args:unknown=null,timeout=30000){
   await p.waitForFunction(({body,args})=>new Function("s","a",`return (${body})(s,a)`)(window.__WM_DEBUG__!.getState(),args),{body:body.toString(),args},{timeout});
@@ -92,8 +92,11 @@ for(const pad of[false,true])for(const pump of[false,true])test(`WM005 ${pump?'s
 });
 for(const pad of[false,true])test(`WM005 held web survives rooftop contact ${pad?'semantic-controller':'keyboard-mouse'}`,async({page})=>{
  test.setTimeout(120000);if(pad)await controllerStart(page);else await start(page);await installCourseControls(page,pad);
- const result=await page.evaluate(async()=>{const c=(window as any).__wm005Controls;await c.look(-Math.PI/2);c.keys('Shift','w');await c.at('z',21);await c.jump(true);
-  await c.until((s:any)=>s.swing.web?.anchorId==='ring-1','ring1');c.keys('w','e');await c.until((s:any)=>s.grounded&&s.position.z>38.5,'attached roof contact');c.keys('e');
+ const result=await page.evaluate(async()=>{const c=(window as any).__wm005Controls;await c.look(-Math.PI/2);c.keys('Shift','w');await c.at('z',20);await c.rest(700);
+  // A valid short web cannot reach the far roof while taut. Jump and return to
+  // the current roof under the same held web, exercising actual landing contact.
+  c.keys('e','Space');await c.frame();c.keys('e');await c.until((s:any)=>s.swing.web?.anchorId==='ring-1'&&!s.grounded,'attached rooftop jump');
+  await c.until((s:any)=>s.grounded&&s.position.y===0,'attached roof contact');c.keys('e');
   const start=performance.now(),frames=[];while(performance.now()-start<1000)frames.push(await c.frame());return frames;});
  expect(result.every(s=>s.swing.web?.anchorId==='ring-1'&&s.grounded&&!s.safe)).toBe(true);await shot(page,`${pad?'controller':'keyboard'}-held-roof-web`);
  await writeFile(`${out}/${pad?'controller':'keyboard'}-held-roof-web.json`,JSON.stringify(result,null,2));

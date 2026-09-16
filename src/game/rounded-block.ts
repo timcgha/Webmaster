@@ -12,7 +12,9 @@ export function roundedBlockData(options: Parameters<typeof CreateBoxVertexData>
   for(let face=0;face<6;face++) {
     const corners=Array.from({length:4},(_,i)=>Array.from({length:3},(_,a)=>box.positions![(face*4+i)*3+a]!));
     const edge=(a:number,b:number)=>Math.hypot(...corners[a]!.map((v,i)=>v-corners[b]![i]!));
-    const levels=(length:number)=>[0,r*.293/length,r/length,1-r/length,1-r*.293/length,1];
+    // Restrained bevel with smooth normals: one edge strip is enough at this
+    // authored radius. Avoid the former 300-triangle grid on every small block.
+    const levels=(length:number)=>[0,r/length,1-r/length,1];
     const us=levels(edge(0,1)),vs=levels(edge(0,3)),start=positions.length/3;
     for(const v of vs)for(const u of us){
       const p=half.map((_,a)=>lerp(lerp(corners[0]![a]!,corners[1]![a]!,u),lerp(corners[3]![a]!,corners[2]![a]!,u),v));
@@ -23,7 +25,7 @@ export function roundedBlockData(options: Parameters<typeof CreateBoxVertexData>
         uvs.push(lerp(lerp(at(0),at(1),u),lerp(at(3),at(2),u),v));}
       if(box.colors)colors.push(...Array.from({length:4},(_,a)=>box.colors![(face*4)*4+a]!));
     }
-    for(let v=0;v<5;v++)for(let u=0;u<5;u++){const a=start+v*6+u;indices.push(a,a+1,a+7,a,a+7,a+6);}
+    for(let v=0;v<3;v++)for(let u=0;u<3;u++){const a=start+v*4+u;indices.push(a,a+1,a+5,a,a+5,a+4);}
   }
   data.positions=positions;data.normals=normals;data.indices=indices;data.uvs=uvs;if(colors.length)data.colors=colors;return data;
 }

@@ -3,7 +3,7 @@ import {mkdir,writeFile} from "node:fs/promises";
 import {state,start,look,hudLayout} from "./routes/wm003-route";
 import {installCourseControls} from "./routes/wm005-route";
 import {startHeroRecording,saveHeroRecording} from "./routes/wm004-recording";
-const out="evidence/wm-004/captures";
+const out="evidence/wm-005/captures";
 async function shot(p:Page,name:string){await mkdir(out,{recursive:true});await p.screenshot({path:`${out}/${name}.png`});}
   // Native canvas recording is explicitly stopped before context teardown.
   test.use({video:"off"});
@@ -26,4 +26,3 @@ async function shot(p:Page,name:string){await mkdir(out,{recursive:true});await 
     if(name==="front")await hudLayout(page,"wm005-hero-review");
     }finally{if(!video)await saveHeroRecording(page,`${out}/hero-${name}-native.webm`);}
   });
-

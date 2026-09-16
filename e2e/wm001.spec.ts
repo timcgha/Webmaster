@@ -370,7 +370,16 @@ test.describe("WM-001 rendered simulated Gamepad journey", () => {
     await setPad(page, { axes: [0, -1, 0, 0] });
     await page.waitForTimeout(250);
     await setPad(page, { connected: false });
+    // Device polling happens on the browser frame; observe the actual disconnect
+    // before freezing the no-motion comparison point.
+    await page.waitForFunction(() => window.__WM_DEBUG__!.getControllerStatus().lifecycle === "CONTROLLER_DISCONNECTED");
+    const brakingAt = (await state(page)).position;
+    await page.waitForFunction(() => {
+      const v = window.__WM_DEBUG__!.getState().velocity;
+      return v.x === 0 && v.z === 0;
+    }, undefined, { timeout: 500 });
     const disconnectedAt = (await state(page)).position;
+    expect(Math.hypot(disconnectedAt.x-brakingAt.x,disconnectedAt.z-brakingAt.z)).toBeLessThan(.5);
     await page.waitForTimeout(350);
     expect((await state(page)).position).toEqual(disconnectedAt);
     await setPad(page, { connected: true, axes: [0, -1, 0, 0] });
@@ -766,8 +775,10 @@ test("persists a Hard run after closing and reopening the same browser profile a
   await newGameWithMouse(page, 3, "Hard");
   await hold(page, ["w", "Shift"], 1_350);
   expect((await state(page)).progress).toBe(1);
-  const savedPosition = (await state(page)).position;
   await page.keyboard.press("Escape");
+  // Freeze the reference after Pause has stopped integration, then verify the
+  // actual persisted payload and restored position exactly.
+  const savedPosition = (await state(page)).position;
   await page.getByRole("button", { name: /^Save Game/ }).click();
   await expect(page.locator("#toast-layer")).toContainText("Save confirmed");
   const savedPayload = await activeSavePayload(page, 3, "manual");

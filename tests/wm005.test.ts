@@ -93,8 +93,8 @@ describe('WM005 roof attachment and physical loops',()=>{
 describe('WM005 restrained rounding and connected face-up climbing',()=>{
  it('rounds inside unchanged box bounds with unit normals and original face UV atlas',()=>{
   const d=roundedBlockData({width:.72,height:.78,depth:.66}),p=d.positions!,n=d.normals!;
-  expect(p.length/3).toBe(216);for(let i=0;i<p.length;i+=3){expect(Math.abs(p[i]!)).toBeLessThanOrEqual(.36+.00001);expect(Math.abs(p[i+1]!)).toBeLessThanOrEqual(.39+.00001);expect(Math.abs(p[i+2]!)).toBeLessThanOrEqual(.33+.00001);expect(Math.hypot(n[i]!,n[i+1]!,n[i+2]!)).toBeCloseTo(1);}
-  expect(d.indices!.length).toBe(900);expect([HERO_RADIUS,HERO_HEIGHT]).toEqual([.48,3.4]);
+  expect(p.length/3).toBe(96);for(let i=0;i<p.length;i+=3){expect(Math.abs(p[i]!)).toBeLessThanOrEqual(.36+.00001);expect(Math.abs(p[i+1]!)).toBeLessThanOrEqual(.39+.00001);expect(Math.abs(p[i+2]!)).toBeLessThanOrEqual(.33+.00001);expect(Math.hypot(n[i]!,n[i+1]!,n[i+2]!)).toBeCloseTo(1);}
+  expect(d.indices!.length).toBe(324);expect([HERO_RADIUS,HERO_HEIGHT]).toEqual([.48,3.4]);
  });
  it('uses gray costume webs and face-up pitch with alternating attached limbs',()=>{
   expect(HERO_PRESENTATION.web).toBe('#bfc5ce');expect(ceilingClimbOffset(0)).toEqual({x:0,y:0,z:0});
