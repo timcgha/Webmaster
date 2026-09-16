@@ -45,6 +45,7 @@ export type TraversalPhase =
 export interface Surface extends Solid {
   role: AuthoredRole;
   normal: Vec3Data;
+  solidId?: string;
   transition?: string;
   /** Street recovery walls allow a continuous climb above the lip and onto the roof. */
   topOut?: boolean;
@@ -132,6 +133,7 @@ export const SURFACES: readonly Surface[] = [
     role: "CLIMBABLE_WALL",
     normal: { x: 0, y: 0, z: 1 },
     transition: "climb-ceiling",
+    topOut: true,
   },
   {
     ...TRAINING_SOLIDS[3]!,
@@ -240,6 +242,7 @@ export interface TraversalState {
   heldPull: boolean;
   message: string;
   cameraMode: "ground" | "wall" | "ceiling";
+  wallNormal?: Vec3Data | undefined;
 }
 export const newTraversal = (): TraversalState => ({
   phase: "FREE_OR_GROUNDED",
@@ -297,60 +300,41 @@ function heroOverlaps(p: Vec3Data, b: Solid): boolean {
     p.y < b.maxY - 0.001
   );
 }
+/** Four exterior sides share one collision box; surface identity records the face. */
+export function exteriorWalls(box: Solid): Surface[] {
+  return [
+    { x: 0, y: 0, z: 1 }, { x: 0, y: 0, z: -1 },
+    { x: 1, y: 0, z: 0 }, { x: -1, y: 0, z: 0 },
+  ].map((normal, i) => ({ ...box, id: i || box.id === "climb-ceiling" ? `${box.id}:face-${i}` : box.id,
+    solidId: box.id, role: "CLIMBABLE_WALL", normal, topOut: true }));
+}
 function wallContact(m: MotionState, wall: Surface): Vec3Data {
-  return { ...m.position, z: wall.maxZ + HERO_RADIUS + 0.015 };
+  const p = { ...m.position }, n = wall.normal, gap = HERO_RADIUS + 0.015;
+  if (n.x) p.x = (n.x > 0 ? wall.maxX : wall.minX) + n.x * gap;
+  else p.z = (n.z > 0 ? wall.maxZ : wall.minZ) + n.z * gap;
+  return p;
 }
-function clearAttachmentPath(
-  from: Vec3Data,
-  to: Vec3Data,
-  solids: readonly Solid[],
-): boolean {
-  // Wall contact changes only Z. Its swept body volume therefore is this box,
-  // including the final pose, rather than only a center-line visibility ray.
-  return !solids.some(
-    (b) =>
-      from.x + HERO_RADIUS > b.minX + 0.001 &&
-      from.x - HERO_RADIUS < b.maxX - 0.001 &&
-      Math.max(from.z, to.z) + HERO_RADIUS > b.minZ + 0.001 &&
-      Math.min(from.z, to.z) - HERO_RADIUS < b.maxZ - 0.001 &&
-      from.y + HERO_HEIGHT > b.minY + 0.001 &&
-      from.y < b.maxY - 0.001,
-  );
+function clearAttachmentPath(from: Vec3Data, to: Vec3Data, solids: readonly Solid[]): boolean {
+  // Swept full capsule bounds in either horizontal direction, including endpoint.
+  return !solids.some(b => Math.max(from.x,to.x)+HERO_RADIUS > b.minX+.001 &&
+    Math.min(from.x,to.x)-HERO_RADIUS < b.maxX-.001 &&
+    Math.max(from.z,to.z)+HERO_RADIUS > b.minZ+.001 && Math.min(from.z,to.z)-HERO_RADIUS < b.maxZ-.001 &&
+    from.y+HERO_HEIGHT > b.minY+.001 && from.y < b.maxY-.001);
 }
-export function selectWall(
-  m: MotionState,
-  held: boolean,
-  surfaces: readonly Surface[],
-  solids: readonly Solid[],
-): Surface | null {
+export function selectWall(m: MotionState, held: boolean, surfaces: readonly Surface[], solids: readonly Solid[]): Surface | null {
   if (!held) return null;
   const facing = { x: Math.sin(m.facingYaw), y: 0, z: Math.cos(m.facingYaw) };
-  return (
-    surfaces
-      .filter(
-        (s) =>
-          s.role === "CLIMBABLE_WALL" &&
-          s.normal.z === 1 &&
-          m.position.x > s.minX + HERO_RADIUS &&
-          m.position.x < s.maxX - HERO_RADIUS &&
-          m.position.y >= s.minY - 0.1 &&
-          m.position.y + (s.topOut ? 0 : HERO_HEIGHT) <= s.maxY + 0.03 &&
-          m.position.z >= s.maxZ + HERO_RADIUS - 0.03 &&
-          m.position.z - s.maxZ <= (s.topOut ? HERO_RADIUS + 0.12 : LIMITS.attachDistance) &&
-          dot(facing, s.normal) <= -LIMITS.facingCosine &&
-          clearAttachmentPath(
-            m.position,
-            wallContact(m, s),
-            solids.filter((b) => b.id !== s.id),
-          ) &&
-          !segmentBlocked(
-            { x: m.position.x, y: m.position.y + 1.5, z: m.position.z },
-            { x: m.position.x, y: m.position.y + 1.5, z: s.maxZ + 0.01 },
-            solids.filter((b) => b.id !== s.id),
-          ),
-      )
-      .sort((a, b) => a.id.localeCompare(b.id))[0] ?? null
-  );
+  return surfaces.filter(s => {
+    if (s.role !== "CLIMBABLE_WALL") return false;
+    const n=s.normal, side=n.x ? m.position.z : m.position.x,
+      low=n.x?s.minZ:s.minX, high=n.x?s.maxZ:s.maxX,
+      outward=n.x ? n.x*(m.position.x-(n.x>0?s.maxX:s.minX)) : n.z*(m.position.z-(n.z>0?s.maxZ:s.minZ)),
+      blockers=solids.filter(b=>b.id!==(s.solidId??s.id));
+    return side>low+HERO_RADIUS && side<high-HERO_RADIUS &&
+      m.position.y>=s.minY-HERO_HEIGHT+.1 && m.position.y<=s.maxY+.03 &&
+      outward>=HERO_RADIUS-.03 && outward<=(s.id!=="climb-wall"?HERO_RADIUS+.12:LIMITS.attachDistance) &&
+      dot(facing,n)<=-LIMITS.facingCosine && clearAttachmentPath(m.position,wallContact(m,s),blockers);
+  }).sort((a,b)=>a.id.localeCompare(b.id))[0]??null;
 }
 export interface PullSelection {
   object: PullObject | null;
@@ -459,9 +443,9 @@ export function stepTraversal(
     s = clearTraversal(s);
     m.grounded = false;
     m.velocity = {
-      x: 0,
+      x: surface?.role === "CLIMBABLE_WALL" ? surface.normal.x * 3 : 0,
       y: input.jumpPressed ? 4 : 0,
-      z: surface?.role === "CLIMBABLE_WALL" ? 3 : 0,
+      z: surface?.role === "CLIMBABLE_WALL" ? surface.normal.z * 3 : 0,
     };
     surface = undefined;
   }
@@ -473,6 +457,7 @@ export function stepTraversal(
     s.phase = "WALL_ATTACHING";
     s.phaseTime = 0.12;
     s.cameraMode = "wall";
+    s.wallNormal = { ...wall.normal };
     s.message =
       "Wall held. Up/down climbs; left/right moves sideways. Let go to detach.";
     surface = wall;
@@ -490,31 +475,28 @@ export function stepTraversal(
     m.velocity = { x: 0, y: 0, z: 0 };
     sw.web = null;
     if (surface.role === "CLIMBABLE_WALL") {
-      const p = {
-        ...m.position,
-        x: clamp(
-          m.position.x - moveX * LIMITS.climbSpeed * step,
-          surface.minX + HERO_RADIUS + 0.02,
-          surface.maxX - HERO_RADIUS - 0.02,
-        ),
-        y: clamp(
-          m.position.y + moveY * LIMITS.climbSpeed * step,
-          surface.minY,
-          surface.maxY - (surface.topOut ? 0 : HERO_HEIGHT),
-        ),
-      };
-      if (!allSolids().some((b) => b.id !== surface!.id && heroOverlaps(p, b)))
-        m.position = p;
-      m.facingYaw = Math.PI;
-      if (s.phaseTime === 0) s.phase = "WALL_CLIMBING";
-      if (surface.topOut && p.y >= surface.maxY - 0.001 && moveY > 0.2) {
-        const onTop = { ...m.position, z: m.position.z - moveY * LIMITS.climbSpeed * step };
-        if (!allSolids().some(b => heroOverlaps(onTop, b))) m.position = onTop;
-        if (m.position.z <= surface.maxZ - HERO_RADIUS - 0.05) {
-          s = clearTraversal(s, "LANDING");
-          s.message = "Back on the rooftop! Follow the numbered rings.";
-          m.grounded = true;
-        }
+      const startY=m.position.y,n=surface.normal, tangent={x:-n.z,z:n.x},
+        p={...m.position,
+          x:clamp(m.position.x+tangent.x*moveX*LIMITS.climbSpeed*step,
+            surface.minX+HERO_RADIUS+.02,surface.maxX-HERO_RADIUS-.02),
+          z:clamp(m.position.z+tangent.z*moveX*LIMITS.climbSpeed*step,
+            surface.minZ+HERO_RADIUS+.02,surface.maxZ-HERO_RADIUS-.02),
+          y:clamp(m.position.y+moveY*LIMITS.climbSpeed*step,
+            surface.minY-HERO_HEIGHT,surface.maxY-(surface.topOut?0:HERO_HEIGHT))};
+      // Keep the outward coordinate at current contact, including progressive top-out.
+      if(n.x) p.x=m.position.x; else p.z=m.position.z;
+      if(!allSolids().some(b=>b.id!==(surface!.solidId??surface!.id)&&heroOverlaps(p,b))) m.position=p;
+      m.facingYaw=Math.atan2(-n.x,-n.z);
+      if(s.phaseTime===0)s.phase="WALL_CLIMBING";
+      if(surface.topOut && p.y>=surface.maxY-.001 && moveY>.2){
+        const topStep=Math.max(0,moveY*LIMITS.climbSpeed*step-Math.abs(m.position.y-startY));
+        const onTop={...m.position,x:m.position.x-n.x*topStep,
+          z:m.position.z-n.z*topStep};
+        if(!allSolids().some(b=>heroOverlaps(onTop,b)))m.position=onTop;
+        const inset=n.x?n.x*(m.position.x-(n.x>0?surface.maxX:surface.minX)):
+          n.z*(m.position.z-(n.z>0?surface.maxZ:surface.minZ));
+        if(inset<=-HERO_RADIUS-.05){s=clearTraversal(s,"LANDING");
+          s.message="On the rooftop! Every clear exterior face is climbable.";m.grounded=true;}
       }
       const ceiling = surfaces.find(
         (c) => c.id === surface!.transition && c.role === "CLIMBABLE_CEILING",
@@ -559,12 +541,29 @@ export function stepTraversal(
           p.z < surface.minZ + HERO_RADIUS ||
           p.z > surface.maxZ - HERO_RADIUS
         ) {
-          s = clearTraversal(s);
-          m.velocity = { x: 0, y: 0, z: 0 };
+          const n=p.x<surface.minX+HERO_RADIUS?{x:-1,y:0,z:0}:p.x>surface.maxX-HERO_RADIUS?{x:1,y:0,z:0}:
+            p.z<surface.minZ+HERO_RADIUS?{x:0,y:0,z:-1}:{x:0,y:0,z:1};
+          const wall=surfaces.find(w=>w.role==="CLIMBABLE_WALL"&&w.solidId===surface!.id&&w.normal.x===n.x&&w.normal.z===n.z);
+          if(wall){
+            const contact=wallContact({...m,position:p},wall), q={...p};
+            if(n.x)q.x=n.x>0?Math.min(p.x,contact.x):Math.max(p.x,contact.x);
+            else q.z=n.z>0?Math.min(p.z,contact.z):Math.max(p.z,contact.z);
+            if(!allSolids().some(b=>heroOverlaps(q,b))){
+              m.position=q;s.phase="CEILING_MOVING";
+              if((n.x&&Math.abs(q.x-contact.x)<.001)||(n.z&&Math.abs(q.z-contact.z)<.001)){
+                s.surfaceId=wall.id;s.cameraMode="wall";s.wallNormal=n;s.phase="WALL_ATTACHING";s.phaseTime=.12;
+                s.message="At the platform edge. Keep holding climb and press forward/up to climb onto its top.";
+                m.facingYaw=Math.atan2(-n.x,-n.z);
+              }
+            }
+          }else {s=clearTraversal(s);m.velocity={x:0,y:0,z:0};}
         } else if (
           !allSolids().some((b) => b.id !== surface!.id && heroOverlaps(p, b))
         ) {
+          const travel=minus(p,m.position);
           m.position = p;
+          // The horizontal head direction of a face-up rig is opposite local +Z.
+          if(Math.hypot(travel.x,travel.z)>.0001)m.facingYaw=Math.atan2(-travel.x,-travel.z);
           s.phase =
             Math.hypot(input.moveX, input.moveY) > 0.05
               ? "CEILING_MOVING"
@@ -900,3 +899,4 @@ export function safeTraversal(
     ].includes(t.phase)
   );
 }
+
