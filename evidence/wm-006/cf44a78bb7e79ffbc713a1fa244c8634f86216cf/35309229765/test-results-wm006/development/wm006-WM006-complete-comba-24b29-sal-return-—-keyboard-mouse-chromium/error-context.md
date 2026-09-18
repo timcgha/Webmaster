@@ -1,0 +1,66 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: wm006.spec.ts >> WM006 complete combat course, cleanup, saves and traversal return — keyboard-mouse
+- Location: e2e\wm006.spec.ts:12:3
+
+# Error details
+
+```
+Error: page.evaluate: Error: successful dodge: {"active":true,"paused":false,"safe":false,"health":100,"maxHealth":100,"progress":0,"progressLabel":"Every building face is climbable. Mint paths teach the route. Hold C / RB / R1 to climb onto a roof.","position":{"x":-35.130000000000024,"y":-18,"z":-27.023333333332864},"grounded":true,"fps":48,"cameraAlpha":-1.5707963267948966,"cameraBeta":1.08,"cameraRadius":10.35,"cameraPosition":{"x":-35.13000000000003,"y":-11.421751430801788,"z":-36.151596634592075},"inputSource":"keyboard-mouse","velocity":{"x":0,"y":0,"z":0},"swing":{"phase":"GROUNDED_OR_FREE","web":null,"targetId":null,"held":false,"freshRequired":false,"phaseTime":0,"message":"Aim at a glowing ring. Walk toward the skyline arrows.","attachments":0,"releases":0,"collisions":0},"hand":{"x":-34.42000000000002,"y":-15.97,"z":-27.583333333332863},"skyline":{"active":false,"stage":0,"completed":false,"completions":0,"anchors":[],"released":false,"reattached":false,"leftRoof":false,"lastAnchor":null,"valid":true},"traversal":{"phase":"FREE_OR_GROUNDED","surfaceId":null,"targetId":null,"pullId":null,"webOrigin":null,"phaseTime":0,"freshClimb":false,"freshPull":false,"heldClimb":false,"heldPull":false,"message":"Released safely. Let go of controls, then press again.","cameraMode":"ground"},"training":{"active":false,"stage":0,"checkpoint":0,"completed":false,"completions":0,"valid":true,"swingAttached":false,"swingReleased":false,"wallStart":null,"vertical":0,"lateral":0,"ceilingStart":null,"ceilingDistance":0,"pulledDistance":0,"stepped":false},"pullObjects":[{"id":"route-step","role":"PULLABLE_LIGHT","position":{"x":0,"y":0.65,"z":-51},"initial":{"x":0,"y":0.65,"z":-51},"half":{"x":1.5,"y":0.65,"z":1.5},"speed":0},{"id":"limited-crate","role":"PULLABLE_LIMITED","position":{"x":4,"y":0.55,"z":-57},"initial":{"x":4,"y":0.55,"z":-57},"half":{"x":0.75,"y":0.55,"z":0.75},"speed":0},{"id":"heavy-crate","role":"TOO_HEAVY","position":{"x":4,"y":1,"z":-49},"initial":{"x":4,"y":1,"z":-49},"half":{"x":1,"y":1,"z":1},"speed":0},{"id":"ordinary-crate","role":"ORDINARY_SOLID","position":{"x":7,"y":0.9,"z":-55},"initial":{"x":7,"y":0.9,"z":-55},"half":{"x":0.9,"y":0.9,"z":0.9},"speed":0}],"legPose":{"blend":0,"phase":0,"angle":0},"gait":{"phase":0.15878107046297116,"weight":3.093724320130003e-112,"hips":[-9.489995150008865e-111,2.0756715546548405e-113],"knees":[1.0658346384058809e-114,4.109194603348981e-110],"arms":[6.168496847505762e-111,-1.3491865105256464e-113],"lift":-2.5421201905222585e-114},"course":{"version":1,"next":0,"completed":false,"active":false,"valid":true,"released":true,"completions":0},"legWorld":[{"hip":{"x":-35.130001068115234,"y":-16.540000915527344,"z":-26.803333282470703},"tip":{"x":-35.130001068115234,"y":-18.080000915527343,"z":-26.803333282470703},"forwardDisplacement":0},{"hip":{"x":-35.130001068115234,"y":-16.540000915527344,"z":-27.243331909179688},"tip":{"x":-35.130001068115234,"y":-18.080000915527343,"z":-27.243331909179688},"forwardDisplacement":0}],"surfaceCameraBlend":0,"heroPitch":0,"combat":{"active":true,"completed":false,"stage":3,"finalPart":0,"time":46.48333333333198,"serial":43,"combo":{"punch":{"step":0,"last":null},"kick":{"step":0,"last":null},"web":{"step":0,"last":null}},"attack":null,"queued":null,"dodge":null,"dodgeCooldown":0,"shots":[],"targets":[{"id":"combo-box","kind":"box","position":{"x":-38,"y":-16.3,"z":-49},"home":{"x":-38,"y":-16.3,"z":-49},"hp":0,"maxHp":80,"wrap":0,"wrappedOnce":false,"released":false,"flash":0,"hits":[1,2,3],"active":false},{"id":"high-pad","kind":"high","position":{"x":-38,"y":-14.25,"z":-41},"home":{"x":-38,"y":-14.25,"z":-41},"hp":0,"maxHp":32,"wrap":0,"wrappedOnce":false,"released":false,"flash":0,"hits":[1],"active":false},{"id":"web-dummy","kind":"dummy","position":{"x":-39.20462080621506,"y":-16.3,"z":-33},"home":{"x":-38,"y":-16.3,"z":-33},"hp":84,"maxHp":160,"wrap":0,"wrappedOnce":false,"released":false,"flash":0,"hits":[1,2,3],"active":false},{"id":"final-box","kind":"box","position":{"x":-38,"y":-16.3,"z":-13},"home":{"x":-38,"y":-16.3,"z":-13},"hp":80,"maxHp":80,"wrap":0,"wrappedOnce":false,"released":false,"flash":0,"hits":[],"active":false},{"id":"final-high","kind":"high","position":{"x":-38,"y":-14.25,"z":-9},"home":{"x":-38,"y":-14.25,"z":-9},"hp":32,"maxHp":32,"wrap":0,"wrappedOnce":false,"released":false,"flash":0,"hits":[],"active":false},{"id":"final-dummy","kind":"dummy","position":{"x":-38,"y":-16.3,"z":-4},"home":{"x":-38,"y":-16.3,"z":-4},"hp":160,"maxHp":160,"wrap":0,"wrappedOnce":false,"released":false,"flash":0,"hits":[],"active":false}],"machine":{"phase":"warning","age":1.1500000000000008,"aim":{"x":-35.130000000000024,"y":-18,"z":-27.023333333332864},"resolved":false},"events":[{"id":34,"kind":"success","position":{"x":-39.20462080621506,"y":-16.3,"z":-33},"power":1},{"id":35,"kind":"bump","position":{"x":-38,"y":-18,"z":-27.023333333332864},"power":1},{"id":36,"kind":"dodge","position":{"x":-38,"y":-18,"z":-27.023333333332864},"power":1},{"id":37,"kind":"bump","position":{"x":-35.130000000000024,"y":-18,"z":-27.023333333332864},"power":1},{"id":38,"kind":"bump","position":{"x":-35.130000000000024,"y":-18,"z":-27.023333333332864},"power":1},{"id":39,"kind":"bump","position":{"x":-35.130000000000024,"y":-18,"z":-27.023333333332864},"power":1},{"id":40,"kind":"bump","position":{"x":-35.130000000000024,"y":-18,"z":-27.023333333332864},"power":1},{"id":41,"kind":"bump","position":{"x":-35.130000000000024,"y":-18,"z":-27.023333333332864},"power":1},{"id":42,"kind":"bump","position":{"x":-35.130000000000024,"y":-18,"z":-27.023333333332864},"power":1},{"id":43,"kind":"bump","position":{"x":-35.130000000000024,"y":-18,"z":-27.023333333332864},"power":1}],"message":"Amber warning! Dodge when the pad turns pink.","successfulDodges":0,"bumps":8,"history":[{"kind":"punch","step":1,"id":1},{"kind":"punch","step":2,"id":4},{"kind":"punch","step":1,"id":7},{"kind":"punch","step":2,"id":10},{"kind":"punch","step":3,"id":13},{"kind":"kick","step":1,"id":17},{"kind":"web","step":1,"id":21},{"kind":"web","step":2,"id":25},{"kind":"web","step":3,"id":29}]}}
+    at Object.until (eval at evaluate (:311:30), <anonymous>:49:58)
+    at async eval (eval at evaluate (:311:30), <anonymous>:4:5)
+    at async <anonymous>:337:30
+```
+
+# Page snapshot
+
+```yaml
+- main [ref=e2]:
+  - generic "Webmaster 3D practice area" [ref=e3]
+  - generic:
+    - generic:
+      - region "Current objective":
+        - text: COMBAT 4 / 5
+        - strong: "Dodge the training pad: F / B / ○ + left/right, or neutral for back hop."
+      - region "Combat training":
+        - strong: "Soft bump. Try again: dodge at the end of the amber warning."
+        - text: "Tap again within 1 second: 1 → 2 → 3 → 1. Hold does not repeat."
+        - generic: J / X / □ punch · K / Y / △ kickL / D-pad ↑ shoot · F / B / ○ dodge
+        - text: "Pause: retry station / replay / return to traversal"
+    - region "Health 100 percent":
+      - text: HERO ENERGY
+      - strong: 100 / 100
+    - generic:
+      - generic: Slot 1 • Normal
+      - generic: "-35, -18, -27 • 46 FPS"
+      - generic: Follow the colored mats north · no timer
+    - status:
+      - generic: CONTROLLER
+      - strong: "Controller: press any button or move a stick to connect"
+    - generic:
+      - strong: Move
+      - text: WASD / Left Stick
+      - strong: Look
+      - text: Drag / Right Stick
+      - strong: Jump
+      - text: Space / A / ✕
+      - strong: Run
+      - text: Shift / RT / R2
+      - strong: Swing
+      - text: Hold E / LT / L2, release to let go
+      - strong: Climb
+      - text: Hold C / RB / R1
+      - strong: Pull
+      - text: Hold Q / LB / L1
+      - strong: Recenter
+      - text: R / RS
+      - strong: Pause
+      - text: Esc / Menu / Options
+  - status: "Checkpoint: Dodge the training pad: F / B / ○ + left/right, or neutral for back hop."
+```
