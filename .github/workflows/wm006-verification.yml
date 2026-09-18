@@ -92,7 +92,8 @@ jobs:
           WM006_SUITE: inherited
         run: |
           set -euo pipefail
-          pnpm exec playwright test -c playwright.wm006.config.ts e2e/wm001.spec.ts e2e/wm002.spec.ts e2e/wm003.spec.ts e2e/wm003-remediation.spec.ts e2e/wm005-climb.spec.ts 2>&1 | tee evidence/wm-006/inherited-browser.log
+          node scripts/wm006-prepare-inherited.mjs
+          pnpm exec playwright test -c playwright.wm006.config.ts e2e/wm006-refresh-wm001.spec.ts e2e/wm006-refresh-wm002.spec.ts e2e/wm006-refresh-wm003.spec.ts e2e/wm003-remediation.spec.ts e2e/wm005-climb.spec.ts e2e/wm006-refresh-current-course.spec.ts 2>&1 | tee evidence/wm-006/inherited-browser.log
       - name: Final exact-source integrity
         if: always()
         run: node scripts/wm006-source-integrity.mjs
@@ -141,7 +142,7 @@ jobs:
           pnpm --dir ../baseline install --frozen-lockfile
           pnpm exec playwright install chromium
           node scripts/wm006-source-integrity.mjs
-      - name: Four paired practice, swing and climb rounds against released WM005
+      - name: Four paired practice, swing, climb and combat-street rounds against released WM005
         run: |
           set -euo pipefail
           node scripts/wm006-performance.mjs 2>&1 | tee evidence/wm-006/performance.log

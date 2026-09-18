@@ -1,12 +1,15 @@
-import { CreateBox } from "@babylonjs/core/Meshes/Builders/boxBuilder.pure";
+import { CreateBox, CreateBoxVertexData } from "@babylonjs/core/Meshes/Builders/boxBuilder.pure";
 import { CreatePlane } from "@babylonjs/core/Meshes/Builders/planeBuilder.pure";
 import { CreateSphere } from "@babylonjs/core/Meshes/Builders/sphereBuilder.pure";
 import { CreateTorus } from "@babylonjs/core/Meshes/Builders/torusBuilder.pure";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
+import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
 import { Color3 } from "@babylonjs/core/Maths/math.color";
 import type { Scene } from "@babylonjs/core/scene";
+import type { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
+import type { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
 import type { CombatState } from "../core/combat";
 import type { createBlockHero } from "./hero";
 import type { TransformNode } from "@babylonjs/core/Meshes/transformNode";
@@ -43,6 +46,47 @@ export class CombatView {
     m.specularColor = Color3.Black();
     return m;
   }
+  private createStaticMats(scene: Scene, palette: StandardMaterial[]) {
+    // These boxes and the two scene lights never move. Bake the same diffuse +
+    // emissive face colors once, following StandardMaterial's clamped lighting,
+    // and submit the five boxes in one unlit draw (as the accepted street does).
+    // Original box vertices, bounds, palette and all gameplay colliders remain.
+    const sky = scene.getLightById("sky-light") as HemisphericLight;
+    const sun = scene.getLightById("sun") as DirectionalLight;
+    const direction = sun.direction.normalizeToNew();
+    const positions: number[] = [], normals: number[] = [],
+      indices: number[] = [], colors: number[] = [];
+    for (let i = 0; i < 5; i++) {
+      const box = CreateBoxVertexData({ width: 9, height: 0.035, depth: i === 4 ? 23 : 6 });
+      const offset = positions.length / 3, material = palette[i]!;
+      for (let v = 0; v < box.positions!.length; v += 3) {
+        const nx = box.normals![v]!, ny = box.normals![v + 1]!, nz = box.normals![v + 2]!;
+        positions.push(box.positions![v]! - 38, box.positions![v + 1]! - 17.97,
+          box.positions![v + 2]! + [-49, -41, -33, -23, -7][i]!);
+        normals.push(nx, ny, nz);
+        const hemi = (ny + 1) / 2;
+        const direct = Math.max(0, -(nx * direction.x + ny * direction.y + nz * direction.z));
+        for (const channel of ["r", "g", "b"] as const) {
+          const light = sky.intensity * (sky.groundColor[channel] * (1 - hemi) + sky.diffuse[channel] * hemi)
+            + sun.intensity * sun.diffuse[channel] * direct;
+          colors.push(Math.min(1, Math.max(0, material.diffuseColor[channel] * light + material.emissiveColor[channel])));
+        }
+        colors.push(1);
+      }
+      indices.push(...Array.from(box.indices!, index => index + offset));
+    }
+    const material = new StandardMaterial("combat-static-floor-color", scene);
+    material.disableLighting = true;
+    material.emissiveColor = Color3.White();
+    material.specularColor = Color3.Black();
+    const mesh = new Mesh("combat-station-mats", scene), data = new VertexData();
+    data.positions = positions; data.normals = normals; data.indices = indices; data.colors = colors;
+    data.applyToMesh(mesh);
+    mesh.material = material;
+    mesh.metadata = { combatStatic: true };
+    mesh.freezeWorldMatrix();
+    material.freeze();
+  }
   constructor(scene: Scene, s: CombatState) {
     const prior = new Set(scene.meshes);
     const orange = this.mat(scene, "training-orange", "#ffab3d"),
@@ -50,15 +94,7 @@ export class CombatView {
       teal = this.mat(scene, "training-teal", "#25dbc8"),
       gold = this.mat(scene, "training-gold", "#ffe257"),
       white = this.mat(scene, "training-web", "#eefff8");
-    for (let i = 0; i < 5; i++) {
-      const mat = CreateBox(
-        "combat-station-mat-" + i,
-        { width: 9, height: 0.035, depth: i === 4 ? 23 : 6 },
-        scene,
-      );
-      mat.position.set(-38, -17.97, [-49, -41, -33, -23, -7][i]!);
-      mat.material = [orange, pink, teal, gold, teal][i]!;
-    }
+    this.createStaticMats(scene, [orange, pink, teal, gold, teal]);
     for (const t of s.targets) {
       const body = createRoundedBlock(
         "combat-" + t.id,
@@ -144,7 +180,7 @@ export class CombatView {
     this.warning.material = gold;
     this.warningMaterial=gold;this.strikeMaterial=pink;
     for (const mesh of scene.meshes)
-      if (!prior.has(mesh))
+      if (!prior.has(mesh) && !mesh.metadata?.combatStatic)
         mesh.metadata = { ...mesh.metadata, combatDynamic: true };
   }
   update(
