@@ -1,0 +1,122 @@
+name: WM-006 isolated preview public verification
+on:
+  push:
+    branches: [verification/wm006-evidence]
+    paths: [.github/workflows/wm006-public.yml]
+permissions:
+  contents: read
+jobs:
+  public:
+    runs-on: windows-2025
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    env:
+      WM_SOURCE: __SOURCE__
+      WM_TREE: __TREE__
+      WM_PUBLICATION: __PUBLICATION__
+    steps:
+      - name: Preserve checkout bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: __SOURCE__
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: site
+          ref: __PUBLICATION__
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline
+          ref: 6aff5802736b5c12380102a70a38794838397d7d
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline4
+          ref: a63ad0e05ce12d2b42ff22e97d39de4af51d4b08
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: save-baseline
+          ref: 3962446ca00c6e1db6bd8b250335b24619a0aeab
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: tooling
+          ref: ${{ github.sha }}
+          sparse-checkout: evidence/wm-006/tooling
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Exact browser and source integrity
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install chromium
+          cp ../tooling/evidence/wm-006/tooling/*.mjs scripts/
+          node scripts/wm006-source-integrity.mjs
+      - name: Public byte identity and root preservation
+        run: node scripts/public-bytes.mjs
+      - name: Public compiled saves and real browser close/reopen
+        run: node scripts/public-saves.mjs
+      - name: Final source integrity
+        if: always()
+        run: node scripts/wm006-source-integrity.mjs
+      - name: Retain public verification
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm006-public-${{ github.run_id }}
+          path: |
+            candidate/evidence/wm-006/public/
+            candidate/evidence/wm-006/source-integrity.json
+          retention-days: 90
+  archive:
+    if: always()
+    needs: public
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: verification/wm006-evidence
+          path: archive
+          sparse-checkout: evidence/wm-006
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: wm006-public-${{ github.run_id }}
+          path: retained
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: wm006-cf44a78bb7e79ffbc713a1fa244c8634f86216cf
+          run-id: 35309229765
+          github-token: ${{ github.token }}
+          path: retained-initial
+      - name: Preserve public and initial development evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="archive/evidence/wm-006/public/${GITHUB_RUN_ID}"
+          mkdir -p "$target"
+          cp -r retained/. "$target/"
+          first="archive/evidence/wm-006/cf44a78bb7e79ffbc713a1fa244c8634f86216cf/35309229765"
+          mkdir -p "$first"
+          cp -r retained-initial/. "$first/"
+          git -C archive config user.name WEBMASTER_PRODUCT_OWNER
+          git -C archive config user.email webmaster-po@users.noreply.github.com
+          git -C archive add -f evidence/wm-006
+          git -C archive commit -m "WM-006 preserve public preview checks and initial retained findings [skip ci]"
+          git -C archive push origin HEAD:verification/wm006-evidence
