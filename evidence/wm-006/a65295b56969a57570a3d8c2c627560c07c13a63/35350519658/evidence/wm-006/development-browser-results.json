@@ -1,0 +1,357 @@
+{
+  "config": {
+    "argv": [
+      "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+      "D:\\a\\Webmaster\\Webmaster\\candidate\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "-c",
+      "playwright.wm006.config.ts",
+      "e2e/wm006.spec.ts",
+      "e2e/wm006-visual.spec.ts",
+      "e2e/wm006-cleanup.spec.ts"
+    ],
+    "configFile": "D:\\a\\Webmaster\\Webmaster\\candidate\\playwright.wm006.config.ts",
+    "rootDir": "D:/a/Webmaster/Webmaster/candidate/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": true,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": {},
+    "maxFailures": 0,
+    "metadata": {
+      "ci": {
+        "commitHref": "https://github.com/timcgha/Webmaster/commit/a65295b56969a57570a3d8c2c627560c07c13a63",
+        "commitHash": "a65295b56969a57570a3d8c2c627560c07c13a63",
+        "buildHref": "https://github.com/timcgha/Webmaster/actions/runs/35350519658"
+      },
+      "gitCommit": {
+        "shortHash": "a65295b",
+        "hash": "a65295b56969a57570a3d8c2c627560c07c13a63",
+        "subject": "WM-006 C3 batch static training mats and retain reconciled gates",
+        "body": "WM-006 C3 batch static training mats and retain reconciled gates",
+        "author": {
+          "name": "timcgha",
+          "email": "official.signup.john@gmail.com",
+          "time": 1789738165000
+        },
+        "committer": {
+          "name": "timcgha",
+          "email": "official.signup.john@gmail.com",
+          "time": 1789738165000
+        },
+        "branch": "HEAD"
+      },
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/a/Webmaster/Webmaster/candidate/test-results-wm006/development",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "ci": {
+            "commitHref": "https://github.com/timcgha/Webmaster/commit/a65295b56969a57570a3d8c2c627560c07c13a63",
+            "commitHash": "a65295b56969a57570a3d8c2c627560c07c13a63",
+            "buildHref": "https://github.com/timcgha/Webmaster/actions/runs/35350519658"
+          },
+          "gitCommit": {
+            "shortHash": "a65295b",
+            "hash": "a65295b56969a57570a3d8c2c627560c07c13a63",
+            "subject": "WM-006 C3 batch static training mats and retain reconciled gates",
+            "body": "WM-006 C3 batch static training mats and retain reconciled gates",
+            "author": {
+              "name": "timcgha",
+              "email": "official.signup.john@gmail.com",
+              "time": 1789738165000
+            },
+            "committer": {
+              "name": "timcgha",
+              "email": "official.signup.john@gmail.com",
+              "time": 1789738165000
+            },
+            "branch": "HEAD"
+          },
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/a/Webmaster/Webmaster/candidate/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "wm006*.spec.ts",
+          "wm005-climb.spec.ts",
+          "wm001.spec.ts",
+          "wm003.spec.ts",
+          "wm003-remediation.spec.ts",
+          "wm002.spec.ts"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/wm-006/development-browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "node scripts/wm005-devserver.mjs",
+      "url": "http://127.0.0.1:4173",
+      "timeout": 120000,
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "wm006-cleanup.spec.ts",
+      "file": "wm006-cleanup.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "WM006 combat lifecycle cleanup keyboard-focus",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 20621,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T13:31:18.472Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "bdd0c1ab3dedbbb1647f-98fb2b1e9ae300ee8e19",
+          "file": "wm006-cleanup.spec.ts",
+          "line": 6,
+          "column": 31
+        },
+        {
+          "title": "WM006 combat lifecycle cleanup controller-disconnect",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 23554,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T13:31:39.654Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "bdd0c1ab3dedbbb1647f-c661882713790dacbca9",
+          "file": "wm006-cleanup.spec.ts",
+          "line": 6,
+          "column": 31
+        }
+      ]
+    },
+    {
+      "title": "wm006-visual.spec.ts",
+      "file": "wm006-visual.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "WM006 nine visible attacks, dodge directions, audio and held-input edges",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 180291,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 180000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 180000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 180000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm006-visual.spec.ts",
+                        "column": 17,
+                        "line": 19
+                      },
+                      "message": "Error: page.waitForFunction: Test timeout of 180000ms exceeded.\n\n  17 |    for(const step of [1,2,3]){\n  18 |      await page.keyboard.press(key);\n> 19 |      await page.waitForFunction(({kind,step})=>{const a=window.__WM_DEBUG__!.getState().combat.attack;return a?.kind===kind&&a.step===step&&a.age>=.12;},{kind,step});\n     |                 ^\n  20 |      poses.push({kind,step,state:await state(page)});await page.screenshot({path:`${out}/${kind}-${step}.png`});\n  21 |      await page.waitForFunction(()=>!window.__WM_DEBUG__!.getState().combat.attack);\n  22 |    }\n    at D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm006-visual.spec.ts:19:17"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T13:32:03.246Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm006\\development\\wm006-visual-WM006-nine-vi-2dbbb--audio-and-held-input-edges-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm006\\development\\wm006-visual-WM006-nine-vi-2dbbb--audio-and-held-input-edges-chromium\\error-context.md"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "fb177c84d67c2b10e90b-6ab58328fb2fb6600586",
+          "file": "wm006-visual.spec.ts",
+          "line": 7,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "wm006.spec.ts",
+      "file": "wm006.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "WM006 complete combat course, cleanup, saves and traversal return — keyboard-mouse",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 52873,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T13:35:04.253Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "03bc61514cbf57bf0614-7dac284e4428df4cb0fa",
+          "file": "wm006.spec.ts",
+          "line": 12,
+          "column": 3
+        },
+        {
+          "title": "WM006 complete combat course, cleanup, saves and traversal return — semantic-controller",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 57941,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T13:35:57.411Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "03bc61514cbf57bf0614-849a65c477d5be7407b5",
+          "file": "wm006.spec.ts",
+          "line": 12,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-18T13:31:16.876Z",
+    "duration": 338864.835,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

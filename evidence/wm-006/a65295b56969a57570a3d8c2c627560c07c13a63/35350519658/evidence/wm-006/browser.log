@@ -1,0 +1,34 @@
+
+Running 5 tests using 1 worker
+
+  ok 1 [chromium] › e2e\wm006-cleanup.spec.ts:6:31 › WM006 combat lifecycle cleanup keyboard-focus (20.6s)
+  ok 2 [chromium] › e2e\wm006-cleanup.spec.ts:6:31 › WM006 combat lifecycle cleanup controller-disconnect (23.6s)
+  x  3 [chromium] › e2e\wm006-visual.spec.ts:7:1 › WM006 nine visible attacks, dodge directions, audio and held-input edges (3.0m)
+  ok 4 [chromium] › e2e\wm006.spec.ts:12:3 › WM006 complete combat course, cleanup, saves and traversal return — keyboard-mouse (52.9s)
+  ok 5 [chromium] › e2e\wm006.spec.ts:12:3 › WM006 complete combat course, cleanup, saves and traversal return — semantic-controller (57.9s)
+
+
+  1) [chromium] › e2e\wm006-visual.spec.ts:7:1 › WM006 nine visible attacks, dodge directions, audio and held-input edges 
+
+    Test timeout of 180000ms exceeded.
+
+    Error: page.waitForFunction: Test timeout of 180000ms exceeded.
+
+      17 |    for(const step of [1,2,3]){
+      18 |      await page.keyboard.press(key);
+    > 19 |      await page.waitForFunction(({kind,step})=>{const a=window.__WM_DEBUG__!.getState().combat.attack;return a?.kind===kind&&a.step===step&&a.age>=.12;},{kind,step});
+         |                 ^
+      20 |      poses.push({kind,step,state:await state(page)});await page.screenshot({path:`${out}/${kind}-${step}.png`});
+      21 |      await page.waitForFunction(()=>!window.__WM_DEBUG__!.getState().combat.attack);
+      22 |    }
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm006-visual.spec.ts:19:17
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm006\development\wm006-visual-WM006-nine-vi-2dbbb--audio-and-held-input-edges-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm006\development\wm006-visual-WM006-nine-vi-2dbbb--audio-and-held-input-edges-chromium\error-context.md
+
+  1 failed
+    [chromium] › e2e\wm006-visual.spec.ts:7:1 › WM006 nine visible attacks, dodge directions, audio and held-input edges 
+  4 passed (5.6m)
