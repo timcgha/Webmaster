@@ -3,6 +3,14 @@ import { SaveStore, saveStorageKeyForTests } from "../src/core/save";
 import { MemoryStorage, payload } from "./helpers";
 
 describe("SaveStore two-generation commits", () => {
+  it("roundtrips the optional combat badge without altering historical traversal fields", () => {
+    const storage=new MemoryStorage(),store=new SaveStore(storage),old=payload(1,'Normal',10);
+    expect(store.write(1,'manual',old).ok).toBe(true);
+    expect(store.read(1,'manual').payload).toEqual(old);
+    const next={...old,combat:{version:1 as const,completed:true}};
+    expect(store.write(1,'manual',next).ok).toBe(true);
+    expect(store.read(1,'manual').payload).toEqual(next);
+  });
   it("writes, validates, reads back, and advances alternating generations", () => {
     const storage = new MemoryStorage();
     const store = new SaveStore(storage);

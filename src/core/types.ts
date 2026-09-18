@@ -13,6 +13,7 @@ export interface RunSavePayload {
   skyline?: import("./skyline").SkylineSave;
   climb?: import("./traversal").ClimbSave;
   course?: import("./course").CourseSave;
+  combat?: import("./combat").CombatSave;
   slot: SlotId;
   difficulty: Difficulty;
   health: number;
@@ -30,12 +31,14 @@ export interface GameSettings {
   cameraSensitivity: number;
   invertY: boolean;
   adaptiveQuality: boolean;
+  combatSound?: boolean;
 }
 
 export const DEFAULT_SETTINGS: GameSettings = {
   cameraSensitivity: 1,
   invertY: false,
   adaptiveQuality: true,
+  combatSound: true,
 };
 
 export interface SemanticActions {
@@ -47,6 +50,10 @@ export interface SemanticActions {
   swingHeld?: boolean;
   climbHeld?: boolean;
   pullHeld?: boolean;
+  punchPressed?: boolean;
+  kickPressed?: boolean;
+  webShotPressed?: boolean;
+  dodgePressed?: boolean;
   jumpPressed: boolean;
   recenterPressed: boolean;
   pausePressed: boolean;
