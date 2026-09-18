@@ -64,10 +64,12 @@ jobs:
           corepack prepare pnpm@11.19.0 --activate
           pnpm install --frozen-lockfile
           pnpm exec playwright install chromium
-          cp ../tooling/evidence/wm-006/tooling/public-bytes.mjs ../tooling/evidence/wm-006/tooling/public-saves.mjs ../tooling/evidence/wm-006/tooling/prepare-public.mjs scripts/
+          cp ../tooling/evidence/wm-006/tooling/public-bytes.mjs ../tooling/evidence/wm-006/tooling/public-saves.mjs ../tooling/evidence/wm-006/tooling/prepare-public.mjs ../tooling/evidence/wm-006/tooling/public-ordinary.mjs scripts/
           node scripts/wm006-source-integrity.mjs
       - name: Public byte identity and root preservation
         run: node scripts/public-bytes.mjs
+      - name: Ordinary public URL and persistent save
+        run: node scripts/public-ordinary.mjs
       - name: Complete public combat courses and safe checkpoint
         run: |
           set -euo pipefail
