@@ -118,7 +118,7 @@ export async function installCombatControls(page: Page, pad: boolean) {
     async function dodge() {
       await until(
         (s: any) =>
-          s.combat.machine.phase === "warning" && s.combat.machine.age >= 1.12,
+          s.combat.machine.phase === "warning" && s.combat.machine.age >= 1.02 && s.combat.machine.age < 1.13,
         "late amber cue",
         12000,
       );

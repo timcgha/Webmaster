@@ -1,4 +1,5 @@
 import { CreateBox } from "@babylonjs/core/Meshes/Builders/boxBuilder.pure";
+import { CreatePlane } from "@babylonjs/core/Meshes/Builders/planeBuilder.pure";
 import { CreateSphere } from "@babylonjs/core/Meshes/Builders/sphereBuilder.pure";
 import { CreateTorus } from "@babylonjs/core/Meshes/Builders/torusBuilder.pure";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
@@ -30,7 +31,11 @@ export class CombatView {
   private lastEvent = 0;
   private previousState: CombatState | null = null;
   private machine: Mesh;
+  private machineBase: Mesh;
+  private machineArm: Mesh;
   private warning: Mesh;
+  private warningMaterial: StandardMaterial;
+  private strikeMaterial: StandardMaterial;
   private mat(scene: Scene, name: string, color: string) {
     const m = new StandardMaterial(name, scene);
     m.diffuseColor = Color3.FromHexString(color);
@@ -74,9 +79,9 @@ export class CombatView {
         scene,
       );
       bar.material = gold;
-      const label = CreateBox(
+      const label = CreatePlane(
         "label-" + t.id,
-        { width: 3.8, height: 0.9, depth: 0.015 },
+        { width: 3.8, height: 0.9, sideOrientation:Mesh.DOUBLESIDE },
         scene,
       );
       label.billboardMode = Mesh.BILLBOARDMODE_ALL;
@@ -127,12 +132,17 @@ export class CombatView {
       scene,
     );
     this.machine.material = pink;
+    this.machineBase=createRoundedBlock('training-machine-post',{width:.7,height:2.5,depth:.7},scene);
+    this.machineBase.material=teal;
+    this.machineArm=CreateBox('training-machine-boom',{width:.25,height:.25,depth:1},scene);
+    this.machineArm.material=teal;
     this.warning = CreateBox(
       "training-warning",
       { width: 3, height: 0.04, depth: 3 },
       scene,
     );
     this.warning.material = gold;
+    this.warningMaterial=gold;this.strikeMaterial=pink;
     for (const mesh of scene.meshes)
       if (!prior.has(mesh))
         mesh.metadata = { ...mesh.metadata, combatDynamic: true };
@@ -184,7 +194,7 @@ export class CombatView {
         c.fillStyle = "#ffffff";
         c.textAlign = "center";
         c.fillText(text, 256, 75);
-        v.texture.update(false);
+        v.texture.update();
       }
     }
     this.shots.forEach((v, i) => {
@@ -200,10 +210,16 @@ export class CombatView {
     const machine =
       s.active && (s.stage === 3 || (s.stage === 4 && s.finalPart === 3));
     this.machine.setEnabled(machine);
-    this.warning.setEnabled(machine && s.machine.phase === "warning");
+    this.machineBase.setEnabled(machine);this.machineArm.setEnabled(machine);
+    this.warning.setEnabled(machine && (s.machine.phase === "warning" || s.machine.phase === "strike"));
+    this.warning.material=s.machine.phase==='strike'?this.strikeMaterial:this.warningMaterial;
     const z = s.stage === 3 ? -23 : 1;
-    this.machine.position.set(-38, -15.8, z + 2.4);
-    this.machine.rotation.x = s.machine.phase === "strike" ? -1.3 : 0;
+    const targetZ=s.machine.phase==='idle'?z:s.machine.aim.z;
+    const headZ=s.machine.phase==='strike'?targetZ:targetZ+2;
+    this.machineBase.position.set(-38,-16.75,z+3.4);
+    this.machine.position.set(-38, -16, headZ);
+    this.machineArm.position.set(-38,-16,(z+3.4+headZ)/2);
+    this.machineArm.scaling.z=Math.max(.3,Math.abs(z+3.4-headZ));
     this.warning.position.set(s.machine.aim.x, -17.94, s.machine.aim.z);
     this.warning.scaling.setAll(1 + Math.sin(s.machine.age * 12) * 0.08);
     for (const e of s.events) {

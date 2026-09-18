@@ -24,7 +24,13 @@ for (const pad of [false, true])
       await page.screenshot({ path: `${out}/${input}-${name}.png` });
     };
     await capture("start");
-    if (!pad) await hudLayout(page, "combat-start");
+    if (!pad) {
+      await hudLayout(page, "combat-start");
+      const boxes=await page.locator('.combat-card,.objective-card,.health-card,.input-overlay,.controller-hud-card,.run-card').evaluateAll(elements=>elements.filter(e=>!e.closest('.hidden')).map(e=>{const r=e.getBoundingClientRect();return{name:e.className,x:r.x,y:r.y,right:r.right,bottom:r.bottom};}));
+      const card=boxes.find(b=>b.name.includes('combat-card'))!;
+      expect(card.right).toBeLessThanOrEqual(1280);expect(card.bottom).toBeLessThan(720);
+      for(const b of boxes.filter(b=>b!==card))expect(Math.min(card.right,b.right)-Math.max(card.x,b.x)>1&&Math.min(card.bottom,b.bottom)-Math.max(card.y,b.y)>1,`Combat card overlaps ${b.name}`).toBe(false);
+    }
     await page.evaluate(async () => {
       const c = (window as any).__wm006Controls;
       await c.center(-52);

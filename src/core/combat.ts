@@ -164,6 +164,7 @@ export function newCombat(save?: CombatSave): CombatState {
 export function beginCombat(completed = false): CombatState {
   const s = newCombat({ version: 1, completed });
   s.active = true;
+  s.message = 'Welcome! Follow the colored mats. Start with the orange box.';
   activateTargets(s);
   return s;
 }

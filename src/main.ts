@@ -455,12 +455,6 @@ class WebmasterApp {
           action: () => this.resume(),
         },
         {
-          label: this.latestFrame.combat.active || this.latestFrame.combat.completed ? "Replay Combat Playground" : "Combat Playground",
-          detail: "Punch, kick, web and dodge training · no timer · progress in this activity restarts",
-          action: () => { world.replayCombat(); this.resume(); },
-        },
-        ...(this.latestFrame.combat.active ? [{label:"Return to traversal",detail:"Keep earned traversal progress and combat completion",action:()=>{world.leaveCombat();this.resume();}}] : []),
-        {
           label: "Save Game",
           detail: safeDetail,
           disabled: !this.pauseSafeAtEntry,
@@ -516,6 +510,12 @@ class WebmasterApp {
           detail: "Start on the far practice roof; separate course progress restarts",
           action: () => { world.replayCourse(); this.resume(); },
         },
+        {
+          label: this.latestFrame.combat.active || this.latestFrame.combat.completed ? "Replay Combat Playground" : "Combat Playground",
+          detail: "Punch, kick, web and dodge training · no timer · progress in this activity restarts",
+          action: () => { world.replayCombat(); this.resume(); },
+        },
+        ...(this.latestFrame.combat.active ? [{label:"Return to traversal",detail:"Keep earned traversal progress and combat completion",action:()=>{world.leaveCombat();this.resume();}}] : []),
       ],
       `SLOT ${this.currentRun?.slot ?? "—"} • ${this.currentRun?.difficulty ?? "—"}`,
     );

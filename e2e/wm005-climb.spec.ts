@@ -3,7 +3,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {start,controllerStart,keyboard,controller,state,wait,stop} from './routes/wm003-route';
 import {installCourseControls} from './routes/wm005-route';
 import {startHeroRecording,saveHeroRecording} from './routes/wm004-recording';
-const out='evidence/wm-005/captures';
+const out=process.env.WM_EVIDENCE_ROOT?`${process.env.WM_EVIDENCE_ROOT}/wm005-climb`:'evidence/wm-005/captures';
 for(const pad of[false,true])test(`WM005 unmarked east facade street-to-roof ${pad?'semantic-controller':'keyboard-mouse'}`,async({page})=>{
  test.setTimeout(150000);if(pad)await controllerStart(page);else await start(page);await installCourseControls(page,pad);await mkdir(out,{recursive:true});
  const label=pad?'controller':'keyboard';

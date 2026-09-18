@@ -16,7 +16,8 @@ export class SettingsStore {
         value.cameraSensitivity < 0.5 ||
         value.cameraSensitivity > 2 ||
         typeof value.invertY !== "boolean" ||
-        typeof value.adaptiveQuality !== "boolean"
+        typeof value.adaptiveQuality !== "boolean" ||
+        (value.combatSound !== undefined && typeof value.combatSound !== "boolean")
       ) return { ...DEFAULT_SETTINGS };
       return { ...value } as GameSettings;
     } catch {

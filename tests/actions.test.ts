@@ -37,6 +37,10 @@ function activate(tracker: ControllerTracker, activePad: GamepadLike, neutralPad
 }
 
 describe("standard Gamepad semantic mapping", () => {
+  it("keeps three combat actions distinct from held swinging and pulling", () => {
+    expect(mapStandardGamepad(pad('Xbox',{pressed:[2,3,12]}))).toMatchObject({punch:true,kick:true,webShot:true,swing:false,pull:false,neutral:false});
+    expect(mapStandardGamepad(pad('Xbox',{pressed:[6,4]}))).toMatchObject({punch:false,kick:false,webShot:false,swing:true,pull:true});
+  });
   it("identifies Xbox, PlayStation, and generic prompt families", () => {
     expect(controllerFamily("Xbox Wireless Controller")).toBe("xbox");
     expect(controllerFamily("DualSense Wireless Controller")).toBe("playstation");
