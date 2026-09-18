@@ -1,0 +1,64 @@
+name: WM-006 remaining C2 inherited assertions
+on:
+  push:
+    branches: [verification/wm006-evidence]
+    paths: [.github/workflows/wm006-regression-remaining.yml]
+permissions:
+  contents: read
+jobs:
+  views:
+    runs-on: windows-2025
+    timeout-minutes: 40
+    env:
+      WM_SOURCE: 2dbe64ec4d0f85d9a90246fc2deb3013803e8e06
+      WM_TREE: 806e2bf59a7d301b28c98e903dcebc1b50593393
+      WM006_SUITE: regression-remaining
+      WM_BROWSER_CHANNEL: chromium
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Preserve exact checkout bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: 2dbe64ec4d0f85d9a90246fc2deb3013803e8e06
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: tooling
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: evidence/wm-006/tooling
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Locked browser and unchanged-source guard
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install chromium
+          node ../tooling/evidence/wm-006/tooling/prepare-regression.mjs
+          node scripts/wm006-source-integrity.mjs
+      - name: Reconciled inherited assertions and current complete two-lap course
+        run: |
+          set -euo pipefail
+          pnpm exec playwright test -c playwright.wm006.config.ts e2e/wm006-refresh-wm002.spec.ts e2e/wm006-refresh-wm003.spec.ts --grep 'continuous keyboard route under uneven render schedule|historical WM002 save to full swing' 2>&1 | tee evidence/wm-006/regression-refresh.log
+      - name: Final tracked-source integrity
+        if: always()
+        run: node scripts/wm006-source-integrity.mjs
+      - name: Preserve reconciliation pass or failure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm006-regression-remaining-${{ github.run_id }}
+          path: |
+            candidate/evidence/wm-006/
+            candidate/test-results-wm006/regression-remaining/
+          retention-days: 90
