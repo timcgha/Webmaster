@@ -6,7 +6,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: wm006-verification
+  group: wm006-verification-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   verify:
@@ -71,7 +71,16 @@ jobs:
       - name: Complete keyboard and semantic-controller course, poses and audio
         run: |
           set -euo pipefail
-          pnpm exec playwright test -c playwright.wm006.config.ts e2e/wm006.spec.ts e2e/wm006-visual.spec.ts 2>&1 | tee evidence/wm-006/browser.log
+          pnpm exec playwright test -c playwright.wm006.config.ts e2e/wm006.spec.ts e2e/wm006-visual.spec.ts e2e/wm006-cleanup.spec.ts 2>&1 | tee evidence/wm-006/browser.log
+      - name: Preserve affected rendered evidence immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm006-rendered-${{ github.sha }}
+          path: |
+            candidate/evidence/wm-006/
+            candidate/test-results-wm006/
+          retention-days: 90
       - name: Compiled route, exact historical writers and persistent save reopening
         if: ${{ !cancelled() }}
         run: |
@@ -151,6 +160,9 @@ jobs:
   archive:
     if: always()
     needs: [verify, performance]
+    concurrency:
+      group: wm006-evidence-archive
+      cancel-in-progress: false
     runs-on: ubuntu-24.04
     permissions:
       contents: write

@@ -20,6 +20,18 @@ No historical work counted again. Earlier WM0044/4 and WM0053/3 ledgers unchange
 
 ## Gate policy
 
+## C2 — input-loss interruption and complete moving evidence
+
+Usage: 2 of 3; IN PROGRESS, no SELF_REVIEW_PASS. C1 source 26bf552f2e09ae271e18400d2d8dbaf5bd9c68d4 / tree ca361586b7e1740f145446d41d5cec434729ed92; run35309998404 retained. Do not rewrite its conclusions.
+
+F-WM006-SR-04: adversarial source review found that focus loss and controller disappearance only cleared held input, allowing an already pending combat strike/projectile/protection to survive. Add a narrow explicit combat interruption at focus boundaries and selected-controller disconnect/API loss; existing traversal cleanup remains. Rendered regression earns the dummy station, interrupts attacks/projectiles/dodge and a real wrap, confirms no objective gain and a full station reset. Three front/side/rear native moving captures cover all nine variations, alongside the exact poses and actual browser mute observation.
+
+F-WM006-SR-05: the visible padded head remained on the centerline after a lateral retry although the warning footprint followed the player. Align the head/boom with the already captured warning location, and say to dodge before pink contact. Collision/protection timing and harmless retry rules are unchanged.
+
+C1 performance did not finish: the baseline street approach hit an existing city building at x≈−22,z−8. This is a route-harness error, not a measured performance regression. Use the existing clear west corridor before moving toward the new training area. No geometry, floor or thresholds are changed. Recheck exact WM005 versus candidate on one runner.
+
+## Gate policy (continued)
+
 Candidate identity is the commit/tree used by the workflow. All tracked checkout bytes are hashed before/after. Immutable previous gates remain historical. Core traversal geometry, capsule, physics, SaveStore transaction algorithm and hero meshes are unchanged; deterministic suite is rerun and affected rendered legacy journeys are rerun because input, menus and frame integration changed. No rendered incompleteness is relabelled PASS.
 
 Paired performance uses exact merged WM005 6aff5802736b5c12380102a70a38794838397d7d / tree 2d815a1d42d6e9da3d08175b286aa685acb06e72, same browser/runtime/runner, alternating order and both resolutions. Preserve 30 FPS target; software-rendered CI exception applies only where the exact accepted baseline also misses the floor, with at most 10% mean loss. No physical-controller, Safari/iPad or perceived audio/play-feel claim from synthetic evidence.

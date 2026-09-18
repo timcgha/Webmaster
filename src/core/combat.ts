@@ -570,7 +570,7 @@ export function stepCombat(
         p.age = 0;
         p.aim = { ...m.position };
         p.resolved = false;
-        s.message = "Amber warning! Dodge when the pad turns pink.";
+        s.message = "Amber warning! Dodge before the pad turns pink.";
       } else if (p.phase !== "idle") {
         p.age += dt;
         if (p.phase === "warning" && p.age >= 1.3) {

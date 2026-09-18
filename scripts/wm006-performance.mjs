@@ -45,7 +45,7 @@ try{
       if(phase==='combat-street'){
         await page.evaluate(()=>localStorage.clear());await begin(page);
         if(name==='candidate'){await page.keyboard.press('Escape');await page.getByRole('button',{name:/^Combat Playground/}).click();}
-        else await page.evaluate(async()=>{const c=window.__wm005Controls;await c.look(-Math.PI/2,1.08);c.keys('a');await c.at('x',-38,-1);c.keys();await c.until(s=>s.grounded&&s.position.y===-18,'paired combat street');await c.center({x:-38,z:-54});});
+        else await page.evaluate(async()=>{const c=window.__wm005Controls;await c.look(-Math.PI/2,1.08);c.keys('a');await c.at('x',-21,-1);c.keys();await c.until(s=>s.grounded&&s.position.y===-18,'paired combat street');await c.center({x:-21,z:-54});await c.center({x:-38,z:-54});});
         await page.waitForTimeout(1500);
       }
       const {times,states}=await sample(page,phase),buckets=Array.from({length:12},(_,i)=>times.filter(t=>t>=i*1000&&t<(i+1)*1000).length);

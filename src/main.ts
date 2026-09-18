@@ -90,6 +90,7 @@ class WebmasterApp {
     this.settings = settingsStore.read();
     this.latestFrame = world.stateForTests();
     this.input = new InputManager(canvas, (status) => {
+      if(status.lifecycle === 'CONTROLLER_DISCONNECTED' || status.lifecycle === 'GAMEPAD_API_UNAVAILABLE') world.interruptCombat();
       this.controllerStatus = status;
       this.refreshControllerUi();
     });
@@ -99,6 +100,8 @@ class WebmasterApp {
     document.addEventListener("visibilitychange", () => {
       if (document.hidden && this.screen === "play") this.pauseGame();
     });
+    window.addEventListener('blur',()=>world.interruptCombat());
+    window.addEventListener('focus',()=>world.interruptCombat());
     loading.classList.add("hidden");
   }
 

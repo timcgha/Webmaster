@@ -216,10 +216,12 @@ export class CombatView {
     const z = s.stage === 3 ? -23 : 1;
     const targetZ=s.machine.phase==='idle'?z:s.machine.aim.z;
     const headZ=s.machine.phase==='strike'?targetZ:targetZ+2;
+    const headX=s.machine.phase==='idle'?-38:s.machine.aim.x;
     this.machineBase.position.set(-38,-16.75,z+3.4);
-    this.machine.position.set(-38, -16, headZ);
-    this.machineArm.position.set(-38,-16,(z+3.4+headZ)/2);
-    this.machineArm.scaling.z=Math.max(.3,Math.abs(z+3.4-headZ));
+    this.machine.position.set(headX, -16, headZ);
+    this.machineArm.position.set((-38+headX)/2,-16,(z+3.4+headZ)/2);
+    this.machineArm.scaling.z=Math.max(.3,Math.hypot(headX+38,z+3.4-headZ));
+    this.machineArm.rotation.y=Math.atan2(headX+38,headZ-z-3.4);
     this.warning.position.set(s.machine.aim.x, -17.94, s.machine.aim.z);
     this.warning.scaling.setAll(1 + Math.sin(s.machine.age * 12) * 0.08);
     for (const e of s.events) {

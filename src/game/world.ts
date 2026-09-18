@@ -1003,6 +1003,11 @@ export class GameWorld {
 
   private latestActions: SemanticActions | null = null;
 
+  interruptCombat(): void {
+    // Input-device/focus lifecycle boundary; never resolve a pending strike.
+    clearCombat(this.combat);
+  }
+
   update(actions: SemanticActions): void {
     this.latestActions = actions;
     if (!this.active || this.paused || performance.now() < this.recoveringUntil)
