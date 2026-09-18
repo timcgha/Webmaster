@@ -1,0 +1,93 @@
+name: WM-006 C3 continuous visual SELF_REVIEW
+on:
+  push:
+    branches: [verification/wm006-evidence]
+    paths: [.github/workflows/wm006-c3-visual.yml]
+permissions:
+  contents: read
+jobs:
+  views:
+    runs-on: windows-2025
+    timeout-minutes: 15
+    env:
+      WM_SOURCE: a65295b56969a57570a3d8c2c627560c07c13a63
+      WM_TREE: 4ad67302f2f84dd042ea5d50b0de27d3899df91d
+      WM006_SUITE: c3-visual
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Preserve exact checkout bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: a65295b56969a57570a3d8c2c627560c07c13a63
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: tooling
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: evidence/wm-006/tooling
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Locked browser and unchanged-source guard
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install chromium
+          cp ../tooling/evidence/wm-006/tooling/c3-visual.spec.ts e2e/wm006-c3-visual.spec.ts
+          node scripts/wm006-source-integrity.mjs
+      - name: Actual clear street and face-oriented moving views
+        run: pnpm exec playwright test -c playwright.wm006.config.ts e2e/wm006-c3-visual.spec.ts
+      - name: Final tracked-source integrity
+        if: always()
+        run: node scripts/wm006-source-integrity.mjs
+      - name: Preserve visual pass or failure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm006-c3-visual-${{ github.run_id }}
+          path: |
+            candidate/evidence/wm-006/
+            candidate/test-results-wm006/c3-visual/
+          retention-days: 90
+  archive:
+    if: always()
+    needs: views
+    concurrency:
+      group: wm006-evidence-archive
+      cancel-in-progress: false
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: verification/wm006-evidence
+          path: archive
+          sparse-checkout: evidence/wm-006
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: wm006-c3-visual-${{ github.run_id }}
+          path: retained
+      - name: Preserve unchanged-source visual results
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="archive/evidence/wm-006/a65295b56969a57570a3d8c2c627560c07c13a63/${GITHUB_RUN_ID}"
+          mkdir -p "$target"
+          cp -r retained/. "$target/"
+          git -C archive config user.name WEBMASTER_PRODUCT_OWNER
+          git -C archive config user.email webmaster-po@users.noreply.github.com
+          git -C archive add -f evidence/wm-006
+          git -C archive commit -m "WM-006 retain C3 visual evidence ${GITHUB_RUN_ID} [skip ci]"
+          git -C archive push origin HEAD:verification/wm006-evidence
