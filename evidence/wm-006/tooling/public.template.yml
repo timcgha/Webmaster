@@ -64,10 +64,15 @@ jobs:
           corepack prepare pnpm@11.19.0 --activate
           pnpm install --frozen-lockfile
           pnpm exec playwright install chromium
-          cp ../tooling/evidence/wm-006/tooling/*.mjs scripts/
+          cp ../tooling/evidence/wm-006/tooling/public-bytes.mjs ../tooling/evidence/wm-006/tooling/public-saves.mjs ../tooling/evidence/wm-006/tooling/prepare-public.mjs scripts/
           node scripts/wm006-source-integrity.mjs
       - name: Public byte identity and root preservation
         run: node scripts/public-bytes.mjs
+      - name: Complete public combat courses and safe checkpoint
+        run: |
+          set -euo pipefail
+          node scripts/prepare-public.mjs
+          pnpm exec playwright test -c playwright.wm006-public.config.ts
       - name: Public compiled saves and real browser close/reopen
         run: node scripts/public-saves.mjs
       - name: Final source integrity
@@ -81,10 +86,14 @@ jobs:
           path: |
             candidate/evidence/wm-006/public/
             candidate/evidence/wm-006/source-integrity.json
+            candidate/test-results-wm006/public/
           retention-days: 90
   archive:
     if: always()
     needs: public
+    concurrency:
+      group: wm006-evidence-archive
+      cancel-in-progress: false
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -105,7 +114,25 @@ jobs:
           run-id: 35309229765
           github-token: ${{ github.token }}
           path: retained-initial
-      - name: Preserve public and initial development evidence
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: wm006-review-views-35311152819
+          run-id: 35311152819
+          github-token: ${{ github.token }}
+          path: retained-views
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: wm006-regression-refresh-35311890714
+          run-id: 35311890714
+          github-token: ${{ github.token }}
+          path: retained-regression
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: wm006-regression-remaining-35346818450
+          run-id: 35346818450
+          github-token: ${{ github.token }}
+          path: retained-remaining
+      - name: Preserve public and prior verification evidence
         shell: bash
         run: |
           set -euo pipefail
@@ -115,6 +142,15 @@ jobs:
           first="archive/evidence/wm-006/cf44a78bb7e79ffbc713a1fa244c8634f86216cf/35309229765"
           mkdir -p "$first"
           cp -r retained-initial/. "$first/"
+          views="archive/evidence/wm-006/2dbe64ec4d0f85d9a90246fc2deb3013803e8e06/35311152819"
+          mkdir -p "$views"
+          cp -r retained-views/. "$views/"
+          regression="archive/evidence/wm-006/2dbe64ec4d0f85d9a90246fc2deb3013803e8e06/35311890714"
+          mkdir -p "$regression"
+          cp -r retained-regression/. "$regression/"
+          remaining="archive/evidence/wm-006/2dbe64ec4d0f85d9a90246fc2deb3013803e8e06/35346818450"
+          mkdir -p "$remaining"
+          cp -r retained-remaining/. "$remaining/"
           git -C archive config user.name WEBMASTER_PRODUCT_OWNER
           git -C archive config user.email webmaster-po@users.noreply.github.com
           git -C archive add -f evidence/wm-006
