@@ -1,0 +1,1856 @@
+{
+  "config": {
+    "argv": [
+      "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+      "D:\\a\\Webmaster\\Webmaster\\candidate\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "-c",
+      "playwright.wm006.config.ts",
+      "e2e/wm001.spec.ts",
+      "e2e/wm002.spec.ts",
+      "e2e/wm003.spec.ts",
+      "e2e/wm003-remediation.spec.ts",
+      "e2e/wm005-climb.spec.ts"
+    ],
+    "configFile": "D:\\a\\Webmaster\\Webmaster\\candidate\\playwright.wm006.config.ts",
+    "rootDir": "D:/a/Webmaster/Webmaster/candidate/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": true,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": {},
+    "maxFailures": 0,
+    "metadata": {
+      "ci": {
+        "commitHref": "https://github.com/timcgha/Webmaster/commit/26bf552f2e09ae271e18400d2d8dbaf5bd9c68d4",
+        "commitHash": "26bf552f2e09ae271e18400d2d8dbaf5bd9c68d4",
+        "buildHref": "https://github.com/timcgha/Webmaster/actions/runs/35309998404"
+      },
+      "gitCommit": {
+        "shortHash": "26bf552",
+        "hash": "26bf552f2e09ae271e18400d2d8dbaf5bd9c68d4",
+        "subject": "WM-006 C1: readable training feedback and complete source-bound review gates",
+        "body": "WM-006 C1: readable training feedback and complete source-bound review gates\n\nWEBMASTER_PRODUCT_OWNER SELF_REVIEW correction cycle 1/3. Initial run 35309229765 retained; keyboard dodge timing not a full journey pass; no publication yet.",
+        "author": {
+          "name": "timcgha",
+          "email": "official.signup.john@gmail.com",
+          "time": 1789708426000
+        },
+        "committer": {
+          "name": "timcgha",
+          "email": "official.signup.john@gmail.com",
+          "time": 1789708426000
+        },
+        "branch": "HEAD"
+      },
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/a/Webmaster/Webmaster/candidate/test-results-wm006/inherited",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "ci": {
+            "commitHref": "https://github.com/timcgha/Webmaster/commit/26bf552f2e09ae271e18400d2d8dbaf5bd9c68d4",
+            "commitHash": "26bf552f2e09ae271e18400d2d8dbaf5bd9c68d4",
+            "buildHref": "https://github.com/timcgha/Webmaster/actions/runs/35309998404"
+          },
+          "gitCommit": {
+            "shortHash": "26bf552",
+            "hash": "26bf552f2e09ae271e18400d2d8dbaf5bd9c68d4",
+            "subject": "WM-006 C1: readable training feedback and complete source-bound review gates",
+            "body": "WM-006 C1: readable training feedback and complete source-bound review gates\n\nWEBMASTER_PRODUCT_OWNER SELF_REVIEW correction cycle 1/3. Initial run 35309229765 retained; keyboard dodge timing not a full journey pass; no publication yet.",
+            "author": {
+              "name": "timcgha",
+              "email": "official.signup.john@gmail.com",
+              "time": 1789708426000
+            },
+            "committer": {
+              "name": "timcgha",
+              "email": "official.signup.john@gmail.com",
+              "time": 1789708426000
+            },
+            "branch": "HEAD"
+          },
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/a/Webmaster/Webmaster/candidate/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "wm006*.spec.ts",
+          "wm005-climb.spec.ts",
+          "wm001.spec.ts",
+          "wm003.spec.ts",
+          "wm003-remediation.spec.ts",
+          "wm002.spec.ts"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/wm-006/inherited-browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "node scripts/wm005-devserver.mjs",
+      "url": "http://127.0.0.1:4173",
+      "timeout": 120000,
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "wm001.spec.ts",
+      "file": "wm001.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "keeps occupied-slot bytes unchanged when replacement is cancelled",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 11281,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:21:43.533Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-e2c516612db38d40d642",
+          "file": "wm001.spec.ts",
+          "line": 632,
+          "column": 1
+        },
+        {
+          "title": "keeps the prior committed save and remains paused when Save & Quit write fails",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9311,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:21:54.831Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-d6d8074bad82aec0a3bb",
+          "file": "wm001.spec.ts",
+          "line": 649,
+          "column": 1
+        },
+        {
+          "title": "loads only the prior commit after pointer verification fails, then permits a clean retry",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12326,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:22:04.179Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-27ee016906245e10a6a7",
+          "file": "wm001.spec.ts",
+          "line": 671,
+          "column": 1
+        },
+        {
+          "title": "renders storage-unavailable records explicitly and refuses destructive replacement",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 21461,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:22:16.536Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-6d1d6b4cbde52bf7ce51",
+          "file": "wm001.spec.ts",
+          "line": 730,
+          "column": 1
+        },
+        {
+          "title": "remains controllable under a second real-time CPU/frame profile",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 11846,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:22:38.012Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-f96242aa4bad5be46969",
+          "file": "wm001.spec.ts",
+          "line": 762,
+          "column": 1
+        },
+        {
+          "title": "persists a Hard run after closing and reopening the same browser profile and exact origin",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 36706,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:22:49.886Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-c059bc2948b975c80b64",
+          "file": "wm001.spec.ts",
+          "line": 787,
+          "column": 1
+        },
+        {
+          "title": "labels corrupt and incompatible save fixtures without hiding valid choices",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 31074,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:23:26.621Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "743eaa1ce03f610ffa4d-906c3316c6847e33bf1b",
+          "file": "wm001.spec.ts",
+          "line": 839,
+          "column": 1
+        }
+      ],
+      "suites": [
+        {
+          "title": "WM-001 rendered keyboard and mouse journey",
+          "file": "wm001.spec.ts",
+          "line": 165,
+          "column": 6,
+          "specs": [
+            {
+              "title": "moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 22058,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:19:17.983Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-0585bb2fb25258ed894b",
+              "file": "wm001.spec.ts",
+              "line": 166,
+              "column": 3
+            },
+            {
+              "title": "recovers outside the bounded street, reduces health, and performs a clean zero-health retry",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9058,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:19:40.301Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-d429d9d80a70abbe9722",
+              "file": "wm001.spec.ts",
+              "line": 284,
+              "column": 3
+            },
+            {
+              "title": "explains and enforces safe-state saving while airborne",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 21743,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: /^Save Game/ })\nExpected substring: \u001b[32m\"Unavailable \u001b[7mwhile climbing, on a ceiling, pulling, swinging, airborne, landing or recovering\u001b[27m\"\u001b[39m\nReceived string:    \u001b[31m\"\u001b[7mSave Game\u001b[27mUnavailable \u001b[7mduring attacks, webs, wraps, dodge recovery, training-machine danger, climbing, pulling, swinging or flight. Resume to reach a safe state.\u001b[27m\"\u001b[39m\nTimeout: 15000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" getByRole('button', { name: /^Save Game/ }) with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: /^Save Game/ })\u001b[22m\n\u001b[2m    31 × locator resolved to <button disabled type=\"button\" data-menu-item=\"1\" aria-current=\"false\">…</button>\u001b[22m\n\u001b[2m       - unexpected value \"Save GameUnavailable during attacks, webs, wraps, dodge recovery, training-machine danger, climbing, pulling, swinging or flight. Resume to reach a safe state.\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: /^Save Game/ })\nExpected substring: \u001b[32m\"Unavailable \u001b[7mwhile climbing, on a ceiling, pulling, swinging, airborne, landing or recovering\u001b[27m\"\u001b[39m\nReceived string:    \u001b[31m\"\u001b[7mSave Game\u001b[27mUnavailable \u001b[7mduring attacks, webs, wraps, dodge recovery, training-machine danger, climbing, pulling, swinging or flight. Resume to reach a safe state.\u001b[27m\"\u001b[39m\nTimeout: 15000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" getByRole('button', { name: /^Save Game/ }) with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: /^Save Game/ })\u001b[22m\n\u001b[2m    31 × locator resolved to <button disabled type=\"button\" data-menu-item=\"1\" aria-current=\"false\">…</button>\u001b[22m\n\u001b[2m       - unexpected value \"Save GameUnavailable during attacks, webs, wraps, dodge recovery, training-machine danger, climbing, pulling, swinging or flight. Resume to reach a safe state.\"\u001b[22m\n\n    at D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm001.spec.ts:309:28",
+                        "location": {
+                          "file": "D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm001.spec.ts",
+                          "column": 28,
+                          "line": 309
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 307 |\u001b[39m       \u001b[36mconst\u001b[39m button \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mgetByRole(\u001b[32m\"button\"\u001b[39m\u001b[33m,\u001b[39m { name })\u001b[33m;\u001b[39m\n \u001b[90m 308 |\u001b[39m       \u001b[36mawait\u001b[39m expect(button)\u001b[33m.\u001b[39mtoBeDisabled()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 309 |\u001b[39m       \u001b[36mawait\u001b[39m expect(button)\u001b[33m.\u001b[39mtoContainText(\u001b[32m\"Unavailable while climbing, on a ceiling, pulling, swinging, airborne, landing or recovering\"\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 310 |\u001b[39m     }\n \u001b[90m 311 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByRole(\u001b[32m\"button\"\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[35m/^Resume/\u001b[39m }))\u001b[33m.\u001b[39mtoBeEnabled()\u001b[33m;\u001b[39m\n \u001b[90m 312 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mscreenshot({ path\u001b[33m:\u001b[39m \u001b[32m`${captures}/${browserName}-airborne-safe-save-disabled.png`\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm001.spec.ts",
+                            "column": 28,
+                            "line": 309
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: /^Save Game/ })\nExpected substring: \u001b[32m\"Unavailable \u001b[7mwhile climbing, on a ceiling, pulling, swinging, airborne, landing or recovering\u001b[27m\"\u001b[39m\nReceived string:    \u001b[31m\"\u001b[7mSave Game\u001b[27mUnavailable \u001b[7mduring attacks, webs, wraps, dodge recovery, training-machine danger, climbing, pulling, swinging or flight. Resume to reach a safe state.\u001b[27m\"\u001b[39m\nTimeout: 15000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" getByRole('button', { name: /^Save Game/ }) with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: /^Save Game/ })\u001b[22m\n\u001b[2m    31 × locator resolved to <button disabled type=\"button\" data-menu-item=\"1\" aria-current=\"false\">…</button>\u001b[22m\n\u001b[2m       - unexpected value \"Save GameUnavailable during attacks, webs, wraps, dodge recovery, training-machine danger, climbing, pulling, swinging or flight. Resume to reach a safe state.\"\u001b[22m\n\n\n  307 |       const button = page.getByRole(\"button\", { name });\n  308 |       await expect(button).toBeDisabled();\n> 309 |       await expect(button).toContainText(\"Unavailable while climbing, on a ceiling, pulling, swinging, airborne, landing or recovering\");\n      |                            ^\n  310 |     }\n  311 |     await expect(page.getByRole(\"button\", { name: /^Resume/ })).toBeEnabled();\n  312 |     await page.screenshot({ path: `${captures}/${browserName}-airborne-safe-save-disabled.png` });\n    at D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm001.spec.ts:309:28"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:19:49.377Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm006\\inherited\\wm001-WM-001-rendered-keyb-d7f79-state-saving-while-airborne-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm006\\inherited\\wm001-WM-001-rendered-keyb-d7f79-state-saving-while-airborne-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm001.spec.ts",
+                        "column": 28,
+                        "line": 309
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-7f91c346bb0c6a0a7033",
+              "file": "wm001.spec.ts",
+              "line": 298,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "WM-001 rendered simulated Gamepad journey",
+          "file": "wm001.spec.ts",
+          "line": 316,
+          "column": 6,
+          "specs": [
+            {
+              "title": "uses gamepad alone for new game, movement, camera, pause, save, save-and-quit, Continue, and Load",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 18636,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:20:11.922Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-847fea2d50eeb0a98d6d",
+              "file": "wm001.spec.ts",
+              "line": 319,
+              "column": 3
+            },
+            {
+              "title": "disconnect releases motion and reconnect requires neutral then fresh input",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7075,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:20:30.890Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-9c69fc44e8ba52611ed7",
+              "file": "wm001.spec.ts",
+              "line": 378,
+              "column": 3
+            },
+            {
+              "title": "shows PlayStation-style prompts without changing standard semantic actions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4688,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:20:38.018Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-b3a54e0670d0a90951ee",
+              "file": "wm001.spec.ts",
+              "line": 409,
+              "column": 3
+            },
+            {
+              "title": "operates persisted main and pause settings without mouse or typing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 17110,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:20:42.723Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-ecf77ad4352289010c5b",
+              "file": "wm001.spec.ts",
+              "line": 417,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "WM-001 controller remediation lifecycle (simulated Gamepad API)",
+          "file": "wm001.spec.ts",
+          "line": 457,
+          "column": 6,
+          "specs": [
+            {
+              "title": "makes exposure, release, ready, HUD status, and local copy diagnostics persistent",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9245,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:20:59.850Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-5030cda5b98a577c6dbc",
+              "file": "wm001.spec.ts",
+              "line": 458,
+              "column": 3
+            },
+            {
+              "title": "keeps keyboard available when the Gamepad API is unavailable",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3621,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:21:09.119Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-90dc618fd5bf7faf8be1",
+              "file": "wm001.spec.ts",
+              "line": 493,
+              "column": 3
+            },
+            {
+              "title": "rejects an unsupported mapping visibly while keyboard remains available",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3268,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:21:12.756Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-80a8bb6a97f5f0882d59",
+              "file": "wm001.spec.ts",
+              "line": 507,
+              "column": 3
+            },
+            {
+              "title": "selects active index 1 over idle index 0 and ignores noisy extra axes",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5362,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:21:16.086Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-6d028d219b217f8e8746",
+              "file": "wm001.spec.ts",
+              "line": 519,
+              "column": 3
+            },
+            {
+              "title": "supports connection after load, disconnect cleanup, keyboard fallback, and deliberate replacement",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7451,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:21:21.500Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-66003a1564c27a9512fe",
+              "file": "wm001.spec.ts",
+              "line": 543,
+              "column": 3
+            },
+            {
+              "title": "cleans up held movement on blur/focus and requires neutral then fresh input",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6521,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:21:28.972Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-8bcd0aa6d9aca6dc0d0d",
+              "file": "wm001.spec.ts",
+              "line": 585,
+              "column": 3
+            },
+            {
+              "title": "keeps controller status and local diagnostics usable at a representative iPad landscape viewport",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8001,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-18T05:21:35.515Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743eaa1ce03f610ffa4d-091ce56be3a053417eea",
+              "file": "wm001.spec.ts",
+              "line": 612,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "wm002.spec.ts",
+      "file": "wm002.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "WM-002 keyboard continuous four-gap route, safe save and same-origin reopen",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 180415,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 180000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 180000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 180000ms exceeded.\u001b[39m"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:23:57.745Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm006\\inherited\\wm002-WM-002-keyboard-cont-42b31-save-and-same-origin-reopen-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm006\\inherited\\wm002-WM-002-keyboard-cont-42b31-save-and-same-origin-reopen-chromium\\test-failed-2.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm006\\inherited\\wm002-WM-002-keyboard-cont-42b31-save-and-same-origin-reopen-chromium\\error-context.md"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-688432dd8e5644023d48",
+          "file": "wm002.spec.ts",
+          "line": 126,
+          "column": 1
+        },
+        {
+          "title": "WM-002 simulated PlayStation controller-only complete route and safe save/load",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 100000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 100444,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 100000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 100000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 100000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm002.spec.ts",
+                        "column": 14,
+                        "line": 295
+                      },
+                      "message": "Error: page.waitForFunction: Test timeout of 100000ms exceeded.\n\n  293 |   await page.waitForTimeout(70);\n  294 |   await pad(page, [7, 6], [0, -1, 0, 0]);\n> 295 |   await page.waitForFunction(() => !!window.__WM_DEBUG__!.getState().swing.web);\n      |              ^\n  296 |   await shot(page, \"controller-ready-hand-web\");\n  297 |   await until(page, \"z\", 37);\n  298 |   await pad(page, [7], [0, -1, 0, 0]);\n    at controllerRoute (D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm002.spec.ts:295:14)\n    at D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm002.spec.ts:354:3"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:26:59.678Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm006\\inherited\\wm002-WM-002-simulated-Pla-7d5ed-te-route-and-safe-save-load-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm006\\inherited\\wm002-WM-002-simulated-Pla-7d5ed-te-route-and-safe-save-load-chromium\\error-context.md"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-57a4b77a4a379b05953b",
+          "file": "wm002.spec.ts",
+          "line": 349,
+          "column": 1
+        },
+        {
+          "title": "WM-002 targeted anchor, unsafe save, pause, focus, fall recovery, invalid finish and replay cleanup",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 14751,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: /Resume/ }) resolved to 3 elements:\n    1) <button type=\"button\" class=\"selected\" data-menu-item=\"0\" aria-current=\"true\">…</button> aka getByRole('button', { name: 'Resume Return to practice' })\n    2) <button disabled type=\"button\" data-menu-item=\"1\" aria-current=\"false\">…</button> aka getByRole('button', { name: 'Save Game Unavailable during' })\n    3) <button disabled type=\"button\" data-menu-item=\"2\" aria-current=\"false\">…</button> aka getByRole('button', { name: 'Save & Quit Unavailable' })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Resume/ })\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: /Resume/ }) resolved to 3 elements:\n    1) <button type=\"button\" class=\"selected\" data-menu-item=\"0\" aria-current=\"true\">…</button> aka getByRole('button', { name: 'Resume Return to practice' })\n    2) <button disabled type=\"button\" data-menu-item=\"1\" aria-current=\"false\">…</button> aka getByRole('button', { name: 'Save Game Unavailable during' })\n    3) <button disabled type=\"button\" data-menu-item=\"2\" aria-current=\"false\">…</button> aka getByRole('button', { name: 'Save & Quit Unavailable' })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Resume/ })\u001b[22m\n\n    at D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm002.spec.ts:414:54",
+                    "location": {
+                      "file": "D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm002.spec.ts",
+                      "column": 54,
+                      "line": 414
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 412 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m250\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 413 |\u001b[39m   expect((\u001b[36mawait\u001b[39m state(page))\u001b[33m.\u001b[39mposition)\u001b[33m.\u001b[39mtoEqual(paused\u001b[33m.\u001b[39mposition)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 414 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgetByRole(\u001b[32m\"button\"\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[35m/Resume/\u001b[39m })\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 415 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m200\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 416 |\u001b[39m   expect((\u001b[36mawait\u001b[39m state(page))\u001b[33m.\u001b[39mswing\u001b[33m.\u001b[39mweb)\u001b[33m.\u001b[39mtoBeNull()\u001b[33m;\u001b[39m\n \u001b[90m 417 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mkeyboard\u001b[33m.\u001b[39mup(\u001b[32m\"e\"\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm002.spec.ts",
+                        "column": 54,
+                        "line": 414
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: /Resume/ }) resolved to 3 elements:\n    1) <button type=\"button\" class=\"selected\" data-menu-item=\"0\" aria-current=\"true\">…</button> aka getByRole('button', { name: 'Resume Return to practice' })\n    2) <button disabled type=\"button\" data-menu-item=\"1\" aria-current=\"false\">…</button> aka getByRole('button', { name: 'Save Game Unavailable during' })\n    3) <button disabled type=\"button\" data-menu-item=\"2\" aria-current=\"false\">…</button> aka getByRole('button', { name: 'Save & Quit Unavailable' })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Resume/ })\u001b[22m\n\n\n  412 |   await page.waitForTimeout(250);\n  413 |   expect((await state(page)).position).toEqual(paused.position);\n> 414 |   await page.getByRole(\"button\", { name: /Resume/ }).click();\n      |                                                      ^\n  415 |   await page.waitForTimeout(200);\n  416 |   expect((await state(page)).swing.web).toBeNull();\n  417 |   await page.keyboard.up(\"e\");\n    at D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm002.spec.ts:414:54"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:28:41.117Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm006\\inherited\\wm002-WM-002-targeted-anch-56715-d-finish-and-replay-cleanup-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm006\\inherited\\wm002-WM-002-targeted-anch-56715-d-finish-and-replay-cleanup-chromium\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm002.spec.ts",
+                    "column": 54,
+                    "line": 414
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-97052128e58876f83db7",
+          "file": "wm002.spec.ts",
+          "line": 388,
+          "column": 1
+        },
+        {
+          "title": "WM-002 LT disconnect clears web, reconnect needs neutral and diagnostics retain swing mapping",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 11101,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:28:56.890Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-4c28fb00a97c4366b0a9",
+          "file": "wm002.spec.ts",
+          "line": 454,
+          "column": 1
+        },
+        {
+          "title": "WM-002 continuous keyboard route under near-30fps render schedule",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 100000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 24018,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:29:08.286Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-f4960a52a0dbfa4859fd",
+          "file": "wm002.spec.ts",
+          "line": 496,
+          "column": 3
+        },
+        {
+          "title": "WM-002 continuous keyboard route under uneven render schedule",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 100000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 24316,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:29:32.358Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-e14661c2d58b956def73",
+          "file": "wm002.spec.ts",
+          "line": 496,
+          "column": 3
+        },
+        {
+          "title": "WM-002 repeated pause, replay, save and load keeps runtime resources bounded",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 27169,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:29:56.696Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "87d052b1cede4dab7d9b-c23b61ce10ecb13c9b34",
+          "file": "wm002.spec.ts",
+          "line": 544,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "wm003-remediation.spec.ts",
+      "file": "wm003-remediation.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "WM003 R1 genuine roof2 checkpoint and manual save survive reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 19599,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:30:23.904Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "42f1d4012be714f6a7ca-076612ae49451d6ac773",
+          "file": "wm003-remediation.spec.ts",
+          "line": 22,
+          "column": 1
+        },
+        {
+          "title": "WM003 R1 standing on dynamic step still disables both save actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6918,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:30:43.522Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "42f1d4012be714f6a7ca-958da495c487ce5e7f1e",
+          "file": "wm003-remediation.spec.ts",
+          "line": 77,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "wm003.spec.ts",
+      "file": "wm003.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "WM003 ordinary keyboard combined swing climb ceiling pull route",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 58579,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:30:50.499Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0f907fb332c802910d0e-03a3b98cbca0772ab91d",
+          "file": "wm003.spec.ts",
+          "line": 20,
+          "column": 1
+        },
+        {
+          "title": "WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 210000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 54040,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:31:49.125Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0f907fb332c802910d0e-aec7d422257fc637537a",
+          "file": "wm003.spec.ts",
+          "line": 59,
+          "column": 1
+        },
+        {
+          "title": "WM003 loads exact historical WM-001 writer records without changing old generations",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3115,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:32:43.198Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0f907fb332c802910d0e-60bddf0acdf2f33a1a40",
+          "file": "wm003.spec.ts",
+          "line": 123,
+          "column": 3
+        },
+        {
+          "title": "WM003 loads exact historical WM-002 writer records without changing old generations",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2453,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:32:46.329Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0f907fb332c802910d0e-5d07d06c8adaa0baf3b7",
+          "file": "wm003.spec.ts",
+          "line": 123,
+          "column": 3
+        },
+        {
+          "title": "WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 62000,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:32:48.798Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0f907fb332c802910d0e-210b0c851b368a8ead6f",
+          "file": "wm003.spec.ts",
+          "line": 167,
+          "column": 1
+        },
+        {
+          "title": "WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 9146,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: /Resume/ }) resolved to 3 elements:\n    1) <button type=\"button\" class=\"selected\" data-menu-item=\"0\" aria-current=\"true\">…</button> aka getByRole('button', { name: 'Resume Return to practice' })\n    2) <button disabled type=\"button\" data-menu-item=\"1\" aria-current=\"false\">…</button> aka getByRole('button', { name: 'Save Game Unavailable during' })\n    3) <button disabled type=\"button\" data-menu-item=\"2\" aria-current=\"false\">…</button> aka getByRole('button', { name: 'Save & Quit Unavailable' })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Resume/ })\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: /Resume/ }) resolved to 3 elements:\n    1) <button type=\"button\" class=\"selected\" data-menu-item=\"0\" aria-current=\"true\">…</button> aka getByRole('button', { name: 'Resume Return to practice' })\n    2) <button disabled type=\"button\" data-menu-item=\"1\" aria-current=\"false\">…</button> aka getByRole('button', { name: 'Save Game Unavailable during' })\n    3) <button disabled type=\"button\" data-menu-item=\"2\" aria-current=\"false\">…</button> aka getByRole('button', { name: 'Save & Quit Unavailable' })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Resume/ })\u001b[22m\n\n    at D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm003.spec.ts:309:54",
+                    "location": {
+                      "file": "D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm003.spec.ts",
+                      "column": 54,
+                      "line": 309
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 307 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m250\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 308 |\u001b[39m   expect((\u001b[36mawait\u001b[39m state(page))\u001b[33m.\u001b[39mposition)\u001b[33m.\u001b[39mtoEqual(paused\u001b[33m.\u001b[39mposition)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 309 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgetByRole(\u001b[32m\"button\"\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[35m/Resume/\u001b[39m })\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 310 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m200\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 311 |\u001b[39m   expect((\u001b[36mawait\u001b[39m state(page))\u001b[33m.\u001b[39mtraversal\u001b[33m.\u001b[39msurfaceId)\u001b[33m.\u001b[39mtoBeNull()\u001b[33m;\u001b[39m\n \u001b[90m 312 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mkeyboard\u001b[33m.\u001b[39mup(\u001b[32m\"c\"\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm003.spec.ts",
+                        "column": 54,
+                        "line": 309
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: /Resume/ }) resolved to 3 elements:\n    1) <button type=\"button\" class=\"selected\" data-menu-item=\"0\" aria-current=\"true\">…</button> aka getByRole('button', { name: 'Resume Return to practice' })\n    2) <button disabled type=\"button\" data-menu-item=\"1\" aria-current=\"false\">…</button> aka getByRole('button', { name: 'Save Game Unavailable during' })\n    3) <button disabled type=\"button\" data-menu-item=\"2\" aria-current=\"false\">…</button> aka getByRole('button', { name: 'Save & Quit Unavailable' })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Resume/ })\u001b[22m\n\n\n  307 |   await page.waitForTimeout(250);\n  308 |   expect((await state(page)).position).toEqual(paused.position);\n> 309 |   await page.getByRole(\"button\", { name: /Resume/ }).click();\n      |                                                      ^\n  310 |   await page.waitForTimeout(200);\n  311 |   expect((await state(page)).traversal.surfaceId).toBeNull();\n  312 |   await page.keyboard.up(\"c\");\n    at D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm003.spec.ts:309:54"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:33:50.809Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm006\\inherited\\wm003-WM003-negative-lifec-fa287-vy-feedback-and-blocked-web-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\a\\Webmaster\\Webmaster\\candidate\\test-results-wm006\\inherited\\wm003-WM003-negative-lifec-fa287-vy-feedback-and-blocked-web-chromium\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\a\\Webmaster\\Webmaster\\candidate\\e2e\\wm003.spec.ts",
+                    "column": 54,
+                    "line": 309
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "0f907fb332c802910d0e-fee38d7b76a6c861a8d4",
+          "file": "wm003.spec.ts",
+          "line": 282,
+          "column": 1
+        },
+        {
+          "title": "WM003 RB and LB disconnect cleanup with neutral reconnect and keyboard fallback",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 70000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9454,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:34:00.799Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0f907fb332c802910d0e-64619b9db52150088d1b",
+          "file": "wm003.spec.ts",
+          "line": 411,
+          "column": 1
+        },
+        {
+          "title": "WM003 complete route under near-30 rendered timing",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 160000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 34227,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:34:10.524Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0f907fb332c802910d0e-9d6f0be67707e2a15c0a",
+          "file": "wm003.spec.ts",
+          "line": 558,
+          "column": 3
+        },
+        {
+          "title": "WM003 complete route under uneven rendered timing",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 160000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 36163,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:34:44.767Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0f907fb332c802910d0e-9b93534c8a987a65653a",
+          "file": "wm003.spec.ts",
+          "line": 558,
+          "column": 3
+        },
+        {
+          "title": "WM003 repeated replay pause save load clears transients and bounds resources",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 100000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 30952,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:35:20.956Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0f907fb332c802910d0e-ceedbc8d6faf73309b5a",
+          "file": "wm003.spec.ts",
+          "line": 615,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "wm005-climb.spec.ts",
+      "file": "wm005-climb.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "WM005 unmarked east facade street-to-roof keyboard-mouse",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 150000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 24829,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:35:51.944Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a1e0726a90ed15921683-a9ced14cd090852855b8",
+          "file": "wm005-climb.spec.ts",
+          "line": 7,
+          "column": 30
+        },
+        {
+          "title": "WM005 unmarked east facade street-to-roof semantic-controller",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 150000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 35599,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:36:16.809Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a1e0726a90ed15921683-baa70eb3597d73ad613a",
+          "file": "wm005-climb.spec.ts",
+          "line": 7,
+          "column": 30
+        },
+        {
+          "title": "WM005 visible face-up head-first ceiling and challenge top-out keyboard-mouse",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 35377,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:36:52.428Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a1e0726a90ed15921683-f87589989b784285ae84",
+          "file": "wm005-climb.spec.ts",
+          "line": 21,
+          "column": 30
+        },
+        {
+          "title": "WM005 visible face-up head-first ceiling and challenge top-out semantic-controller",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 42826,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T05:37:27.842Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a1e0726a90ed15921683-802d9dc82add45317f28",
+          "file": "wm005-climb.spec.ts",
+          "line": 21,
+          "column": 30
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-18T05:19:16.371Z",
+    "duration": 1134601.253,
+    "expected": 39,
+    "skipped": 0,
+    "unexpected": 5,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,20 @@
+#wm-preview {
+  position: fixed;
+  z-index: 10000;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 16px);
+  width: max-content;
+  padding: 4px 10px;
+  border: 1px solid #79b8ee;
+  border-radius: 8px;
+  background: #10243aeb;
+  color: #f2f7ff;
+  font: 12px/1.4 system-ui, sans-serif;
+  text-align: center;
+  pointer-events: none;
+}
+#wm-preview strong, #wm-preview-diagnostics { display: block; }
+#wm-preview-error { max-width: 420px; margin: 8px 0 0; }
+
