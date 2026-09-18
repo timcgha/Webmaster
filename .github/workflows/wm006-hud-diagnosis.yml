@@ -1,0 +1,102 @@
+name: WM-006 unchanged-source HUD cost diagnosis
+on:
+  push:
+    branches: [verification/wm006-evidence]
+    paths: [.github/workflows/wm006-hud-diagnosis.yml]
+permissions:
+  contents: read
+concurrency:
+  group: wm006-hud-diagnosis
+  cancel-in-progress: false
+jobs:
+  diagnose:
+    runs-on: windows-2025
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
+        working-directory: candidate
+    steps:
+      - name: Preserve exact checkout bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: candidate
+          ref: 2dbe64ec4d0f85d9a90246fc2deb3013803e8e06
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: baseline
+          ref: 6aff5802736b5c12380102a70a38794838397d7d
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: tooling
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: evidence/wm-006/tooling
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.19.0'
+          package-manager-cache: false
+      - name: Locked install and source guard
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm --dir ../baseline install --frozen-lockfile
+          pnpm exec playwright install chromium
+          test "$(git rev-parse HEAD^{tree})" = 806e2bf59a7d301b28c98e903dcebc1b50593393
+          cp ../tooling/evidence/wm-006/tooling/hud-diagnosis.mjs scripts/wm006-hud-diagnosis.mjs
+          node scripts/wm006-source-integrity.mjs
+      - name: Measure native workload and fixed HUD text diagnosis
+        run: |
+          set -euo pipefail
+          node scripts/wm006-hud-diagnosis.mjs 2>&1 | tee evidence/wm-006/hud-diagnosis.log
+      - name: Final unchanged-source guard
+        if: always()
+        run: node scripts/wm006-source-integrity.mjs
+      - name: Retain complete or partial diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wm006-hud-diagnosis-${{ github.run_id }}
+          path: |
+            candidate/evidence/wm-006/hud-diagnosis/
+            candidate/evidence/wm-006/hud-diagnosis.log
+            candidate/evidence/wm-006/source-integrity.json
+          retention-days: 90
+  archive:
+    if: always()
+    needs: [diagnose]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    concurrency:
+      group: wm006-evidence-archive
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: verification/wm006-evidence
+          path: archive
+          sparse-checkout: evidence/wm-006
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: wm006-hud-diagnosis-${{ github.run_id }}
+          path: retained
+      - name: Archive diagnostic bytes without changing product or deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="archive/evidence/wm-006/diagnosis/${GITHUB_RUN_ID}"
+          mkdir -p "$target"
+          cp -r retained/. "$target/"
+          git -C archive config user.name WEBMASTER_PRODUCT_OWNER
+          git -C archive config user.email webmaster-po@users.noreply.github.com
+          git -C archive add -f evidence/wm-006
+          git -C archive commit -m "WM-006 retain HUD cost diagnosis ${GITHUB_RUN_ID} [skip ci]"
+          git -C archive push origin HEAD:verification/wm006-evidence
