@@ -3,6 +3,7 @@ import { InputManager, type ControllerStatus } from "./core/actions";
 import { SaveStore, saveStorageKeyForTests } from "./core/save";
 import { SettingsStore } from "./core/settings";
 import { courseLabel } from "./core/course";
+import { combatLabel } from './core/combat';
 import type {
   Difficulty,
   GameSettings,
@@ -443,7 +444,7 @@ class WebmasterApp {
     this.screen = "pause";
     const safeDetail = this.pauseSafeAtEntry
       ? "Grounded safe position ready"
-      : "Unavailable while climbing, on a ceiling, pulling, swinging, airborne, landing or recovering — resume to reach safe ground";
+      : "Unavailable during attacks, webs, wraps, dodge recovery, training-machine danger, climbing, pulling, swinging or flight. Resume to reach a safe state.";
     this.renderPanel(
       "Paused",
       "The city and all held inputs are frozen. Resume requires fresh input.",
@@ -453,6 +454,12 @@ class WebmasterApp {
           detail: "Return to practice",
           action: () => this.resume(),
         },
+        {
+          label: this.latestFrame.combat.active || this.latestFrame.combat.completed ? "Replay Combat Playground" : "Combat Playground",
+          detail: "Punch, kick, web and dodge training · no timer · progress in this activity restarts",
+          action: () => { world.replayCombat(); this.resume(); },
+        },
+        ...(this.latestFrame.combat.active ? [{label:"Return to traversal",detail:"Keep earned traversal progress and combat completion",action:()=>{world.leaveCombat();this.resume();}}] : []),
         {
           label: "Save Game",
           detail: safeDetail,
@@ -570,6 +577,7 @@ class WebmasterApp {
           detail: "Balances clarity and frame rate",
           action: () => this.adjustSetting(2, 1),
         },
+        {label:`Combat sounds: ${this.settings.combatSound !== false ? "On" : "Off"}`,detail:"Original soft impact and web tones",action:()=>this.adjustSetting(3,1)},
         {
           label: "Controller Details",
           detail: "Connection status and local diagnostics",
@@ -582,7 +590,7 @@ class WebmasterApp {
   }
 
   private adjustSelectedSetting(direction: -1 | 1): void {
-    if (this.selectedIndex <= 2)
+    if (this.selectedIndex <= 3)
       this.adjustSetting(this.selectedIndex, direction);
   }
 
@@ -595,6 +603,7 @@ class WebmasterApp {
     } else if (index === 1) this.settings.invertY = !this.settings.invertY;
     else if (index === 2)
       this.settings.adaptiveQuality = !this.settings.adaptiveQuality;
+    else if(index===3)this.settings.combatSound=this.settings.combatSound===false;
     const persisted = settingsStore.write(this.settings);
     world.applySettings(this.settings);
     const selected = this.selectedIndex;
@@ -735,6 +744,7 @@ class WebmasterApp {
         <strong data-hud="objective"></strong>
       </section>
       <section class="hud-card swing-card" aria-label="Swing status"><span class="hud-kicker" data-hud="swing-prompt"></span><strong data-hud="swing-state"></strong><small data-hud="swing-message"></small></section>
+      <section class="hud-card combat-card hidden" aria-label="Combat training"><strong data-hud="combat-message"></strong><small>Tap again within 1 second: 1 → 2 → 3 → 1. Hold does not repeat.</small><small>J / X / □ punch · K / Y / △ kick<br>L / D-pad ↑ shoot · F / B / ○ dodge</small><small>Pause: retry station / replay / return to traversal</small></section>
       </div>
       <section class="hud-card health-card">
         <span class="hud-kicker">HERO ENERGY</span>
@@ -766,6 +776,8 @@ class WebmasterApp {
       `;
     }
     hudLayer.querySelector<HTMLElement>("[data-hud='course']")!.textContent = courseLabel(frame.course, frame.position.y < -1);
+    hudLayer.querySelector<HTMLElement>('.combat-card')!.classList.toggle('hidden',!frame.combat.active);
+    hudLayer.querySelector<HTMLElement>("[data-hud='combat-message']")!.textContent=frame.combat.message;
     hudLayer.querySelector<HTMLElement>("[data-hud='practice']")!.textContent =
       frame.position.y < -1 ? "STREET RECOVERY" : frame.course.active
         ? `20-RING COURSE ${frame.course.next} / 20`
@@ -828,6 +840,13 @@ class WebmasterApp {
       ? `TEST FIXTURE: ${this.fixtureLabel}`
       : "";
     fixtureBadge.classList.toggle("hidden", !this.fixtureLabel);
+    if(frame.combat.active){
+      hudLayer.querySelector<HTMLElement>("[data-hud='practice']")!.textContent=`COMBAT ${Math.min(frame.combat.stage+1,5)} / 5`;
+      hudLayer.querySelector<HTMLElement>("[data-hud='objective']")!.textContent=combatLabel(frame.combat);
+      hudLayer.querySelector<HTMLElement>('.swing-card')!.classList.add('hidden');
+      hudLayer.querySelector<HTMLElement>('.traversal-card')!.classList.add('hidden');
+      hudLayer.querySelector<HTMLElement>("[data-hud='course']")!.textContent=frame.combat.completed?'Combat badge earned · safe saves retain completion':'Follow the colored mats north · no timer';
+    }
   }
 
   private refreshControllerUi(): void {

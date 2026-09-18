@@ -10,6 +10,8 @@ import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
 import { createRoundedBlock } from "./rounded-block";
 import { createBlockHero } from "./hero";
+import { newCombat, beginCombat, clearCombat, retryCombat, combatStationStart, combatSafe, combatLabel, pressAttack, pressDodge, stepCombat, type CombatState } from '../core/combat';
+import { CombatView } from './combat-view';
 import { COURSE_ANCHORS, COURSE_NODES, COURSE_ROOFS, COURSE_START, COURSE_FINISH, RECOVERY_WALLS, EXTERIOR_WALLS, STREET, CITY_SOLIDS, newCourse, advanceCourse, courseLabel, restoreSafePosition, cameraClearFraction, cameraSafeRadius, type CourseState } from "../core/course";
 import { CreateBox } from "@babylonjs/core/Meshes/Builders/boxBuilder.pure";
 import { CreateCylinder } from "@babylonjs/core/Meshes/Builders/cylinderBuilder.pure";
@@ -119,6 +121,7 @@ export interface WorldFrame {
   legWorld?: { hip: Vec3Data; tip: Vec3Data; forwardDisplacement: number }[];
   surfaceCameraBlend: number;
   heroPitch: number;
+  combat: CombatState;
 }
 
 export interface WorldCallbacks {
@@ -181,6 +184,9 @@ export class GameWorld {
   private surfaceCameraBlend = 0;
   private climbOffsetBlend = 0;
   private groundBeta = 1.08;
+  private combat = newCombat();
+  private combatView!: CombatView;
+  private combatReturn: {position:Vec3Data;checkpoint:Vec3Data}|null=null;
 
   private constructor(
     canvas: HTMLCanvasElement,
@@ -302,6 +308,7 @@ export class GameWorld {
     // its matrices/bounds each frame as the longer course comes into view.
     for (const mesh of this.scene.meshes) {
       if (!mesh.parent && !mesh.billboardMode && !this.anchorMeshes.has(mesh.name) &&
+          !mesh.metadata?.combatDynamic &&
           !this.pullMeshes.has(mesh.name) && !mesh.name.startsWith("marker-ring") &&
           mesh !== this.webLine && mesh !== this.wristFlash) mesh.freezeWorldMatrix();
     }
@@ -481,6 +488,8 @@ export class GameWorld {
 
   private createHero(shadows: ShadowGenerator): void {
     this.rig = createBlockHero(this.scene, this.heroRoot, shadows);
+    this.combatView = new CombatView(this.scene, this.combat);
+    this.combatView.audio.setEnabled(this.settings.combatSound !== false);
     this.legs.push(...this.rig.hips);
     this.rightArm = this.rig.arms[1]!;
   }
@@ -983,6 +992,7 @@ export class GameWorld {
     const freeRadius = cameraSafeRadius(t,wanted,desiredRadius,this.skylineSolids);
     this.camera.radius = freeRadius < this.camera.radius ? freeRadius : Math.min(freeRadius,this.camera.radius + delta*8);
     this.renderSwing();
+    this.combatView.update(this.combat, this.rig, this.heroRoot);
     this.updateCourseContactShadow();
     this.scene.render();
     if (now - this.lastHudAt > 100) {
@@ -1022,6 +1032,14 @@ export class GameWorld {
     if (actions.recenterPressed)
       this.camera.alpha = -Math.PI / 2 - this.motion.facingYaw;
     if (actions.jumpPressed) this.pendingJump = true;
+    if (!this.swing.web && !this.traversal.surfaceId && !this.traversal.pullId) {
+      const stamp = performance.now();
+      if (actions.punchPressed || actions.kickPressed || actions.webShotPressed || actions.dodgePressed) this.combatView.audio.unlock();
+      if (actions.dodgePressed) pressDodge(this.combat,this.motion,actions.moveX,{x:-Math.cos(this.camera.alpha),y:0,z:-Math.sin(this.camera.alpha)});
+      if (actions.punchPressed) pressAttack(this.combat,this.motion,'punch',stamp,this.skylineSolids);
+      if (actions.kickPressed) pressAttack(this.combat,this.motion,'kick',stamp,this.skylineSolids);
+      if (actions.webShotPressed) pressAttack(this.combat,this.motion,'web',stamp,this.skylineSolids);
+    }
   }
 
   private tick(delta: number): void {
@@ -1074,7 +1092,12 @@ export class GameWorld {
       this.swing = result.swing;
       this.traversal = result.traversal;
       this.pullObjects = result.objects;
+      if(this.swing.web || this.traversal.surfaceId || this.traversal.pullId) clearCombat(this.combat);
+      const oldCombatStage=this.combat.stage;
+      stepCombat(this.combat,this.motion,FIXED_STEP,this.skylineSolids);
+      if(this.combat.active && this.combat.stage!==oldCombatStage) this.pendingCheckpoint=true;
       const oldCourse = this.course;
+      if(!this.combat.active){
       this.course = advanceCourse(this.course, before, this.motion, priorSwing, this.swing);
       if (oldCourse.next !== this.course.next || oldCourse.completed !== this.course.completed) this.pendingCheckpoint = true;
       const priorTraining = this.training;
@@ -1111,11 +1134,12 @@ export class GameWorld {
         this.checkpoint = copyVec3(CHECKPOINTS[this.skyline.stage]!);
         this.pendingCheckpoint = true;
       }
+      }
       if (this.pendingCheckpoint && this.isSafe()) {
         this.pendingCheckpoint = false;
         this.callbacks.onProgress(
           this.progress,
-          this.course.active ? courseLabel(this.course,this.motion.position.y < -1) : this.training.active
+          this.combat.active ? combatLabel(this.combat) : this.course.active ? courseLabel(this.course,this.motion.position.y < -1) : this.training.active
             ? TRAINING_LABELS[this.training.stage]!
             : ROUTE_LABELS[this.skyline.stage]!,
         );
@@ -1134,7 +1158,7 @@ export class GameWorld {
   }
 
   private checkProgress(): void {
-    if (this.training.active || this.skyline.active || !this.motion.grounded)
+    if (this.combat.active || this.training.active || this.skyline.active || !this.motion.grounded)
       return;
     let next = this.progress;
     let label = this.progressLabel;
@@ -1221,10 +1245,13 @@ export class GameWorld {
       course: structuredClone(this.course),
       surfaceCameraBlend: this.surfaceCameraBlend,
       heroPitch: this.heroRoot.rotation.x,
+      combat: structuredClone(this.combat),
     });
   }
 
   start(payload?: RunSavePayload): void {
+    this.combat=newCombat(payload?.combat);
+    this.combatReturn=null;
     this.active = true;
     this.paused = false;
     this.fpsSamples.length = 0;
@@ -1302,6 +1329,7 @@ export class GameWorld {
   pause(): boolean {
     if (!this.active || this.paused) return false;
     this.paused = true;
+    clearCombat(this.combat);
     this.latestActions = null;
     this.pendingJump = false;
     this.accumulator = 0;
@@ -1326,6 +1354,7 @@ export class GameWorld {
   }
 
   restart(): void {
+    if(this.combat.active){retryCombat(this.combat);this.checkpoint=combatStationStart(this.combat);}
     this.swing = clearSwing(this.swing);
     this.resetTrainingTransient();
     this.skyline = resetSegment(this.skyline);
@@ -1346,6 +1375,7 @@ export class GameWorld {
   isSafe(): boolean {
     return (
       this.active &&
+      combatSafe(this.combat) &&
       safeTraversal(
         this.motion,
         this.traversal,
@@ -1366,6 +1396,7 @@ export class GameWorld {
   ): RunSavePayload {
     return {
       schemaVersion: 1,
+      combat: {version:1,completed:this.combat.completed},
       ...(this.course.active || this.course.next > 0 || this.course.completed ? { course: { version: 1 as const, next: this.course.completed ? 20 : this.course.next, completed: this.course.completed, active: this.course.active, ...(this.course.completed ? {lapNext:this.course.next}: {}) } } : {}),
       ...(this.training.active
         ? {
@@ -1405,6 +1436,7 @@ export class GameWorld {
 
   applySettings(settings: GameSettings): void {
     this.settings = { ...settings };
+    this.combatView?.audio.setEnabled(settings.combatSound !== false);
     const adaptiveScale = window.innerWidth >= 1600 ? 2.25 : 1.4;
     this.engine.setHardwareScalingLevel(
       settings.adaptiveQuality ? adaptiveScale : 1,
@@ -1440,6 +1472,7 @@ export class GameWorld {
   private resetTrainingTransient(
     phase: TraversalState["phase"] = "FREE_OR_GROUNDED",
   ): void {
+    clearCombat(this.combat);
     this.traversal = clearTraversal(this.traversal, phase);
     this.heroRoot.rotation.x = 0;
     this.surfaceCameraBlend = 0;
@@ -1462,6 +1495,7 @@ export class GameWorld {
       };
   }
   replayCourse(): void {
+    this.combat.active=false;
     this.course = newCourse();
     // Replay only this activity. Preserve earned S2/S3 checkpoints/completion.
     this.checkpoint = copyVec3(COURSE_START);
@@ -1469,7 +1503,22 @@ export class GameWorld {
     this.camera.alpha = -Math.PI / 2;
   }
 
+  replayCombat(): void {
+    if(!this.combat.active)this.combatReturn={position:copyVec3(this.isSafe()?this.motion.position:this.checkpoint),checkpoint:copyVec3(this.checkpoint)};
+    this.combat=beginCombat(this.combat.completed);
+    this.checkpoint=combatStationStart(this.combat);
+    this.restart();this.camera.alpha=-Math.PI/2;this.camera.beta=1.08;this.groundBeta=1.08;this.camera.radius=10.5;
+  }
+  leaveCombat(): void {
+    const back=this.combatReturn;
+    this.combat=newCombat({version:1,completed:this.combat.completed});
+    this.checkpoint=copyVec3(back?.checkpoint??START);this.restart();
+    this.motion.position=copyVec3(back?.position??START);this.combatReturn=null;
+    this.camera.alpha=-Math.PI/2;this.camera.beta=1.08;
+  }
+
   replayTraining(): void {
+    this.combat.active=false;
     this.course.active = false;
     this.training = {
       ...newTrainingRoute(),
@@ -1485,6 +1534,7 @@ export class GameWorld {
   }
 
   replaySkyline(): void {
+    this.combat.active=false;
     this.course.active = false;
     this.training = newTrainingRoute();
     this.skyline = {
@@ -1573,12 +1623,14 @@ export class GameWorld {
       }),
       surfaceCameraBlend: this.surfaceCameraBlend,
       heroPitch: this.heroRoot.rotation.x,
+      combat: structuredClone(this.combat),
     };
   }
 
   private resize = (): void => this.engine.resize();
 
   dispose(): void {
+    this.combatView.dispose();
     window.removeEventListener("resize", this.resize);
     this.engine.stopRenderLoop(this.renderFrame);
     for (const body of this.physicsBodies) body.dispose();
