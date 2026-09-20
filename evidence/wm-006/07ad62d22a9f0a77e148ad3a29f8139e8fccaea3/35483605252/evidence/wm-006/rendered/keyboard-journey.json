@@ -1,0 +1,4206 @@
+{
+  "method": "Ordinary menus, keyboard/mouse or standard Gamepad semantics; debug observations only; no position/progression/time writes",
+  "checkpoints": [
+    {
+      "name": "start",
+      "state": {
+        "active": true,
+        "paused": false,
+        "safe": true,
+        "health": 100,
+        "maxHealth": 100,
+        "progress": 0,
+        "progressLabel": "Every building face is climbable. Mint paths teach the route. Hold C / RB / R1 to climb onto a roof.",
+        "position": {
+          "x": -38,
+          "y": -18,
+          "z": -54
+        },
+        "grounded": true,
+        "fps": 26,
+        "cameraAlpha": -1.5707963267948966,
+        "cameraBeta": 1.08,
+        "cameraRadius": 10.35,
+        "cameraPosition": {
+          "x": -38,
+          "y": -11.421751430801791,
+          "z": -63.12826330125921
+        },
+        "inputSource": "keyboard-mouse",
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "swing": {
+          "phase": "GROUNDED_OR_FREE",
+          "web": null,
+          "targetId": null,
+          "held": false,
+          "freshRequired": false,
+          "phaseTime": 0,
+          "message": "Aim at a glowing ring. Walk toward the skyline arrows.",
+          "attachments": 0,
+          "releases": 0,
+          "collisions": 0
+        },
+        "hand": {
+          "x": -37.44,
+          "y": -15.97,
+          "z": -53.29
+        },
+        "skyline": {
+          "active": false,
+          "stage": 0,
+          "completed": false,
+          "completions": 0,
+          "anchors": [],
+          "released": false,
+          "reattached": false,
+          "leftRoof": false,
+          "lastAnchor": null,
+          "valid": true
+        },
+        "traversal": {
+          "phase": "FREE_OR_GROUNDED",
+          "surfaceId": null,
+          "targetId": null,
+          "pullId": null,
+          "webOrigin": null,
+          "phaseTime": 0,
+          "freshClimb": false,
+          "freshPull": false,
+          "heldClimb": false,
+          "heldPull": false,
+          "message": "Released safely. Let go of controls, then press again.",
+          "cameraMode": "ground"
+        },
+        "training": {
+          "active": false,
+          "stage": 0,
+          "checkpoint": 0,
+          "completed": false,
+          "completions": 0,
+          "valid": true,
+          "swingAttached": false,
+          "swingReleased": false,
+          "wallStart": null,
+          "vertical": 0,
+          "lateral": 0,
+          "ceilingStart": null,
+          "ceilingDistance": 0,
+          "pulledDistance": 0,
+          "stepped": false
+        },
+        "pullObjects": [
+          {
+            "id": "route-step",
+            "role": "PULLABLE_LIGHT",
+            "position": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "initial": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "half": {
+              "x": 1.5,
+              "y": 0.65,
+              "z": 1.5
+            },
+            "speed": 0
+          },
+          {
+            "id": "limited-crate",
+            "role": "PULLABLE_LIMITED",
+            "position": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "initial": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "half": {
+              "x": 0.75,
+              "y": 0.55,
+              "z": 0.75
+            },
+            "speed": 0
+          },
+          {
+            "id": "heavy-crate",
+            "role": "TOO_HEAVY",
+            "position": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "initial": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "half": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "speed": 0
+          },
+          {
+            "id": "ordinary-crate",
+            "role": "ORDINARY_SOLID",
+            "position": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "initial": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "half": {
+              "x": 0.9,
+              "y": 0.9,
+              "z": 0.9
+            },
+            "speed": 0
+          }
+        ],
+        "legPose": {
+          "blend": 0,
+          "phase": 0,
+          "angle": 0
+        },
+        "gait": {
+          "phase": 0,
+          "weight": 0,
+          "hips": [
+            0,
+            0
+          ],
+          "knees": [
+            0,
+            0
+          ],
+          "arms": [
+            0,
+            0
+          ],
+          "lift": 0
+        },
+        "course": {
+          "version": 1,
+          "next": 0,
+          "completed": false,
+          "active": false,
+          "valid": true,
+          "released": true,
+          "completions": 0
+        },
+        "legWorld": [
+          {
+            "hip": {
+              "x": -38.220001220703125,
+              "y": -16.540000915527344,
+              "z": -54
+            },
+            "tip": {
+              "x": -38.220001220703125,
+              "y": -18.080000915527343,
+              "z": -54
+            },
+            "forwardDisplacement": 0
+          },
+          {
+            "hip": {
+              "x": -37.779998779296875,
+              "y": -16.540000915527344,
+              "z": -54
+            },
+            "tip": {
+              "x": -37.779998779296875,
+              "y": -18.080000915527343,
+              "z": -54
+            },
+            "forwardDisplacement": 0
+          }
+        ],
+        "surfaceCameraBlend": 0,
+        "heroPitch": 0,
+        "combat": {
+          "active": true,
+          "completed": false,
+          "stage": 0,
+          "finalPart": 0,
+          "time": 0.7666666666666674,
+          "serial": 0,
+          "combo": {
+            "punch": {
+              "step": 0,
+              "last": null
+            },
+            "kick": {
+              "step": 0,
+              "last": null
+            },
+            "web": {
+              "step": 0,
+              "last": null
+            }
+          },
+          "attack": null,
+          "queued": null,
+          "dodge": null,
+          "dodgeCooldown": 0,
+          "shots": [],
+          "targets": [
+            {
+              "id": "combo-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "hp": 80,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": true
+            },
+            {
+              "id": "high-pad",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "hp": 32,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "web-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -33
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -33
+              },
+              "hp": 160,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "hp": 80,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-high",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "hp": 32,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "hp": 160,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            }
+          ],
+          "machine": {
+            "phase": "idle",
+            "age": 0,
+            "aim": {
+              "x": -38,
+              "y": -18,
+              "z": -54
+            },
+            "resolved": false
+          },
+          "events": [],
+          "message": "Welcome! Follow the colored mats. Start with the orange box.",
+          "successfulDodges": 0,
+          "bumps": 0,
+          "history": []
+        }
+      }
+    },
+    {
+      "name": "box-complete",
+      "state": {
+        "active": true,
+        "paused": false,
+        "safe": true,
+        "health": 100,
+        "maxHealth": 100,
+        "progress": 0,
+        "progressLabel": "Every building face is climbable. Mint paths teach the route. Hold C / RB / R1 to climb onto a roof.",
+        "position": {
+          "x": -38,
+          "y": -18,
+          "z": -51.931666666666636
+        },
+        "grounded": true,
+        "fps": 42,
+        "cameraAlpha": -1.5707963267948966,
+        "cameraBeta": 1.08,
+        "cameraRadius": 10.35,
+        "cameraPosition": {
+          "x": -38,
+          "y": -11.421751430801791,
+          "z": -61.059929967925854
+        },
+        "inputSource": "keyboard-mouse",
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "swing": {
+          "phase": "GROUNDED_OR_FREE",
+          "web": null,
+          "targetId": null,
+          "held": false,
+          "freshRequired": false,
+          "phaseTime": 0,
+          "message": "Aim at a glowing ring. Walk toward the skyline arrows.",
+          "attachments": 0,
+          "releases": 0,
+          "collisions": 0
+        },
+        "hand": {
+          "x": -37.44,
+          "y": -15.97,
+          "z": -51.221666666666636
+        },
+        "skyline": {
+          "active": false,
+          "stage": 0,
+          "completed": false,
+          "completions": 0,
+          "anchors": [],
+          "released": false,
+          "reattached": false,
+          "leftRoof": false,
+          "lastAnchor": null,
+          "valid": true
+        },
+        "traversal": {
+          "phase": "FREE_OR_GROUNDED",
+          "surfaceId": null,
+          "targetId": null,
+          "pullId": null,
+          "webOrigin": null,
+          "phaseTime": 0,
+          "freshClimb": false,
+          "freshPull": false,
+          "heldClimb": false,
+          "heldPull": false,
+          "message": "Released safely. Let go of controls, then press again.",
+          "cameraMode": "ground"
+        },
+        "training": {
+          "active": false,
+          "stage": 0,
+          "checkpoint": 0,
+          "completed": false,
+          "completions": 0,
+          "valid": true,
+          "swingAttached": false,
+          "swingReleased": false,
+          "wallStart": null,
+          "vertical": 0,
+          "lateral": 0,
+          "ceilingStart": null,
+          "ceilingDistance": 0,
+          "pulledDistance": 0,
+          "stepped": false
+        },
+        "pullObjects": [
+          {
+            "id": "route-step",
+            "role": "PULLABLE_LIGHT",
+            "position": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "initial": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "half": {
+              "x": 1.5,
+              "y": 0.65,
+              "z": 1.5
+            },
+            "speed": 0
+          },
+          {
+            "id": "limited-crate",
+            "role": "PULLABLE_LIMITED",
+            "position": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "initial": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "half": {
+              "x": 0.75,
+              "y": 0.55,
+              "z": 0.75
+            },
+            "speed": 0
+          },
+          {
+            "id": "heavy-crate",
+            "role": "TOO_HEAVY",
+            "position": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "initial": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "half": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "speed": 0
+          },
+          {
+            "id": "ordinary-crate",
+            "role": "ORDINARY_SOLID",
+            "position": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "initial": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "half": {
+              "x": 0.9,
+              "y": 0.9,
+              "z": 0.9
+            },
+            "speed": 0
+          }
+        ],
+        "legPose": {
+          "blend": 0,
+          "phase": 0,
+          "angle": 0
+        },
+        "gait": {
+          "phase": 0.7373002702425812,
+          "weight": 8.888719695290249e-23,
+          "hips": [
+            -8.246188431257461e-22,
+            -7.368684755366935e-23
+          ],
+          "knees": [
+            2.693548744576439e-21,
+            1.5774655479048666e-25
+          ],
+          "arms": [
+            5.36002248031735e-22,
+            4.789645090988508e-23
+          ],
+          "lift": -3.2524930096762007e-25
+        },
+        "course": {
+          "version": 1,
+          "next": 0,
+          "completed": false,
+          "active": false,
+          "valid": true,
+          "released": true,
+          "completions": 0
+        },
+        "legWorld": [
+          {
+            "hip": {
+              "x": -38.220001220703125,
+              "y": -16.540000915527344,
+              "z": -51.93166732788086
+            },
+            "tip": {
+              "x": -38.220001220703125,
+              "y": -18.080000915527343,
+              "z": -51.93166732788086
+            },
+            "forwardDisplacement": 0
+          },
+          {
+            "hip": {
+              "x": -37.779998779296875,
+              "y": -16.540000915527344,
+              "z": -51.93166732788086
+            },
+            "tip": {
+              "x": -37.779998779296875,
+              "y": -18.080000915527343,
+              "z": -51.93166732788086
+            },
+            "forwardDisplacement": 0
+          }
+        ],
+        "surfaceCameraBlend": 0,
+        "heroPitch": 0,
+        "combat": {
+          "active": true,
+          "completed": false,
+          "stage": 1,
+          "finalPart": 0,
+          "time": 13.000000000000226,
+          "serial": 16,
+          "combo": {
+            "punch": {
+              "step": 0,
+              "last": null
+            },
+            "kick": {
+              "step": 0,
+              "last": null
+            },
+            "web": {
+              "step": 0,
+              "last": null
+            }
+          },
+          "attack": null,
+          "queued": null,
+          "dodge": null,
+          "dodgeCooldown": 0,
+          "shots": [],
+          "targets": [
+            {
+              "id": "combo-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "hp": 0,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1,
+                2,
+                3
+              ],
+              "active": false
+            },
+            {
+              "id": "high-pad",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "hp": 32,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": true
+            },
+            {
+              "id": "web-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -33
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -33
+              },
+              "hp": 160,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "hp": 80,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-high",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "hp": 32,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "hp": 160,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            }
+          ],
+          "machine": {
+            "phase": "idle",
+            "age": 0,
+            "aim": {
+              "x": -38,
+              "y": -18,
+              "z": -54
+            },
+            "resolved": false
+          },
+          "events": [
+            {
+              "id": 16,
+              "kind": "success",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "power": 1
+            }
+          ],
+          "message": "Nice work! Follow the next colored mat.",
+          "successfulDodges": 0,
+          "bumps": 0,
+          "history": [
+            {
+              "kind": "punch",
+              "step": 1,
+              "id": 1
+            },
+            {
+              "kind": "punch",
+              "step": 2,
+              "id": 4
+            },
+            {
+              "kind": "punch",
+              "step": 1,
+              "id": 7
+            },
+            {
+              "kind": "punch",
+              "step": 2,
+              "id": 10
+            },
+            {
+              "kind": "punch",
+              "step": 3,
+              "id": 13
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "high-kick-complete",
+      "state": {
+        "active": true,
+        "paused": false,
+        "safe": false,
+        "health": 100,
+        "maxHealth": 100,
+        "progress": 0,
+        "progressLabel": "Every building face is climbable. Mint paths teach the route. Hold C / RB / R1 to climb onto a roof.",
+        "position": {
+          "x": -38,
+          "y": -18,
+          "z": -43.9283333333331
+        },
+        "grounded": true,
+        "fps": 44,
+        "cameraAlpha": -1.5707963267948966,
+        "cameraBeta": 1.08,
+        "cameraRadius": 10.35,
+        "cameraPosition": {
+          "x": -38,
+          "y": -10.972708013477625,
+          "z": -53.05659790505892
+        },
+        "inputSource": "keyboard-mouse",
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "swing": {
+          "phase": "LANDING",
+          "web": null,
+          "targetId": null,
+          "held": false,
+          "freshRequired": false,
+          "phaseTime": 0.16,
+          "message": "Nice landing! Release controls before your next swing.",
+          "attachments": 0,
+          "releases": 0,
+          "collisions": 0
+        },
+        "hand": {
+          "x": -37.44,
+          "y": -15.97,
+          "z": -43.2183333333331
+        },
+        "skyline": {
+          "active": false,
+          "stage": 0,
+          "completed": false,
+          "completions": 0,
+          "anchors": [],
+          "released": false,
+          "reattached": false,
+          "leftRoof": false,
+          "lastAnchor": null,
+          "valid": true
+        },
+        "traversal": {
+          "phase": "LANDING",
+          "surfaceId": null,
+          "targetId": null,
+          "pullId": null,
+          "webOrigin": null,
+          "phaseTime": 0.16,
+          "freshClimb": false,
+          "freshPull": false,
+          "heldClimb": false,
+          "heldPull": false,
+          "message": "Released safely. Let go of controls, then press again.",
+          "cameraMode": "ground"
+        },
+        "training": {
+          "active": false,
+          "stage": 0,
+          "checkpoint": 0,
+          "completed": false,
+          "completions": 0,
+          "valid": true,
+          "swingAttached": false,
+          "swingReleased": false,
+          "wallStart": null,
+          "vertical": 0,
+          "lateral": 0,
+          "ceilingStart": null,
+          "ceilingDistance": 0,
+          "pulledDistance": 0,
+          "stepped": false
+        },
+        "pullObjects": [
+          {
+            "id": "route-step",
+            "role": "PULLABLE_LIGHT",
+            "position": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "initial": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "half": {
+              "x": 1.5,
+              "y": 0.65,
+              "z": 1.5
+            },
+            "speed": 0
+          },
+          {
+            "id": "limited-crate",
+            "role": "PULLABLE_LIMITED",
+            "position": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "initial": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "half": {
+              "x": 0.75,
+              "y": 0.55,
+              "z": 0.75
+            },
+            "speed": 0
+          },
+          {
+            "id": "heavy-crate",
+            "role": "TOO_HEAVY",
+            "position": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "initial": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "half": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "speed": 0
+          },
+          {
+            "id": "ordinary-crate",
+            "role": "ORDINARY_SOLID",
+            "position": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "initial": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "half": {
+              "x": 0.9,
+              "y": 0.9,
+              "z": 0.9
+            },
+            "speed": 0
+          }
+        ],
+        "legPose": {
+          "blend": 0,
+          "phase": 0,
+          "angle": 0
+        },
+        "gait": {
+          "phase": 0.45020808348205876,
+          "weight": 0.000017291728325328305,
+          "hips": [
+            0.000048280177866964245,
+            -0.00007007429177958986
+          ],
+          "knees": [
+            3.699321996756312e-9,
+            0.00003469999994679362
+          ],
+          "arms": [
+            -0.00003138211561352676,
+            0.00004554828965673341
+          ],
+          "lift": -1.0841739591088154e-7
+        },
+        "course": {
+          "version": 1,
+          "next": 0,
+          "completed": false,
+          "active": false,
+          "valid": true,
+          "released": true,
+          "completions": 0
+        },
+        "legWorld": [
+          {
+            "hip": {
+              "x": -38.220001220703125,
+              "y": -16.540000915527344,
+              "z": -43.9283332824707
+            },
+            "tip": {
+              "x": -38.220001220703125,
+              "y": -18.080000089406965,
+              "z": -43.926719049708915
+            },
+            "forwardDisplacement": 0.0016142327617885144
+          },
+          {
+            "hip": {
+              "x": -37.779998779296875,
+              "y": -16.540000915527344,
+              "z": -43.9283332824707
+            },
+            "tip": {
+              "x": -37.779998779296875,
+              "y": -18.080000915527343,
+              "z": -43.927975885885246
+            },
+            "forwardDisplacement": 0.00035739658545708153
+          }
+        ],
+        "surfaceCameraBlend": 0,
+        "heroPitch": 0,
+        "combat": {
+          "active": true,
+          "completed": false,
+          "stage": 2,
+          "finalPart": 0,
+          "time": 16.716666666667,
+          "serial": 20,
+          "combo": {
+            "punch": {
+              "step": 0,
+              "last": null
+            },
+            "kick": {
+              "step": 0,
+              "last": null
+            },
+            "web": {
+              "step": 0,
+              "last": null
+            }
+          },
+          "attack": null,
+          "queued": null,
+          "dodge": null,
+          "dodgeCooldown": 0,
+          "shots": [],
+          "targets": [
+            {
+              "id": "combo-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "hp": 0,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1,
+                2,
+                3
+              ],
+              "active": false
+            },
+            {
+              "id": "high-pad",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "hp": 0,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1
+              ],
+              "active": false
+            },
+            {
+              "id": "web-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -36.88865924993179,
+                "y": -16.3,
+                "z": -33
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -33
+              },
+              "hp": 160,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": true
+            },
+            {
+              "id": "final-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "hp": 80,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-high",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "hp": 32,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "hp": 160,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            }
+          ],
+          "machine": {
+            "phase": "idle",
+            "age": 0,
+            "aim": {
+              "x": -38,
+              "y": -18,
+              "z": -54
+            },
+            "resolved": false
+          },
+          "events": [
+            {
+              "id": 20,
+              "kind": "success",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "power": 1
+            }
+          ],
+          "message": "Nice work! Follow the next colored mat.",
+          "successfulDodges": 0,
+          "bumps": 0,
+          "history": [
+            {
+              "kind": "punch",
+              "step": 1,
+              "id": 1
+            },
+            {
+              "kind": "punch",
+              "step": 2,
+              "id": 4
+            },
+            {
+              "kind": "punch",
+              "step": 1,
+              "id": 7
+            },
+            {
+              "kind": "punch",
+              "step": 2,
+              "id": 10
+            },
+            {
+              "kind": "punch",
+              "step": 3,
+              "id": 13
+            },
+            {
+              "kind": "kick",
+              "step": 1,
+              "id": 17
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "wrapped-dummy",
+      "state": {
+        "active": true,
+        "paused": false,
+        "safe": false,
+        "health": 100,
+        "maxHealth": 100,
+        "progress": 0,
+        "progressLabel": "Every building face is climbable. Mint paths teach the route. Hold C / RB / R1 to climb onto a roof.",
+        "position": {
+          "x": -38,
+          "y": -18,
+          "z": -36.94333333333293
+        },
+        "grounded": true,
+        "fps": 40,
+        "cameraAlpha": -1.5707963267948966,
+        "cameraBeta": 1.08,
+        "cameraRadius": 10.35,
+        "cameraPosition": {
+          "x": -38,
+          "y": -11.421751430801788,
+          "z": -46.07159663465204
+        },
+        "inputSource": "keyboard-mouse",
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "swing": {
+          "phase": "GROUNDED_OR_FREE",
+          "web": null,
+          "targetId": null,
+          "held": false,
+          "freshRequired": false,
+          "phaseTime": 0,
+          "message": "Aim at a glowing ring. Walk toward the skyline arrows.",
+          "attachments": 0,
+          "releases": 0,
+          "collisions": 0
+        },
+        "hand": {
+          "x": -37.44,
+          "y": -15.97,
+          "z": -36.23333333333293
+        },
+        "skyline": {
+          "active": false,
+          "stage": 0,
+          "completed": false,
+          "completions": 0,
+          "anchors": [],
+          "released": false,
+          "reattached": false,
+          "leftRoof": false,
+          "lastAnchor": null,
+          "valid": true
+        },
+        "traversal": {
+          "phase": "FREE_OR_GROUNDED",
+          "surfaceId": null,
+          "targetId": null,
+          "pullId": null,
+          "webOrigin": null,
+          "phaseTime": 0,
+          "freshClimb": false,
+          "freshPull": false,
+          "heldClimb": false,
+          "heldPull": false,
+          "message": "Released safely. Let go of controls, then press again.",
+          "cameraMode": "ground"
+        },
+        "training": {
+          "active": false,
+          "stage": 0,
+          "checkpoint": 0,
+          "completed": false,
+          "completions": 0,
+          "valid": true,
+          "swingAttached": false,
+          "swingReleased": false,
+          "wallStart": null,
+          "vertical": 0,
+          "lateral": 0,
+          "ceilingStart": null,
+          "ceilingDistance": 0,
+          "pulledDistance": 0,
+          "stepped": false
+        },
+        "pullObjects": [
+          {
+            "id": "route-step",
+            "role": "PULLABLE_LIGHT",
+            "position": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "initial": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "half": {
+              "x": 1.5,
+              "y": 0.65,
+              "z": 1.5
+            },
+            "speed": 0
+          },
+          {
+            "id": "limited-crate",
+            "role": "PULLABLE_LIMITED",
+            "position": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "initial": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "half": {
+              "x": 0.75,
+              "y": 0.55,
+              "z": 0.75
+            },
+            "speed": 0
+          },
+          {
+            "id": "heavy-crate",
+            "role": "TOO_HEAVY",
+            "position": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "initial": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "half": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "speed": 0
+          },
+          {
+            "id": "ordinary-crate",
+            "role": "ORDINARY_SOLID",
+            "position": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "initial": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "half": {
+              "x": 0.9,
+              "y": 0.9,
+              "z": 0.9
+            },
+            "speed": 0
+          }
+        ],
+        "legPose": {
+          "blend": 0,
+          "phase": 0,
+          "angle": 0
+        },
+        "gait": {
+          "phase": 0.8233876305049902,
+          "weight": 9.53646747423749e-10,
+          "hips": [
+            -6.425430321021589e-9,
+            1.8003469076853898e-9
+          ],
+          "knees": [
+            1.0381711441140445e-8,
+            8.101366604137914e-13
+          ],
+          "arms": [
+            4.176529708664033e-9,
+            -1.1702254899955034e-9
+          ],
+          "lift": -1.6652697124855103e-12
+        },
+        "course": {
+          "version": 1,
+          "next": 0,
+          "completed": false,
+          "active": false,
+          "valid": true,
+          "released": true,
+          "completions": 0
+        },
+        "legWorld": [
+          {
+            "hip": {
+              "x": -38.220001220703125,
+              "y": -16.540000915527344,
+              "z": -36.94333267211914
+            },
+            "tip": {
+              "x": -38.220001220703125,
+              "y": -18.080000915527343,
+              "z": -36.94333262921086
+            },
+            "forwardDisplacement": 4.290828314879036e-8
+          },
+          {
+            "hip": {
+              "x": -37.779998779296875,
+              "y": -16.540000915527344,
+              "z": -36.94333267211914
+            },
+            "tip": {
+              "x": -37.779998779296875,
+              "y": -18.080000915527343,
+              "z": -36.94333268413145
+            },
+            "forwardDisplacement": -1.2012307593067817e-8
+          }
+        ],
+        "surfaceCameraBlend": 0,
+        "heroPitch": 0,
+        "combat": {
+          "active": true,
+          "completed": false,
+          "stage": 2,
+          "finalPart": 0,
+          "time": 21.00000000000009,
+          "serial": 32,
+          "combo": {
+            "punch": {
+              "step": 0,
+              "last": null
+            },
+            "kick": {
+              "step": 0,
+              "last": null
+            },
+            "web": {
+              "step": 3,
+              "last": 25649.699999999953
+            }
+          },
+          "attack": null,
+          "queued": null,
+          "dodge": null,
+          "dodgeCooldown": 0,
+          "shots": [],
+          "targets": [
+            {
+              "id": "combo-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "hp": 0,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1,
+                2,
+                3
+              ],
+              "active": false
+            },
+            {
+              "id": "high-pad",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "hp": 0,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1
+              ],
+              "active": false
+            },
+            {
+              "id": "web-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38.44257398034006,
+                "y": -16.3,
+                "z": -33
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -33
+              },
+              "hp": 84,
+              "maxHp": 160,
+              "wrap": 2.4833333333333347,
+              "wrappedOnce": true,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1,
+                2,
+                3
+              ],
+              "active": true
+            },
+            {
+              "id": "final-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "hp": 80,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-high",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "hp": 32,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "hp": 160,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            }
+          ],
+          "machine": {
+            "phase": "idle",
+            "age": 0,
+            "aim": {
+              "x": -38,
+              "y": -18,
+              "z": -54
+            },
+            "resolved": false
+          },
+          "events": [
+            {
+              "id": 20,
+              "kind": "success",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "power": 1
+            },
+            {
+              "id": 22,
+              "kind": "swing",
+              "position": {
+                "x": -38,
+                "y": -18,
+                "z": -36.94333333333293
+              },
+              "power": 1
+            },
+            {
+              "id": 23,
+              "kind": "hit",
+              "position": {
+                "x": -38.44257398034006,
+                "y": -16.3,
+                "z": -33
+              },
+              "power": 1
+            },
+            {
+              "id": 24,
+              "kind": "wrap",
+              "position": {
+                "x": -38.44257398034006,
+                "y": -16.3,
+                "z": -33
+              },
+              "power": 1
+            },
+            {
+              "id": 26,
+              "kind": "swing",
+              "position": {
+                "x": -38,
+                "y": -18,
+                "z": -36.94333333333293
+              },
+              "power": 2
+            },
+            {
+              "id": 27,
+              "kind": "hit",
+              "position": {
+                "x": -38.44257398034006,
+                "y": -16.3,
+                "z": -33
+              },
+              "power": 2
+            },
+            {
+              "id": 28,
+              "kind": "wrap",
+              "position": {
+                "x": -38.44257398034006,
+                "y": -16.3,
+                "z": -33
+              },
+              "power": 2
+            },
+            {
+              "id": 30,
+              "kind": "swing",
+              "position": {
+                "x": -38,
+                "y": -18,
+                "z": -36.94333333333293
+              },
+              "power": 3
+            },
+            {
+              "id": 31,
+              "kind": "hit",
+              "position": {
+                "x": -38.44257398034006,
+                "y": -16.3,
+                "z": -33
+              },
+              "power": 3
+            },
+            {
+              "id": 32,
+              "kind": "wrap",
+              "position": {
+                "x": -38.44257398034006,
+                "y": -16.3,
+                "z": -33
+              },
+              "power": 3
+            }
+          ],
+          "message": "Web burst! −36 · 84/160",
+          "successfulDodges": 0,
+          "bumps": 0,
+          "history": [
+            {
+              "kind": "punch",
+              "step": 1,
+              "id": 1
+            },
+            {
+              "kind": "punch",
+              "step": 2,
+              "id": 4
+            },
+            {
+              "kind": "punch",
+              "step": 1,
+              "id": 7
+            },
+            {
+              "kind": "punch",
+              "step": 2,
+              "id": 10
+            },
+            {
+              "kind": "punch",
+              "step": 3,
+              "id": 13
+            },
+            {
+              "kind": "kick",
+              "step": 1,
+              "id": 17
+            },
+            {
+              "kind": "web",
+              "step": 1,
+              "id": 21
+            },
+            {
+              "kind": "web",
+              "step": 2,
+              "id": 25
+            },
+            {
+              "kind": "web",
+              "step": 3,
+              "id": 29
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "dodge-warning",
+      "state": {
+        "active": true,
+        "paused": false,
+        "safe": false,
+        "health": 100,
+        "maxHealth": 100,
+        "progress": 0,
+        "progressLabel": "Every building face is climbable. Mint paths teach the route. Hold C / RB / R1 to climb onto a roof.",
+        "position": {
+          "x": -38,
+          "y": -18,
+          "z": -26.939999999999536
+        },
+        "grounded": true,
+        "fps": 40,
+        "cameraAlpha": -1.5707963267948966,
+        "cameraBeta": 1.08,
+        "cameraRadius": 10.35,
+        "cameraPosition": {
+          "x": -38,
+          "y": -11.421751430801788,
+          "z": -36.071975076466686
+        },
+        "inputSource": "keyboard-mouse",
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "swing": {
+          "phase": "GROUNDED_OR_FREE",
+          "web": null,
+          "targetId": null,
+          "held": false,
+          "freshRequired": false,
+          "phaseTime": 0,
+          "message": "Aim at a glowing ring. Walk toward the skyline arrows.",
+          "attachments": 0,
+          "releases": 0,
+          "collisions": 0
+        },
+        "hand": {
+          "x": -37.44,
+          "y": -15.97,
+          "z": -26.229999999999535
+        },
+        "skyline": {
+          "active": false,
+          "stage": 0,
+          "completed": false,
+          "completions": 0,
+          "anchors": [],
+          "released": false,
+          "reattached": false,
+          "leftRoof": false,
+          "lastAnchor": null,
+          "valid": true
+        },
+        "traversal": {
+          "phase": "FREE_OR_GROUNDED",
+          "surfaceId": null,
+          "targetId": null,
+          "pullId": null,
+          "webOrigin": null,
+          "phaseTime": 0,
+          "freshClimb": false,
+          "freshPull": false,
+          "heldClimb": false,
+          "heldPull": false,
+          "message": "Released safely. Let go of controls, then press again.",
+          "cameraMode": "ground"
+        },
+        "training": {
+          "active": false,
+          "stage": 0,
+          "checkpoint": 0,
+          "completed": false,
+          "completions": 0,
+          "valid": true,
+          "swingAttached": false,
+          "swingReleased": false,
+          "wallStart": null,
+          "vertical": 0,
+          "lateral": 0,
+          "ceilingStart": null,
+          "ceilingDistance": 0,
+          "pulledDistance": 0,
+          "stepped": false
+        },
+        "pullObjects": [
+          {
+            "id": "route-step",
+            "role": "PULLABLE_LIGHT",
+            "position": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "initial": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "half": {
+              "x": 1.5,
+              "y": 0.65,
+              "z": 1.5
+            },
+            "speed": 0
+          },
+          {
+            "id": "limited-crate",
+            "role": "PULLABLE_LIMITED",
+            "position": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "initial": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "half": {
+              "x": 0.75,
+              "y": 0.55,
+              "z": 0.75
+            },
+            "speed": 0
+          },
+          {
+            "id": "heavy-crate",
+            "role": "TOO_HEAVY",
+            "position": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "initial": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "half": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "speed": 0
+          },
+          {
+            "id": "ordinary-crate",
+            "role": "ORDINARY_SOLID",
+            "position": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "initial": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "half": {
+              "x": 0.9,
+              "y": 0.9,
+              "z": 0.9
+            },
+            "speed": 0
+          }
+        ],
+        "legPose": {
+          "blend": 0,
+          "phase": 0,
+          "angle": 0
+        },
+        "gait": {
+          "phase": 0.19459683867103,
+          "weight": 0.04282624351338811,
+          "hips": [
+            -0.007994432524163701,
+            -0.008355725186369579
+          ],
+          "knees": [
+            0.00008073253041025155,
+            0.05938711126515015
+          ],
+          "arms": [
+            0.005196381140706406,
+            0.005431221371140227
+          ],
+          "lift": -0.00019252875924551119
+        },
+        "course": {
+          "version": 1,
+          "next": 0,
+          "completed": false,
+          "active": false,
+          "valid": true,
+          "released": true,
+          "completions": 0
+        },
+        "legWorld": [
+          {
+            "hip": {
+              "x": -38.220001220703125,
+              "y": -16.540191650390625,
+              "z": -26.940000534057617
+            },
+            "tip": {
+              "x": -38.220001220703125,
+              "y": -18.080080766677856,
+              "z": -26.9215227426216
+            },
+            "forwardDisplacement": 0.018477791436016133
+          },
+          {
+            "hip": {
+              "x": -37.779998779296875,
+              "y": -16.540191650390625,
+              "z": -26.940000534057617
+            },
+            "tip": {
+              "x": -37.779998779296875,
+              "y": -18.08012161374092,
+              "z": -26.92530992941931
+            },
+            "forwardDisplacement": 0.014690604638307292
+          }
+        ],
+        "surfaceCameraBlend": 0,
+        "heroPitch": 0,
+        "combat": {
+          "active": true,
+          "completed": false,
+          "stage": 3,
+          "finalPart": 0,
+          "time": 26.616666666666436,
+          "serial": 34,
+          "combo": {
+            "punch": {
+              "step": 0,
+              "last": null
+            },
+            "kick": {
+              "step": 0,
+              "last": null
+            },
+            "web": {
+              "step": 0,
+              "last": null
+            }
+          },
+          "attack": null,
+          "queued": null,
+          "dodge": null,
+          "dodgeCooldown": 0,
+          "shots": [],
+          "targets": [
+            {
+              "id": "combo-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "hp": 0,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1,
+                2,
+                3
+              ],
+              "active": false
+            },
+            {
+              "id": "high-pad",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "hp": 0,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1
+              ],
+              "active": false
+            },
+            {
+              "id": "web-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38.44257398034006,
+                "y": -16.3,
+                "z": -33
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -33
+              },
+              "hp": 84,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1,
+                2,
+                3
+              ],
+              "active": false
+            },
+            {
+              "id": "final-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "hp": 80,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-high",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "hp": 32,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "hp": 160,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            }
+          ],
+          "machine": {
+            "phase": "warning",
+            "age": 0.966666666666668,
+            "aim": {
+              "x": -38,
+              "y": -18,
+              "z": -28.923333333332845
+            },
+            "resolved": false
+          },
+          "events": [
+            {
+              "id": 34,
+              "kind": "success",
+              "position": {
+                "x": -38.44257398034006,
+                "y": -16.3,
+                "z": -33
+              },
+              "power": 1
+            }
+          ],
+          "message": "Amber warning! Dodge before the pad turns pink.",
+          "successfulDodges": 0,
+          "bumps": 0,
+          "history": [
+            {
+              "kind": "punch",
+              "step": 1,
+              "id": 1
+            },
+            {
+              "kind": "punch",
+              "step": 2,
+              "id": 4
+            },
+            {
+              "kind": "punch",
+              "step": 1,
+              "id": 7
+            },
+            {
+              "kind": "punch",
+              "step": 2,
+              "id": 10
+            },
+            {
+              "kind": "punch",
+              "step": 3,
+              "id": 13
+            },
+            {
+              "kind": "kick",
+              "step": 1,
+              "id": 17
+            },
+            {
+              "kind": "web",
+              "step": 1,
+              "id": 21
+            },
+            {
+              "kind": "web",
+              "step": 2,
+              "id": 25
+            },
+            {
+              "kind": "web",
+              "step": 3,
+              "id": 29
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "final-start",
+      "state": {
+        "active": true,
+        "paused": false,
+        "safe": true,
+        "health": 100,
+        "maxHealth": 100,
+        "progress": 0,
+        "progressLabel": "Every building face is climbable. Mint paths teach the route. Hold C / RB / R1 to climb onto a roof.",
+        "position": {
+          "x": -35.72333333333335,
+          "y": -18,
+          "z": -26.939999999999536
+        },
+        "grounded": true,
+        "fps": 38,
+        "cameraAlpha": -1.5707963267948966,
+        "cameraBeta": 1.08,
+        "cameraRadius": 10.35,
+        "cameraPosition": {
+          "x": -35.72438014829709,
+          "y": -11.421751430801788,
+          "z": -36.068263301258746
+        },
+        "inputSource": "keyboard-mouse",
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "swing": {
+          "phase": "GROUNDED_OR_FREE",
+          "web": null,
+          "targetId": null,
+          "held": false,
+          "freshRequired": false,
+          "phaseTime": 0,
+          "message": "Aim at a glowing ring. Walk toward the skyline arrows.",
+          "attachments": 0,
+          "releases": 0,
+          "collisions": 0
+        },
+        "hand": {
+          "x": -35.01333333333335,
+          "y": -15.97,
+          "z": -27.499999999999535
+        },
+        "skyline": {
+          "active": false,
+          "stage": 0,
+          "completed": false,
+          "completions": 0,
+          "anchors": [],
+          "released": false,
+          "reattached": false,
+          "leftRoof": false,
+          "lastAnchor": null,
+          "valid": true
+        },
+        "traversal": {
+          "phase": "FREE_OR_GROUNDED",
+          "surfaceId": null,
+          "targetId": null,
+          "pullId": null,
+          "webOrigin": null,
+          "phaseTime": 0,
+          "freshClimb": false,
+          "freshPull": false,
+          "heldClimb": false,
+          "heldPull": false,
+          "message": "Released safely. Let go of controls, then press again.",
+          "cameraMode": "ground"
+        },
+        "training": {
+          "active": false,
+          "stage": 0,
+          "checkpoint": 0,
+          "completed": false,
+          "completions": 0,
+          "valid": true,
+          "swingAttached": false,
+          "swingReleased": false,
+          "wallStart": null,
+          "vertical": 0,
+          "lateral": 0,
+          "ceilingStart": null,
+          "ceilingDistance": 0,
+          "pulledDistance": 0,
+          "stepped": false
+        },
+        "pullObjects": [
+          {
+            "id": "route-step",
+            "role": "PULLABLE_LIGHT",
+            "position": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "initial": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "half": {
+              "x": 1.5,
+              "y": 0.65,
+              "z": 1.5
+            },
+            "speed": 0
+          },
+          {
+            "id": "limited-crate",
+            "role": "PULLABLE_LIMITED",
+            "position": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "initial": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "half": {
+              "x": 0.75,
+              "y": 0.55,
+              "z": 0.75
+            },
+            "speed": 0
+          },
+          {
+            "id": "heavy-crate",
+            "role": "TOO_HEAVY",
+            "position": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "initial": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "half": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "speed": 0
+          },
+          {
+            "id": "ordinary-crate",
+            "role": "ORDINARY_SOLID",
+            "position": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "initial": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "half": {
+              "x": 0.9,
+              "y": 0.9,
+              "z": 0.9
+            },
+            "speed": 0
+          }
+        ],
+        "legPose": {
+          "blend": 0,
+          "phase": 0,
+          "angle": 0
+        },
+        "gait": {
+          "phase": 0.19459683867103,
+          "weight": 2.5679236697737266e-20,
+          "hips": [
+            -8.063539600222995e-20,
+            -9.779624596464208e-20
+          ],
+          "knees": [
+            4.840839605659151e-23,
+            6.420357519708209e-19
+          ],
+          "arms": [
+            5.241300740144947e-20,
+            6.356755987701735e-20
+          ],
+          "lift": -1.159684429237226e-22
+        },
+        "course": {
+          "version": 1,
+          "next": 0,
+          "completed": false,
+          "active": false,
+          "valid": true,
+          "released": true,
+          "completions": 0
+        },
+        "legWorld": [
+          {
+            "hip": {
+              "x": -35.723331451416016,
+              "y": -16.540000915527344,
+              "z": -26.720001220703125
+            },
+            "tip": {
+              "x": -35.723331451416016,
+              "y": -18.080000915527343,
+              "z": -26.720001220703125
+            },
+            "forwardDisplacement": 0
+          },
+          {
+            "hip": {
+              "x": -35.723331451416016,
+              "y": -16.540000915527344,
+              "z": -27.15999984741211
+            },
+            "tip": {
+              "x": -35.723331451416016,
+              "y": -18.080000915527343,
+              "z": -27.15999984741211
+            },
+            "forwardDisplacement": 0
+          }
+        ],
+        "surfaceCameraBlend": 0,
+        "heroPitch": 0,
+        "combat": {
+          "active": true,
+          "completed": false,
+          "stage": 4,
+          "finalPart": 0,
+          "time": 30.116666666666237,
+          "serial": 37,
+          "combo": {
+            "punch": {
+              "step": 0,
+              "last": null
+            },
+            "kick": {
+              "step": 0,
+              "last": null
+            },
+            "web": {
+              "step": 0,
+              "last": null
+            }
+          },
+          "attack": null,
+          "queued": null,
+          "dodge": null,
+          "dodgeCooldown": 0,
+          "shots": [],
+          "targets": [
+            {
+              "id": "combo-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "hp": 0,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1,
+                2,
+                3
+              ],
+              "active": false
+            },
+            {
+              "id": "high-pad",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "hp": 0,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1
+              ],
+              "active": false
+            },
+            {
+              "id": "web-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38.44257398034006,
+                "y": -16.3,
+                "z": -33
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -33
+              },
+              "hp": 84,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1,
+                2,
+                3
+              ],
+              "active": false
+            },
+            {
+              "id": "final-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "hp": 80,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": true
+            },
+            {
+              "id": "final-high",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "hp": 32,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "hp": 160,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            }
+          ],
+          "machine": {
+            "phase": "idle",
+            "age": 0,
+            "aim": {
+              "x": -38,
+              "y": -18,
+              "z": -54
+            },
+            "resolved": false
+          },
+          "events": [
+            {
+              "id": 37,
+              "kind": "success",
+              "position": {
+                "x": -35.72333333333335,
+                "y": -18,
+                "z": -26.939999999999536
+              },
+              "power": 1
+            }
+          ],
+          "message": "Great dodge!",
+          "successfulDodges": 1,
+          "bumps": 1,
+          "history": [
+            {
+              "kind": "punch",
+              "step": 1,
+              "id": 1
+            },
+            {
+              "kind": "punch",
+              "step": 2,
+              "id": 4
+            },
+            {
+              "kind": "punch",
+              "step": 1,
+              "id": 7
+            },
+            {
+              "kind": "punch",
+              "step": 2,
+              "id": 10
+            },
+            {
+              "kind": "punch",
+              "step": 3,
+              "id": 13
+            },
+            {
+              "kind": "kick",
+              "step": 1,
+              "id": 17
+            },
+            {
+              "kind": "web",
+              "step": 1,
+              "id": 21
+            },
+            {
+              "kind": "web",
+              "step": 2,
+              "id": 25
+            },
+            {
+              "kind": "web",
+              "step": 3,
+              "id": 29
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "complete",
+      "state": {
+        "active": true,
+        "paused": false,
+        "safe": true,
+        "health": 100,
+        "maxHealth": 100,
+        "progress": 0,
+        "progressLabel": "Every building face is climbable. Mint paths teach the route. Hold C / RB / R1 to climb onto a roof.",
+        "position": {
+          "x": -36.075000000000045,
+          "y": -18,
+          "z": -3.0249999999996136
+        },
+        "grounded": true,
+        "fps": 43,
+        "cameraAlpha": -1.5707963267948966,
+        "cameraBeta": 1.08,
+        "cameraRadius": 10.35,
+        "cameraPosition": {
+          "x": -36.07500000317817,
+          "y": -11.421751430801788,
+          "z": -12.153263301259145
+        },
+        "inputSource": "keyboard-mouse",
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "swing": {
+          "phase": "GROUNDED_OR_FREE",
+          "web": null,
+          "targetId": null,
+          "held": false,
+          "freshRequired": false,
+          "phaseTime": 0,
+          "message": "Aim at a glowing ring. Walk toward the skyline arrows.",
+          "attachments": 0,
+          "releases": 0,
+          "collisions": 0
+        },
+        "hand": {
+          "x": -35.365000000000045,
+          "y": -15.97,
+          "z": -3.5849999999996136
+        },
+        "skyline": {
+          "active": false,
+          "stage": 0,
+          "completed": false,
+          "completions": 0,
+          "anchors": [],
+          "released": false,
+          "reattached": false,
+          "leftRoof": false,
+          "lastAnchor": null,
+          "valid": true
+        },
+        "traversal": {
+          "phase": "FREE_OR_GROUNDED",
+          "surfaceId": null,
+          "targetId": null,
+          "pullId": null,
+          "webOrigin": null,
+          "phaseTime": 0,
+          "freshClimb": false,
+          "freshPull": false,
+          "heldClimb": false,
+          "heldPull": false,
+          "message": "Released safely. Let go of controls, then press again.",
+          "cameraMode": "ground"
+        },
+        "training": {
+          "active": false,
+          "stage": 0,
+          "checkpoint": 0,
+          "completed": false,
+          "completions": 0,
+          "valid": true,
+          "swingAttached": false,
+          "swingReleased": false,
+          "wallStart": null,
+          "vertical": 0,
+          "lateral": 0,
+          "ceilingStart": null,
+          "ceilingDistance": 0,
+          "pulledDistance": 0,
+          "stepped": false
+        },
+        "pullObjects": [
+          {
+            "id": "route-step",
+            "role": "PULLABLE_LIGHT",
+            "position": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "initial": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "half": {
+              "x": 1.5,
+              "y": 0.65,
+              "z": 1.5
+            },
+            "speed": 0
+          },
+          {
+            "id": "limited-crate",
+            "role": "PULLABLE_LIMITED",
+            "position": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "initial": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "half": {
+              "x": 0.75,
+              "y": 0.55,
+              "z": 0.75
+            },
+            "speed": 0
+          },
+          {
+            "id": "heavy-crate",
+            "role": "TOO_HEAVY",
+            "position": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "initial": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "half": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "speed": 0
+          },
+          {
+            "id": "ordinary-crate",
+            "role": "ORDINARY_SOLID",
+            "position": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "initial": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "half": {
+              "x": 0.9,
+              "y": 0.9,
+              "z": 0.9
+            },
+            "speed": 0
+          }
+        ],
+        "legPose": {
+          "blend": 0,
+          "phase": 0,
+          "angle": 0
+        },
+        "gait": {
+          "phase": 0.03001703617859433,
+          "weight": 2.818110529326806e-12,
+          "hips": [
+            -2.1513002895190976e-11,
+            2.1179191097755665e-11
+          ],
+          "knees": [
+            9.680775343623762e-15,
+            8.452133632344665e-12
+          ],
+          "arms": [
+            1.3983451881874134e-11,
+            -1.3766474213541183e-11
+          ],
+          "lift": -3.677221321969257e-14
+        },
+        "course": {
+          "version": 1,
+          "next": 0,
+          "completed": false,
+          "active": false,
+          "valid": true,
+          "released": true,
+          "completions": 0
+        },
+        "legWorld": [
+          {
+            "hip": {
+              "x": -36.07500076293945,
+              "y": -16.540000915527344,
+              "z": -2.805000066757202
+            },
+            "tip": {
+              "x": -36.07500076278161,
+              "y": -18.080000915527343,
+              "z": -2.805000066757202
+            },
+            "forwardDisplacement": 1.5783996332174866e-10
+          },
+          {
+            "hip": {
+              "x": -36.07500076293945,
+              "y": -16.540000915527344,
+              "z": -3.245000123977661
+            },
+            "tip": {
+              "x": -36.07500076309484,
+              "y": -18.080000915527343,
+              "z": -3.245000123977661
+            },
+            "forwardDisplacement": -1.553885908833763e-10
+          }
+        ],
+        "surfaceCameraBlend": 0,
+        "heroPitch": 0,
+        "combat": {
+          "active": true,
+          "completed": true,
+          "stage": 5,
+          "finalPart": 3,
+          "time": 48.33333333333187,
+          "serial": 67,
+          "combo": {
+            "punch": {
+              "step": 0,
+              "last": null
+            },
+            "kick": {
+              "step": 0,
+              "last": null
+            },
+            "web": {
+              "step": 0,
+              "last": null
+            }
+          },
+          "attack": null,
+          "queued": null,
+          "dodge": null,
+          "dodgeCooldown": 0,
+          "shots": [],
+          "targets": [
+            {
+              "id": "combo-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "hp": 0,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1,
+                2,
+                3
+              ],
+              "active": false
+            },
+            {
+              "id": "high-pad",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "hp": 0,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1
+              ],
+              "active": false
+            },
+            {
+              "id": "web-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38.44257398034006,
+                "y": -16.3,
+                "z": -33
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -33
+              },
+              "hp": 84,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1,
+                2,
+                3
+              ],
+              "active": false
+            },
+            {
+              "id": "final-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "hp": 0,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1,
+                2,
+                3
+              ],
+              "active": false
+            },
+            {
+              "id": "final-high",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "hp": 0,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1
+              ],
+              "active": false
+            },
+            {
+              "id": "final-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -37.53594213423866,
+                "y": -16.3,
+                "z": -4
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "hp": 84,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [
+                1,
+                2,
+                3
+              ],
+              "active": false
+            }
+          ],
+          "machine": {
+            "phase": "idle",
+            "age": 0,
+            "aim": {
+              "x": -38,
+              "y": -18,
+              "z": -54
+            },
+            "resolved": false
+          },
+          "events": [
+            {
+              "id": 67,
+              "kind": "success",
+              "position": {
+                "x": -36.075000000000045,
+                "y": -18,
+                "z": -3.0249999999996136
+              },
+              "power": 1
+            }
+          ],
+          "message": "Great dodge!",
+          "successfulDodges": 2,
+          "bumps": 1,
+          "history": [
+            {
+              "kind": "punch",
+              "step": 1,
+              "id": 1
+            },
+            {
+              "kind": "punch",
+              "step": 2,
+              "id": 4
+            },
+            {
+              "kind": "punch",
+              "step": 1,
+              "id": 7
+            },
+            {
+              "kind": "punch",
+              "step": 2,
+              "id": 10
+            },
+            {
+              "kind": "punch",
+              "step": 3,
+              "id": 13
+            },
+            {
+              "kind": "kick",
+              "step": 1,
+              "id": 17
+            },
+            {
+              "kind": "web",
+              "step": 1,
+              "id": 21
+            },
+            {
+              "kind": "web",
+              "step": 2,
+              "id": 25
+            },
+            {
+              "kind": "web",
+              "step": 3,
+              "id": 29
+            },
+            {
+              "kind": "punch",
+              "step": 1,
+              "id": 38
+            },
+            {
+              "kind": "punch",
+              "step": 2,
+              "id": 41
+            },
+            {
+              "kind": "punch",
+              "step": 3,
+              "id": 44
+            },
+            {
+              "kind": "kick",
+              "step": 1,
+              "id": 48
+            },
+            {
+              "kind": "web",
+              "step": 1,
+              "id": 52
+            },
+            {
+              "kind": "web",
+              "step": 2,
+              "id": 56
+            },
+            {
+              "kind": "web",
+              "step": 3,
+              "id": 60
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "loaded-badge",
+      "state": {
+        "active": true,
+        "paused": false,
+        "safe": true,
+        "health": 100,
+        "maxHealth": 100,
+        "progress": 0,
+        "progressLabel": "Every building face is climbable. Mint paths teach the route. Hold C / RB / R1 to climb onto a roof.",
+        "position": {
+          "x": -36.075000000000045,
+          "y": -18,
+          "z": -3.0249999999996136
+        },
+        "grounded": true,
+        "fps": 43,
+        "cameraAlpha": -1.5707963267948966,
+        "cameraBeta": 1.08,
+        "cameraRadius": 10.35,
+        "cameraPosition": {
+          "x": -36.07500000000007,
+          "y": -11.421751430801788,
+          "z": -12.153263301258821
+        },
+        "inputSource": "keyboard-mouse",
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "swing": {
+          "phase": "GROUNDED_OR_FREE",
+          "web": null,
+          "targetId": null,
+          "held": false,
+          "freshRequired": false,
+          "phaseTime": 0,
+          "message": "Aim at a glowing ring. Walk toward the skyline arrows.",
+          "attachments": 0,
+          "releases": 0,
+          "collisions": 0
+        },
+        "hand": {
+          "x": -35.51500000000004,
+          "y": -15.97,
+          "z": -2.3149999999996136
+        },
+        "skyline": {
+          "active": false,
+          "stage": 0,
+          "completed": false,
+          "completions": 0,
+          "anchors": [],
+          "released": false,
+          "reattached": false,
+          "leftRoof": false,
+          "lastAnchor": null,
+          "valid": true
+        },
+        "traversal": {
+          "phase": "FREE_OR_GROUNDED",
+          "surfaceId": null,
+          "targetId": null,
+          "pullId": null,
+          "webOrigin": null,
+          "phaseTime": 0,
+          "freshClimb": false,
+          "freshPull": false,
+          "heldClimb": false,
+          "heldPull": false,
+          "message": "South of practice: follow the Climb & Pull arrows.",
+          "cameraMode": "ground"
+        },
+        "training": {
+          "active": false,
+          "stage": 0,
+          "checkpoint": 0,
+          "completed": false,
+          "completions": 0,
+          "valid": true,
+          "swingAttached": false,
+          "swingReleased": false,
+          "wallStart": null,
+          "vertical": 0,
+          "lateral": 0,
+          "ceilingStart": null,
+          "ceilingDistance": 0,
+          "pulledDistance": 0,
+          "stepped": false
+        },
+        "pullObjects": [
+          {
+            "id": "route-step",
+            "role": "PULLABLE_LIGHT",
+            "position": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "initial": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "half": {
+              "x": 1.5,
+              "y": 0.65,
+              "z": 1.5
+            },
+            "speed": 0
+          },
+          {
+            "id": "limited-crate",
+            "role": "PULLABLE_LIMITED",
+            "position": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "initial": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "half": {
+              "x": 0.75,
+              "y": 0.55,
+              "z": 0.75
+            },
+            "speed": 0
+          },
+          {
+            "id": "heavy-crate",
+            "role": "TOO_HEAVY",
+            "position": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "initial": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "half": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "speed": 0
+          },
+          {
+            "id": "ordinary-crate",
+            "role": "ORDINARY_SOLID",
+            "position": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "initial": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "half": {
+              "x": 0.9,
+              "y": 0.9,
+              "z": 0.9
+            },
+            "speed": 0
+          }
+        ],
+        "legPose": {
+          "blend": 0,
+          "phase": 0,
+          "angle": 0
+        },
+        "gait": {
+          "phase": 0,
+          "weight": 0,
+          "hips": [
+            0,
+            0
+          ],
+          "knees": [
+            0,
+            0
+          ],
+          "arms": [
+            0,
+            0
+          ],
+          "lift": 0
+        },
+        "course": {
+          "version": 1,
+          "next": 0,
+          "completed": false,
+          "active": false,
+          "valid": true,
+          "released": true,
+          "completions": 0
+        },
+        "legWorld": [
+          {
+            "hip": {
+              "x": -36.29500198364258,
+              "y": -16.540000915527344,
+              "z": -3.0250000953674316
+            },
+            "tip": {
+              "x": -36.29500198364258,
+              "y": -18.080000915527343,
+              "z": -3.0250000953673872
+            },
+            "forwardDisplacement": 4.440892098500626e-14
+          },
+          {
+            "hip": {
+              "x": -35.85499954223633,
+              "y": -16.540000915527344,
+              "z": -3.0250000953674316
+            },
+            "tip": {
+              "x": -35.85499954223633,
+              "y": -18.080000915527343,
+              "z": -3.025000095367475
+            },
+            "forwardDisplacement": -4.3520742565306136e-14
+          }
+        ],
+        "surfaceCameraBlend": 0,
+        "heroPitch": 0,
+        "combat": {
+          "active": false,
+          "completed": true,
+          "stage": 0,
+          "finalPart": 0,
+          "time": 0.05,
+          "serial": 0,
+          "combo": {
+            "punch": {
+              "step": 0,
+              "last": null
+            },
+            "kick": {
+              "step": 0,
+              "last": null
+            },
+            "web": {
+              "step": 0,
+              "last": null
+            }
+          },
+          "attack": null,
+          "queued": null,
+          "dodge": null,
+          "dodgeCooldown": 0,
+          "shots": [],
+          "targets": [
+            {
+              "id": "combo-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "hp": 80,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "high-pad",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "hp": 32,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "web-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -33
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -33
+              },
+              "hp": 160,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "hp": 80,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-high",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "hp": 32,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "hp": 160,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            }
+          ],
+          "machine": {
+            "phase": "idle",
+            "age": 0,
+            "aim": {
+              "x": -38,
+              "y": -18,
+              "z": -54
+            },
+            "resolved": false
+          },
+          "events": [],
+          "message": "Pause → Combat Playground to begin. J / K / L / F are combat controls.",
+          "successfulDodges": 0,
+          "bumps": 0,
+          "history": []
+        }
+      }
+    },
+    {
+      "name": "traversal-return",
+      "state": {
+        "active": true,
+        "paused": false,
+        "safe": true,
+        "health": 100,
+        "maxHealth": 100,
+        "progress": 0,
+        "progressLabel": "Every building face is climbable. Mint paths teach the route. Hold C / RB / R1 to climb onto a roof.",
+        "position": {
+          "x": -38,
+          "y": -18,
+          "z": -54
+        },
+        "grounded": true,
+        "fps": 42,
+        "cameraAlpha": -1.5707963267948966,
+        "cameraBeta": 1.08,
+        "cameraRadius": 10.35,
+        "cameraPosition": {
+          "x": -37.99999168248328,
+          "y": -11.421751430801788,
+          "z": -63.12804304909554
+        },
+        "inputSource": "keyboard-mouse",
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "swing": {
+          "phase": "GROUNDED_OR_FREE",
+          "web": null,
+          "targetId": null,
+          "held": false,
+          "freshRequired": false,
+          "phaseTime": 0,
+          "message": "Aim at a glowing ring. Walk toward the skyline arrows.",
+          "attachments": 0,
+          "releases": 0,
+          "collisions": 0
+        },
+        "hand": {
+          "x": -37.44,
+          "y": -15.97,
+          "z": -53.29
+        },
+        "skyline": {
+          "active": false,
+          "stage": 0,
+          "completed": false,
+          "completions": 0,
+          "anchors": [],
+          "released": false,
+          "reattached": false,
+          "leftRoof": false,
+          "lastAnchor": null,
+          "valid": true
+        },
+        "traversal": {
+          "phase": "FREE_OR_GROUNDED",
+          "surfaceId": null,
+          "targetId": null,
+          "pullId": null,
+          "webOrigin": null,
+          "phaseTime": 0.09333333333333335,
+          "freshClimb": false,
+          "freshPull": false,
+          "heldClimb": false,
+          "heldPull": false,
+          "message": "Released safely. Let go of controls, then press again.",
+          "cameraMode": "ground"
+        },
+        "training": {
+          "active": false,
+          "stage": 0,
+          "checkpoint": 0,
+          "completed": false,
+          "completions": 0,
+          "valid": true,
+          "swingAttached": false,
+          "swingReleased": false,
+          "wallStart": null,
+          "vertical": 0,
+          "lateral": 0,
+          "ceilingStart": null,
+          "ceilingDistance": 0,
+          "pulledDistance": 0,
+          "stepped": false
+        },
+        "pullObjects": [
+          {
+            "id": "route-step",
+            "role": "PULLABLE_LIGHT",
+            "position": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "initial": {
+              "x": 0,
+              "y": 0.65,
+              "z": -51
+            },
+            "half": {
+              "x": 1.5,
+              "y": 0.65,
+              "z": 1.5
+            },
+            "speed": 0
+          },
+          {
+            "id": "limited-crate",
+            "role": "PULLABLE_LIMITED",
+            "position": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "initial": {
+              "x": 4,
+              "y": 0.55,
+              "z": -57
+            },
+            "half": {
+              "x": 0.75,
+              "y": 0.55,
+              "z": 0.75
+            },
+            "speed": 0
+          },
+          {
+            "id": "heavy-crate",
+            "role": "TOO_HEAVY",
+            "position": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "initial": {
+              "x": 4,
+              "y": 1,
+              "z": -49
+            },
+            "half": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "speed": 0
+          },
+          {
+            "id": "ordinary-crate",
+            "role": "ORDINARY_SOLID",
+            "position": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "initial": {
+              "x": 7,
+              "y": 0.9,
+              "z": -55
+            },
+            "half": {
+              "x": 0.9,
+              "y": 0.9,
+              "z": 0.9
+            },
+            "speed": 0
+          }
+        ],
+        "legPose": {
+          "blend": 0,
+          "phase": 0,
+          "angle": 0
+        },
+        "gait": {
+          "phase": 0,
+          "weight": 0,
+          "hips": [
+            0,
+            0
+          ],
+          "knees": [
+            0,
+            0
+          ],
+          "arms": [
+            0,
+            0
+          ],
+          "lift": 0
+        },
+        "course": {
+          "version": 1,
+          "next": 0,
+          "completed": false,
+          "active": false,
+          "valid": true,
+          "released": true,
+          "completions": 0
+        },
+        "legWorld": [
+          {
+            "hip": {
+              "x": -38.220001220703125,
+              "y": -16.540000915527344,
+              "z": -54
+            },
+            "tip": {
+              "x": -38.220001220703125,
+              "y": -18.080000915527343,
+              "z": -54
+            },
+            "forwardDisplacement": 0
+          },
+          {
+            "hip": {
+              "x": -37.779998779296875,
+              "y": -16.540000915527344,
+              "z": -54
+            },
+            "tip": {
+              "x": -37.779998779296875,
+              "y": -18.080000915527343,
+              "z": -54
+            },
+            "forwardDisplacement": 0
+          }
+        ],
+        "surfaceCameraBlend": 0,
+        "heroPitch": 0,
+        "combat": {
+          "active": false,
+          "completed": true,
+          "stage": 0,
+          "finalPart": 0,
+          "time": 0.06666666666666667,
+          "serial": 0,
+          "combo": {
+            "punch": {
+              "step": 0,
+              "last": null
+            },
+            "kick": {
+              "step": 0,
+              "last": null
+            },
+            "web": {
+              "step": 0,
+              "last": null
+            }
+          },
+          "attack": null,
+          "queued": null,
+          "dodge": null,
+          "dodgeCooldown": 0,
+          "shots": [],
+          "targets": [
+            {
+              "id": "combo-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -49
+              },
+              "hp": 80,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "high-pad",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -41
+              },
+              "hp": 32,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "web-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -33
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -33
+              },
+              "hp": 160,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-box",
+              "kind": "box",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -13
+              },
+              "hp": 80,
+              "maxHp": 80,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-high",
+              "kind": "high",
+              "position": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "home": {
+                "x": -38,
+                "y": -14.25,
+                "z": -9
+              },
+              "hp": 32,
+              "maxHp": 32,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            },
+            {
+              "id": "final-dummy",
+              "kind": "dummy",
+              "position": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "home": {
+                "x": -38,
+                "y": -16.3,
+                "z": -4
+              },
+              "hp": 160,
+              "maxHp": 160,
+              "wrap": 0,
+              "wrappedOnce": false,
+              "released": false,
+              "flash": 0,
+              "hits": [],
+              "active": false
+            }
+          ],
+          "machine": {
+            "phase": "idle",
+            "age": 0,
+            "aim": {
+              "x": -38,
+              "y": -18,
+              "z": -54
+            },
+            "resolved": false
+          },
+          "events": [],
+          "message": "Pause → Combat Playground to begin. J / K / L / F are combat controls.",
+          "successfulDodges": 0,
+          "bumps": 0,
+          "history": []
+        }
+      }
+    }
+  ],
+  "errors": []
+}

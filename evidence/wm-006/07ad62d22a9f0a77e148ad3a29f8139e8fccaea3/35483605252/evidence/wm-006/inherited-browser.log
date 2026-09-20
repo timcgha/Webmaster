@@ -1,0 +1,86 @@
+
+Running 53 tests using 1 worker
+
+  ok  1 [chromium] › e2e\wm003-remediation.spec.ts:22:1 › WM003 R1 genuine roof2 checkpoint and manual save survive reload (22.2s)
+  ok  2 [chromium] › e2e\wm003-remediation.spec.ts:77:1 › WM003 R1 standing on dynamic step still disables both save actions (8.9s)
+  ok  3 [chromium] › e2e\wm005-climb.spec.ts:7:30 › WM005 unmarked east facade street-to-roof keyboard-mouse (56.3s)
+  ok  4 [chromium] › e2e\wm005-climb.spec.ts:7:30 › WM005 unmarked east facade street-to-roof semantic-controller (1.5m)
+  ok  5 [chromium] › e2e\wm005-climb.spec.ts:21:30 › WM005 visible face-up head-first ceiling and challenge top-out keyboard-mouse (56.7s)
+  ok  6 [chromium] › e2e\wm005-climb.spec.ts:21:30 › WM005 visible face-up head-first ceiling and challenge top-out semantic-controller (45.1s)
+  ok  7 [chromium] › e2e\wm006-refresh-current-course.spec.ts:55:31 › WM005 two complete circuit laps plus ground recovery keyboard-mouse (4.6m)
+  ok  8 [chromium] › e2e\wm006-refresh-current-course.spec.ts:55:31 › WM005 two complete circuit laps plus ground recovery semantic-controller (5.7m)
+  ok  9 [chromium] › e2e\wm006-refresh-current-course.spec.ts:67:1 › WM005 street safe save reopen Continue preserves position and generations (14.7s)
+  ok 10 [chromium] › e2e\wm006-refresh-current-course.spec.ts:81:60 › WM005 insufficient momentum vertical orbit keyboard-mouse (50.3s)
+  ok 11 [chromium] › e2e\wm006-refresh-current-course.spec.ts:81:60 › WM005 sufficient momentum vertical orbit keyboard-mouse (31.0s)
+  ok 12 [chromium] › e2e\wm006-refresh-current-course.spec.ts:81:60 › WM005 insufficient momentum vertical orbit semantic-controller (55.7s)
+  ok 13 [chromium] › e2e\wm006-refresh-current-course.spec.ts:81:60 › WM005 sufficient momentum vertical orbit semantic-controller (35.8s)
+  ok 14 [chromium] › e2e\wm006-refresh-current-course.spec.ts:99:30 › WM005 held web survives rooftop contact keyboard-mouse (13.5s)
+  ok 15 [chromium] › e2e\wm006-refresh-current-course.spec.ts:99:30 › WM005 held web survives rooftop contact semantic-controller (18.2s)
+  ok 16 [chromium] › e2e\wm006-refresh-wm001.spec.ts:166:3 › WM-001 rendered keyboard and mouse journey › moves, jumps, orbits, recenters, collides, pauses safely, and completes the real practice route (23.4s)
+  ok 17 [chromium] › e2e\wm006-refresh-wm001.spec.ts:284:3 › WM-001 rendered keyboard and mouse journey › recovers outside the bounded street, reduces health, and performs a clean zero-health retry (9.8s)
+  ok 18 [chromium] › e2e\wm006-refresh-wm001.spec.ts:298:3 › WM-001 rendered keyboard and mouse journey › explains and enforces safe-state saving while airborne (10.1s)
+  ok 19 [chromium] › e2e\wm006-refresh-wm001.spec.ts:319:3 › WM-001 rendered simulated Gamepad journey › uses gamepad alone for new game, movement, camera, pause, save, save-and-quit, Continue, and Load (18.4s)
+  x  20 [chromium] › e2e\wm006-refresh-wm001.spec.ts:378:3 › WM-001 rendered simulated Gamepad journey › disconnect releases motion and reconnect requires neutral then fresh input (7.9s)
+  ok 21 [chromium] › e2e\wm006-refresh-wm001.spec.ts:409:3 › WM-001 rendered simulated Gamepad journey › shows PlayStation-style prompts without changing standard semantic actions (4.9s)
+  ok 22 [chromium] › e2e\wm006-refresh-wm001.spec.ts:417:3 › WM-001 rendered simulated Gamepad journey › operates persisted main and pause settings without mouse or typing (16.7s)
+  ok 23 [chromium] › e2e\wm006-refresh-wm001.spec.ts:458:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › makes exposure, release, ready, HUD status, and local copy diagnostics persistent (12.0s)
+  ok 24 [chromium] › e2e\wm006-refresh-wm001.spec.ts:493:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps keyboard available when the Gamepad API is unavailable (3.0s)
+  ok 25 [chromium] › e2e\wm006-refresh-wm001.spec.ts:507:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › rejects an unsupported mapping visibly while keyboard remains available (3.3s)
+  ok 26 [chromium] › e2e\wm006-refresh-wm001.spec.ts:519:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › selects active index 1 over idle index 0 and ignores noisy extra axes (5.4s)
+  ok 27 [chromium] › e2e\wm006-refresh-wm001.spec.ts:543:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › supports connection after load, disconnect cleanup, keyboard fallback, and deliberate replacement (8.5s)
+  ok 28 [chromium] › e2e\wm006-refresh-wm001.spec.ts:585:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › cleans up held movement on blur/focus and requires neutral then fresh input (7.0s)
+  ok 29 [chromium] › e2e\wm006-refresh-wm001.spec.ts:612:3 › WM-001 controller remediation lifecycle (simulated Gamepad API) › keeps controller status and local diagnostics usable at a representative iPad landscape viewport (8.9s)
+  ok 30 [chromium] › e2e\wm006-refresh-wm001.spec.ts:632:1 › keeps occupied-slot bytes unchanged when replacement is cancelled (13.6s)
+  ok 31 [chromium] › e2e\wm006-refresh-wm001.spec.ts:649:1 › keeps the prior committed save and remains paused when Save & Quit write fails (10.4s)
+  ok 32 [chromium] › e2e\wm006-refresh-wm001.spec.ts:671:1 › loads only the prior commit after pointer verification fails, then permits a clean retry (15.6s)
+  ok 33 [chromium] › e2e\wm006-refresh-wm001.spec.ts:730:1 › renders storage-unavailable records explicitly and refuses destructive replacement (11.2s)
+  ok 34 [chromium] › e2e\wm006-refresh-wm001.spec.ts:762:1 › remains controllable under a second real-time CPU/frame profile (10.0s)
+  ok 35 [chromium] › e2e\wm006-refresh-wm001.spec.ts:787:1 › persists a Hard run after closing and reopening the same browser profile and exact origin (14.8s)
+  ok 36 [chromium] › e2e\wm006-refresh-wm001.spec.ts:839:1 › labels corrupt and incompatible save fixtures without hiding valid choices (5.7s)
+  ok 37 [chromium] › e2e\wm006-refresh-wm002.spec.ts:70:1 › WM-002 keyboard continuous four-gap route, safe save and same-origin reopen (35.0s)
+  ok 38 [chromium] › e2e\wm006-refresh-wm002.spec.ts:229:1 › WM-002 simulated PlayStation controller-only complete route and safe save/load (45.6s)
+  ok 39 [chromium] › e2e\wm006-refresh-wm002.spec.ts:268:1 › WM-002 targeted anchor, unsafe save, pause, focus, fall recovery, invalid finish and replay cleanup (17.4s)
+  ok 40 [chromium] › e2e\wm006-refresh-wm002.spec.ts:334:1 › WM-002 LT disconnect clears web, reconnect needs neutral and diagnostics retain swing mapping (11.1s)
+  ok 41 [chromium] › e2e\wm006-refresh-wm002.spec.ts:376:3 › WM-002 continuous keyboard route under near-30fps render schedule (28.4s)
+  ok 42 [chromium] › e2e\wm006-refresh-wm002.spec.ts:376:3 › WM-002 continuous keyboard route under uneven render schedule (28.5s)
+  ok 43 [chromium] › e2e\wm006-refresh-wm002.spec.ts:424:1 › WM-002 repeated pause, replay, save and load keeps runtime resources bounded (33.0s)
+  ok 44 [chromium] › e2e\wm006-refresh-wm003.spec.ts:20:1 › WM003 ordinary keyboard combined swing climb ceiling pull route (56.1s)
+  ok 45 [chromium] › e2e\wm006-refresh-wm003.spec.ts:59:1 › WM003 simulated PlayStation complete route, controller pause save load and keyboard fallback (53.5s)
+  ok 46 [chromium] › e2e\wm006-refresh-wm003.spec.ts:123:3 › WM003 loads exact historical WM-001 writer records without changing old generations (3.4s)
+  ok 47 [chromium] › e2e\wm006-refresh-wm003.spec.ts:123:3 › WM003 loads exact historical WM-002 writer records without changing old generations (2.7s)
+  ok 48 [chromium] › e2e\wm006-refresh-wm003.spec.ts:167:1 › WM003 historical WM002 save to full swing plus climb route, safe save and real browser close/reopen (1.0m)
+  ok 49 [chromium] › e2e\wm006-refresh-wm003.spec.ts:282:1 › WM003 negative lifecycle probes: wall pause focus pull interruption heavy feedback and blocked web (27.5s)
+  ok 50 [chromium] › e2e\wm006-refresh-wm003.spec.ts:411:1 › WM003 RB and LB disconnect cleanup with neutral reconnect and keyboard fallback (10.2s)
+  ok 51 [chromium] › e2e\wm006-refresh-wm003.spec.ts:558:3 › WM003 complete route under near-30 rendered timing (35.1s)
+  ok 52 [chromium] › e2e\wm006-refresh-wm003.spec.ts:558:3 › WM003 complete route under uneven rendered timing (36.6s)
+  ok 53 [chromium] › e2e\wm006-refresh-wm003.spec.ts:615:1 › WM003 repeated replay pause save load clears transients and bounds resources (44.8s)
+
+
+  1) [chromium] › e2e\wm006-refresh-wm001.spec.ts:378:3 › WM-001 rendered simulated Gamepad journey › disconnect releases motion and reconnect requires neutral then fresh input 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > -5.771666666666671
+    Received:   -5.771666666666671
+
+      404 |     await setPad(page, { axes: [0, -1, 0, 0] });
+      405 |     await page.waitForTimeout(300);
+    > 406 |     expect((await state(page)).position.z).toBeGreaterThan(disconnectedAt.z);
+          |                                            ^
+      407 |   });
+      408 |
+      409 |   test("shows PlayStation-style prompts without changing standard semantic actions", async ({ page }) => {
+        at D:\a\Webmaster\Webmaster\candidate\e2e\wm006-refresh-wm001.spec.ts:406:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-wm006\inherited\wm006-refresh-wm001-WM-001-228e7-es-neutral-then-fresh-input-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-wm006\inherited\wm006-refresh-wm001-WM-001-228e7-es-neutral-then-fresh-input-chromium\error-context.md
+
+  Slow test file: [chromium] › e2e\wm006-refresh-current-course.spec.ts (14.0m)
+  Slow test file: [chromium] › e2e\wm006-refresh-wm003.spec.ts (5.5m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 failed
+    [chromium] › e2e\wm006-refresh-wm001.spec.ts:378:3 › WM-001 rendered simulated Gamepad journey › disconnect releases motion and reconnect requires neutral then fresh input 
+  52 passed (31.2m)
