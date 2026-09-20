@@ -71,7 +71,7 @@ jobs:
       - name: Complete keyboard and semantic-controller course, poses and audio
         run: |
           set -euo pipefail
-          pnpm exec playwright test -c playwright.wm006.config.ts e2e/wm006.spec.ts e2e/wm006-visual.spec.ts e2e/wm006-cleanup.spec.ts 2>&1 | tee evidence/wm-006/browser.log
+          pnpm exec playwright test -c playwright.wm006.config.ts e2e/wm006.spec.ts e2e/wm006-c3-visual.spec.ts e2e/wm006-cleanup.spec.ts e2e/wm006-followup.spec.ts 2>&1 | tee evidence/wm-006/browser.log
       - name: Preserve affected rendered evidence immediately
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

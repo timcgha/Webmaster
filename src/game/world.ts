@@ -1,4 +1,5 @@
 import HavokPhysics from "@babylonjs/havok";
+import { newRenderQuality, sampleRenderQuality } from "../core/render-quality";
 import { ArcRotateCamera } from "@babylonjs/core/Cameras/arcRotateCamera";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
@@ -157,6 +158,7 @@ export class GameWorld {
   private fpsWindowAt = performance.now();
   private fpsFrameCount = 0;
   private fps = 60;
+  private renderQuality = newRenderQuality();
   private readonly fpsSamples: number[] = [];
   private lastHudAt = 0;
   private pendingJump = false;
@@ -895,11 +897,11 @@ export class GameWorld {
       );
       this.fpsSamples.push(this.fps);
       if (this.fpsSamples.length > 60) this.fpsSamples.shift();
-      if (this.settings.adaptiveQuality && this.fps < 30) {
-        this.engine.setHardwareScalingLevel(
-          Math.min(2.25, this.engine.getHardwareScalingLevel() + 0.2),
-        );
-      }
+      if (this.settings.adaptiveQuality && this.active && !this.paused && !document.hidden) {
+        this.renderQuality = sampleRenderQuality(this.renderQuality, this.fps);
+        if (this.engine.getHardwareScalingLevel() !== this.renderQuality.scale)
+          this.engine.setHardwareScalingLevel(this.renderQuality.scale);
+      } else this.renderQuality = { ...this.renderQuality, slow: 0, fast: 0 };
       this.fpsWindowAt = now;
       this.fpsFrameCount = 0;
     }
@@ -1442,10 +1444,8 @@ export class GameWorld {
   applySettings(settings: GameSettings): void {
     this.settings = { ...settings };
     this.combatView?.audio.setEnabled(settings.combatSound !== false);
-    const adaptiveScale = window.innerWidth >= 1600 ? 2.25 : 1.4;
-    this.engine.setHardwareScalingLevel(
-      settings.adaptiveQuality ? adaptiveScale : 1,
-    );
+    this.renderQuality = newRenderQuality();
+    this.engine.setHardwareScalingLevel(1);
   }
 
   performanceSummary(): {

@@ -1,0 +1,16 @@
+# WM-006 sponsor follow-up work record
+
+Authority: product-operating-model@2226f64caadce4505b497dd849a693c53777ac69, changes/WM-006-playtest-followup.md r1. Adopted register revision123. Sole WEBMASTER_PRODUCT_OWNER, SELF_REVIEW. Original corrections3/3 remain; this is separately authorized bounded correction4. No merge, root replacement or spending.
+
+Sponsor device: ROG gaming laptop, Edge. Punch/kick appearance praised. Roof contacts/low swing launch, fast-swing blur and hidden combat entry reported. GPU, display refresh, Edge version and actual hardware frame timing unknown.
+
+## Implementation and diagnostic findings
+- Grounded web attachment had no automatic lift. Add one 12m/s upward impulse only on fresh successful grounded attachment at horizontal speed below1m/s. Airborne catches, held inputs, invalid targets and running jumps are unchanged. Swept collisions retained. Ordinary jump remains8.2m/s.
+- Adaptive rendering formerly started at scaling2.25 on wide windows (about44% linear resolution) or1.4, and only reduced clarity further after slow frames. Now start at full resolution; degrade after two consecutive sub30FPS active seconds; recover0.1 after five consecutive55+FPS seconds, bounded1–2.25. Neither a proven hardware FPS diagnosis nor a claim of native-resolution performance.
+- Add visible traversal HUD combat-menu prompt/button, explicit Esc/Menu/Options instructions, and circuit-completed invitation. Existing safe pause/menu transition and optional combat entry remain intact; no false physical waypoint.
+
+## Development verification (not final SELF_REVIEW_PASS)
+First prototype boosted running jumps too: full suite415 passed/14 failed, including route overshoots. Narrowed assist to near-stationary attachment. No assertions weakened or test route changed to hide overshoot. Within initial development of the single follow-up package, not a new returned-candidate correction cycle.
+Recheck429/429 deterministic tests across17files PASS, including all existing circuits, plus six new launch/quality tests. TypeScript PASS, production build PASS (existing large-chunk advisory), storage6/6 PASS. Frozen install succeeded after restoring missing local dependencies; predecessor broken dependency symlink preserved separately, previous untracked evidence retained.
+Browser CLI from the browser-verification skill is unavailable locally. Reuse the existing prescribed Windows full-Chromium workflow and browser-frame input harness. New browser tests check real stationary catches and HUD/menu entry on keyboard and semantic pad. Existing complete two-lap journeys additionally check the completion invitation and enter combat. Reuse proven continuous visual observer instead of known brief-pose roundtrip observer; preserve historical failed visual run and original review attribution.
+Pending: fresh rendered journeys, visual inspection, paired performance/raw-frame review, compiled historical saves, audits and source-bound clean payload. Current public preview remains C3. No future source inherits its exact-source PASS. Physical Edge/ROG outcome remains sponsor verification, not inferred from Chromium/SwiftShader.

@@ -758,6 +758,11 @@ class WebmasterApp {
         <span data-hud="run"></span>
         <small data-hud="position"></small>
         <small data-hud="course"></small>
+        <div data-hud="combat-entry">
+          <strong data-hud="combat-invite"></strong>
+          <small>Esc / Menu / Options → Combat Playground</small>
+          <button type="button" data-combat-menu>Open training menu</button>
+        </div>
       </section>
       <section class="hud-card controller-hud-card" data-controller-status-card role="status" aria-live="polite">
         <span class="hud-kicker">CONTROLLER</span>
@@ -777,7 +782,13 @@ class WebmasterApp {
       <section class="hud-card traversal-card" aria-label="Climb and Pull status"><strong data-hud="traversal-state"></strong><small data-hud="traversal-message"></small></section>
       <p id="fixture-badge" class="fixture-badge hidden"></p>
       `;
+      hudLayer.querySelector<HTMLButtonElement>('[data-combat-menu]')!.addEventListener('click', () => {
+        if (this.screen === 'play') this.pauseGame();
+      });
     }
+    hudLayer.querySelector<HTMLElement>("[data-hud='combat-entry']")!.classList.toggle('hidden', frame.combat.active);
+    hudLayer.querySelector<HTMLElement>("[data-hud='combat-invite']")!.textContent = frame.course.completed
+      ? 'Rings complete! Try combat training next.' : 'Try punching, kicking, webs & dodges';
     hudLayer.querySelector<HTMLElement>("[data-hud='course']")!.textContent = courseLabel(frame.course, frame.position.y < -1);
     hudLayer.querySelector<HTMLElement>('.combat-card')!.classList.toggle('hidden',!frame.combat.active);
     hudLayer.querySelector<HTMLElement>("[data-hud='combat-message']")!.textContent=frame.combat.message;

@@ -333,7 +333,11 @@ export function stepSwing(
     const accel = moving ? 24 : 30;
     m.velocity.x = approach(m.velocity.x, desire.x * speed, accel * dt);
     m.velocity.z = approach(m.velocity.z, desire.z * speed, accel * dt);
-    if (input.jumpPressed) m.velocity.y = 8.2;
+    // A fresh standing attachment launches once. Airborne catches and a held
+    // web never add lift; swept collision still controls the complete motion.
+    if (attached && Math.hypot(motion.velocity.x, motion.velocity.z) < 1)
+      m.velocity.y = Math.max(m.velocity.y, 12);
+    else if (input.jumpPressed) m.velocity.y = 8.2;
   } else if (moving) {
     m.velocity.x += desire.x * 9 * dt;
     m.velocity.z += desire.z * 9 * dt;
@@ -415,4 +419,3 @@ export function stepSwing(
   }
   return { motion: m, swing: s, landed, attached, released };
 }
-

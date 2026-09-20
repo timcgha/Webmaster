@@ -36,5 +36,14 @@ for(const n of ['wm001','wm002','wm003']){
  const target=`e2e/wm006-refresh-${n}.spec.ts`;fs.writeFileSync(target,s);transformed.push({original:`e2e/${n}.spec.ts`,overlay:target});
 }
 let s=fs.readFileSync('e2e/wm005.spec.ts','utf8').replace('const out="evidence/wm-005/captures"','const out="evidence/wm-006/regression-refresh/current-course"');
+s='import {menuChoice} from "./routes/wm006-route";\n'+s;
+const finish='await replayStart(page,c,pad);await fullCourse(page,label);expect(errors).toEqual([]);';
+assert.ok(s.includes(finish),'recognized complete course handoff');
+s=s.replace(finish,`await replayStart(page,c,pad);await fullCourse(page,label);
+  await expect(page.locator('[data-hud="combat-invite"]')).toHaveText('Rings complete! Try combat training next.');
+  await hudLayout(page,'followup-'+label+'-rings-complete');
+  if(pad)await padTap(page,9);else await page.getByRole('button',{name:'Open training menu',exact:true}).click();
+  await menuChoice(page,pad,/^Combat Playground/);await expect(page.locator('.combat-card')).toBeVisible();
+  expect((await state(page)).combat.active).toBe(true);await shot(page,label+'-rings-to-combat');expect(errors).toEqual([]);`);
 fs.writeFileSync('e2e/wm006-refresh-current-course.spec.ts',s);
 fs.writeFileSync(`${root}/method.json`,JSON.stringify({source:process.env.WM_SOURCE,tree:process.env.WM_TREE,transformed,reason:'Refresh outdated text and ambiguous selectors; replace transport-timed roof-edge input with the existing released browser-frame semantic sequencer; persistent browser uses prescribed full Chromium. All original progression, save, pause/focus and lifecycle assertions remain. Original failed evidence preserved. Additional current two-lap course tests exercise full twenty-anchor route on both input routes.',productMutation:false},null,2));
