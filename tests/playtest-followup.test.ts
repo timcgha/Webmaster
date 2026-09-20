@@ -48,6 +48,12 @@ describe('adaptive clarity hysteresis',()=>{
     let q=sampleRenderQuality(sampleRenderQuality(newRenderQuality(),25),25);expect(q.scale).toBe(1.2);
     q=sampleRenderQuality(sampleRenderQuality(q,25),25);expect(q.scale).toBe(1.4);
   });
+  it('keeps stepping past a mid-scale plateau under 42 FPS but leaves native 40 FPS alone',()=>{
+    expect(sampleRenderQuality(sampleRenderQuality(newRenderQuality(),40),40)).toEqual(newRenderQuality());
+    let q={scale:1.9,slow:0,fast:0};
+    q=sampleRenderQuality(sampleRenderQuality(q,35),35);expect(q.scale).toBe(2.1);
+    q=sampleRenderQuality(sampleRenderQuality(q,35),35);expect(q.scale).toBe(2.25);
+  });
   it('does not count invalid or middling samples toward recovery',()=>{
     let q={scale:2,slow:0,fast:4};
     for(const fps of [NaN,Infinity,0,45])expect(sampleRenderQuality(q,fps)).toEqual({scale:2,slow:0,fast:0});
