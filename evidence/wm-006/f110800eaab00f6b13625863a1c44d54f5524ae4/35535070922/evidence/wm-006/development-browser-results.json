@@ -1,0 +1,407 @@
+{
+  "config": {
+    "argv": [
+      "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+      "D:\\a\\Webmaster\\Webmaster\\candidate\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "-c",
+      "playwright.wm006.config.ts",
+      "e2e/wm006.spec.ts",
+      "e2e/wm006-c3-visual.spec.ts",
+      "e2e/wm006-cleanup.spec.ts",
+      "e2e/wm006-followup.spec.ts"
+    ],
+    "configFile": "D:\\a\\Webmaster\\Webmaster\\candidate\\playwright.wm006.config.ts",
+    "rootDir": "D:/a/Webmaster/Webmaster/candidate/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": true,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": {},
+    "maxFailures": 0,
+    "metadata": {
+      "ci": {
+        "commitHref": "https://github.com/timcgha/Webmaster/commit/f110800eaab00f6b13625863a1c44d54f5524ae4",
+        "commitHash": "f110800eaab00f6b13625863a1c44d54f5524ae4",
+        "buildHref": "https://github.com/timcgha/Webmaster/actions/runs/35535070922"
+      },
+      "gitCommit": {
+        "shortHash": "f110800",
+        "hash": "f110800eaab00f6b13625863a1c44d54f5524ae4",
+        "subject": "WM-006: break adaptive mid-scale plateau under 42 FPS",
+        "body": "WM-006: break adaptive mid-scale plateau under 42 FPS\n\nOnce already scaled down, keep treating sub-42 FPS as stress so 1080p\ncombat cannot stick near scale 1.9 at ~35 FPS on SwiftShader. Native\nfull-resolution still only degrades below 30 FPS.\n\nCo-authored-by: timcgha <timcgha@users.noreply.github.com>\n",
+        "author": {
+          "name": "Cursor Agent",
+          "email": "cursoragent@cursor.com",
+          "time": 1789935444000
+        },
+        "committer": {
+          "name": "Cursor Agent",
+          "email": "cursoragent@cursor.com",
+          "time": 1789935444000
+        },
+        "branch": "HEAD"
+      },
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/a/Webmaster/Webmaster/candidate/test-results-wm006/development",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "ci": {
+            "commitHref": "https://github.com/timcgha/Webmaster/commit/f110800eaab00f6b13625863a1c44d54f5524ae4",
+            "commitHash": "f110800eaab00f6b13625863a1c44d54f5524ae4",
+            "buildHref": "https://github.com/timcgha/Webmaster/actions/runs/35535070922"
+          },
+          "gitCommit": {
+            "shortHash": "f110800",
+            "hash": "f110800eaab00f6b13625863a1c44d54f5524ae4",
+            "subject": "WM-006: break adaptive mid-scale plateau under 42 FPS",
+            "body": "WM-006: break adaptive mid-scale plateau under 42 FPS\n\nOnce already scaled down, keep treating sub-42 FPS as stress so 1080p\ncombat cannot stick near scale 1.9 at ~35 FPS on SwiftShader. Native\nfull-resolution still only degrades below 30 FPS.\n\nCo-authored-by: timcgha <timcgha@users.noreply.github.com>\n",
+            "author": {
+              "name": "Cursor Agent",
+              "email": "cursoragent@cursor.com",
+              "time": 1789935444000
+            },
+            "committer": {
+              "name": "Cursor Agent",
+              "email": "cursoragent@cursor.com",
+              "time": 1789935444000
+            },
+            "branch": "HEAD"
+          },
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/a/Webmaster/Webmaster/candidate/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "wm006*.spec.ts",
+          "wm005-climb.spec.ts",
+          "wm001.spec.ts",
+          "wm003.spec.ts",
+          "wm003-remediation.spec.ts",
+          "wm002.spec.ts"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/wm-006/development-browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "node scripts/wm005-devserver.mjs",
+      "url": "http://127.0.0.1:4173",
+      "timeout": 120000,
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "wm006-c3-visual.spec.ts",
+      "file": "wm006-c3-visual.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "WM006 continuous nine-attack observation, clear moving views and mute",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 150000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 72622,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-20T20:18:55.934Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "881aa298a529224581eb-7841a2aa029e4e32fcc6",
+          "file": "wm006-c3-visual.spec.ts",
+          "line": 6,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "wm006-cleanup.spec.ts",
+      "file": "wm006-cleanup.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "WM006 combat lifecycle cleanup keyboard-focus",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 21008,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-20T20:20:09.067Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "bdd0c1ab3dedbbb1647f-98fb2b1e9ae300ee8e19",
+          "file": "wm006-cleanup.spec.ts",
+          "line": 6,
+          "column": 31
+        },
+        {
+          "title": "WM006 combat lifecycle cleanup controller-disconnect",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 24149,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-20T20:20:30.116Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "bdd0c1ab3dedbbb1647f-c661882713790dacbca9",
+          "file": "wm006-cleanup.spec.ts",
+          "line": 6,
+          "column": 31
+        }
+      ]
+    },
+    {
+      "title": "wm006-followup.spec.ts",
+      "file": "wm006-followup.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "standing web launch and discoverable combat entry keyboard",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 41933,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-20T20:20:54.312Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3550850b0e3fffc22cec-4edc7094b199dd42c05e",
+          "file": "wm006-followup.spec.ts",
+          "line": 7,
+          "column": 32
+        },
+        {
+          "title": "standing web launch and discoverable combat entry controller",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 29556,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-20T20:21:36.262Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3550850b0e3fffc22cec-f8e828fb008afa58d852",
+          "file": "wm006-followup.spec.ts",
+          "line": 7,
+          "column": 32
+        }
+      ]
+    },
+    {
+      "title": "wm006.spec.ts",
+      "file": "wm006.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "WM006 complete combat course, cleanup, saves and traversal return — keyboard-mouse",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 55185,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-20T20:22:05.839Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "03bc61514cbf57bf0614-7dac284e4428df4cb0fa",
+          "file": "wm006.spec.ts",
+          "line": 12,
+          "column": 3
+        },
+        {
+          "title": "WM006 complete combat course, cleanup, saves and traversal return — semantic-controller",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 59110,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-20T20:23:01.037Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "03bc61514cbf57bf0614-849a65c477d5be7407b5",
+          "file": "wm006.spec.ts",
+          "line": 12,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-20T20:18:54.555Z",
+    "duration": 305912.141,
+    "expected": 7,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
