@@ -38,11 +38,15 @@ describe('adaptive clarity hysteresis',()=>{
     expect(sampleRenderQuality(sampleRenderQuality(q,20),45)).toEqual(q);
   });
   it('degrades after sustained low FPS and recovers only after five fast seconds',()=>{
-    let q=sampleRenderQuality(sampleRenderQuality(newRenderQuality(),20),20);expect(q.scale).toBe(1.2);
-    for(let i=0;i<4;i++)q=sampleRenderQuality(q,60);expect(q.scale).toBe(1.2);
-    q=sampleRenderQuality(q,60);expect(q.scale).toBe(1.1);
+    let q=sampleRenderQuality(sampleRenderQuality(newRenderQuality(),20),20);expect(q.scale).toBe(1.45);
+    for(let i=0;i<4;i++)q=sampleRenderQuality(q,60);expect(q.scale).toBe(1.45);
+    q=sampleRenderQuality(q,60);expect(q.scale).toBe(1.35);
     for(let i=0;i<50;i++)q=sampleRenderQuality(q,60);expect(q.scale).toBe(1);
     for(let i=0;i<100;i++)q=sampleRenderQuality(q,10);expect(q.scale).toBe(2.25);
+  });
+  it('uses the gradual step for mild sub-30 dips that are not critically slow',()=>{
+    let q=sampleRenderQuality(sampleRenderQuality(newRenderQuality(),25),25);expect(q.scale).toBe(1.2);
+    q=sampleRenderQuality(sampleRenderQuality(q,25),25);expect(q.scale).toBe(1.4);
   });
   it('does not count invalid or middling samples toward recovery',()=>{
     let q={scale:2,slow:0,fast:4};

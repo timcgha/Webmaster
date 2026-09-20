@@ -518,6 +518,7 @@ export class InputManager {
   private readonly abort = new AbortController();
   private readonly tracker: ControllerTracker;
   private readonly getGamepads: (() => readonly (GamepadLike | null)[]) | null;
+  private readonly lifecyclePoll: ReturnType<typeof setInterval> | null;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -553,6 +554,16 @@ export class InputManager {
     canvas.addEventListener("contextmenu", (event) => event.preventDefault(), {
       signal,
     });
+    // Reconnect neutrality must not wait on a starved render/rAF loop. Poll the
+    // lifecycle only while gated; READY sampling stays on the frame loop so
+    // button edges are not double-consumed.
+    this.lifecyclePoll =
+      typeof setInterval === "function"
+        ? setInterval(() => {
+            if (this.tracker.status().lifecycle === "CONTROLLER_READY") return;
+            this.sampleController();
+          }, 16)
+        : null;
   }
 
   private onKeyDown = (event: KeyboardEvent): void => {
@@ -726,6 +737,7 @@ export class InputManager {
   }
 
   dispose(): void {
+    if (this.lifecyclePoll !== null) clearInterval(this.lifecyclePoll);
     this.abort.abort();
   }
 }
