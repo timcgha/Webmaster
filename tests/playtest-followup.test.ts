@@ -19,7 +19,10 @@ describe('sponsor follow-up standing launch',()=>{
     const running=stepSwing({...standing,velocity:{x:0,y:0,z:8}},newSwing(),input,[ring],[roof]);
     expect(running.attached).toBe(true);
     expect(running.motion.velocity.y).toBeGreaterThan(8.2);
-    const air=stepSwing({...standing,grounded:false,position:{x:0,y:3,z:0}},newSwing(),input,[ring],[roof]);
+    // Nearby airborne catch (short span) stays gravity-led — no mid-gap yank.
+    const near: Anchor={id:'near',position:{x:0,y:6,z:3},eligible:true,visible:true};
+    const air=stepSwing({...standing,grounded:false,position:{x:0,y:3,z:0}},newSwing(),{...input,aim:{origin:{x:0,y:4,z:0},direction:{x:0,y:0,z:1}}},[near],[roof]);
+    expect(air.attached).toBe(true);
     expect(air.motion.velocity.y).toBeLessThan(0);
     expect(stepSwing(standing,newSwing(),input,[],[roof]).motion.position.y).toBe(0);
     expect(stepSwing(standing,newSwing(),{...input,paused:true},[ring],[roof]).motion).toEqual(standing);
@@ -27,6 +30,31 @@ describe('sponsor follow-up standing launch',()=>{
   it('launches a standing catch higher than an ordinary jump for roof clearance',()=>{
     const r=stepSwing(standing,newSwing(),input,[ring],[roof]);
     expect(r.motion.velocity.y).toBeGreaterThanOrEqual(14);
+  });
+  it('mid-gap airborne reattach pulls up and toward the next ring',()=>{
+    const next: Anchor={id:'ring-2',position:{x:0,y:21,z:64},eligible:true,visible:true};
+    const falling: MotionState={
+      position:{x:0,y:4,z:40},
+      velocity:{x:0,y:-10,z:14},
+      grounded:false,
+      facingYaw:0,
+    };
+    const aim={origin:{x:0,y:6,z:40},direction:{x:0,y:0.35,z:1}};
+    const r=stepSwing(falling,newSwing(),{...input,swingHeld:true,aim,cameraForward:{x:0,y:0,z:1}},[next],[]);
+    expect(r.attached).toBe(true);
+    expect(r.motion.velocity.y).toBeGreaterThan(0);
+    expect(r.motion.velocity.z).toBeGreaterThan(falling.velocity.z);
+    const attachLength=r.swing.web!.length;
+    // Continues clearing the street instead of burying into y≈0.
+    let minY=r.motion.position.y;
+    let state=r;
+    for(let i=0;i<45;i++){
+      state=stepSwing(state.motion,state.swing,{...input,moveY:1,swingHeld:true,aim,cameraForward:{x:0,y:0,z:1}},[next],[]);
+      minY=Math.min(minY,state.motion.position.y);
+    }
+    expect(state.swing.web?.anchorId).toBe('ring-2');
+    expect(state.swing.web!.length).toBeCloseTo(attachLength,5);
+    expect(minY).toBeGreaterThan(1.5);
   });
   it('cushions the swing trough under a long rope so rooftops stay clear',()=>{
     const high: Anchor={id:'ring',position:{x:0,y:16,z:18},eligible:true,visible:true};

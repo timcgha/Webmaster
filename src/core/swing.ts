@@ -345,6 +345,31 @@ export function stepSwing(
     m.velocity.x += desire.x * 9 * dt;
     m.velocity.z += desire.z * 9 * dt;
   }
+  // Mid-gap airborne reattach (release ring A, catch ring B): one-shot pull up
+  // and toward the next ring so a long downswing does not hit the street.
+  // Requires a real fall into a long span — nearby catches and roof scrapes stay normal.
+  if (
+    attached &&
+    !motion.grounded &&
+    s.web &&
+    motion.velocity.y < -2.5
+  ) {
+    const hand = handOrigin(m);
+    const below = s.web.anchor.y - hand.y;
+    const horizontal = Math.hypot(
+      hand.x - s.web.anchor.x,
+      hand.z - s.web.anchor.z,
+    );
+    if (below > 5 && horizontal > 12) {
+      const to = normalized(subtract(s.web.anchor, hand));
+      const fall = Math.max(0, -motion.velocity.y);
+      const up = Math.min(16, 8 + below * 0.45 + fall * 0.35);
+      m.velocity.y = Math.max(m.velocity.y, up);
+      const along = Math.min(10, 3.5 + horizontal * 0.22);
+      m.velocity.x += to.x * along;
+      m.velocity.z += to.z * along;
+    }
+  }
   if(s.web && moving && !m.grounded) {
     const radial=normalized(subtract(handOrigin(m),s.web.anchor));
     const along=dot(m.velocity,radial);
