@@ -60,10 +60,10 @@ export function ceilingPresentationOffset(pitch: number, facingYaw: number): Vec
   };
 }
 export const HERO_RIG = Object.freeze({
-  hipHeight: 1.46, hipSeparation: 0.44, upperLeg: 0.66, lowerLeg: 0.66,
+  hipHeight: 1.46, hipSeparation: 0.48, upperLeg: 0.66, lowerLeg: 0.66,
   hipJointRadius: 0.18, kneeJointRadius: 0.16,
-  pelvisBottom: 1.28, pelvisTop: 1.72, torsoBottom: 1.54, torsoTop: 2.64,
-  headBottom: 2.60, headTop: 3.38,
+  pelvisBottom: 1.28, pelvisTop: 1.72, torsoBottom: 1.52, torsoTop: 2.72,
+  headBottom: 2.64, headTop: 3.38,
 });
 export interface GaitPose {
   phase: number; weight: number; hips: [number, number]; knees: [number, number];

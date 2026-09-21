@@ -70,28 +70,31 @@ export function createBlockHero(scene: Scene, root: TransformNode, shadows: Shad
     mesh.metadata={originalProcedural:true,visualOnly:true,heroJoint:true};
     mesh.isPickable=false; addBlockShadow(mesh,[radius*2,radius*2,radius*2],shadows,shadowMaterial); return mesh;
   }
-  block("webmaster-pelvis",[0.72,0.44,0.46],[0,1.50,0],root);
-  block("webmaster-torso",[0.90,1.10,0.48],[0,2.09,0],root,chest);
-  block("webmaster-neck",[0.34,0.25,0.34],[0,2.63,0],root,red);
-  block("webmaster-mask",[0.72,0.78,0.66],[0,2.99,0],root,mask);
+  // Muscular block silhouette: broad chest/shoulders, tapered waist, thick arms.
+  // Physics capsule (HERO_RADIUS / HERO_HEIGHT) is unchanged — visuals only.
+  block("webmaster-pelvis",[0.62,0.42,0.44],[0,1.50,0],root);
+  block("webmaster-torso",[1.14,1.18,0.58],[0,2.12,0],root,chest);
+  block("webmaster-neck",[0.36,0.22,0.36],[0,2.72,0],root,red);
+  block("webmaster-mask",[0.76,0.80,0.70],[0,3.05,0],root,mask);
   const hips: TransformNode[]=[], knees: TransformNode[]=[], ankles: TransformNode[]=[], arms: TransformNode[]=[], elbows: TransformNode[]=[];
   for (const side of [-1,1]) {
     const hip = new TransformNode(`hip-${side}`,scene); hip.parent=root; hip.position.set(side*HERO_RIG.hipSeparation/2,HERO_RIG.hipHeight,0);
     joint(`hip-joint-${side}`,HERO_RIG.hipJointRadius,hip);
-    block(`upper-leg-${side}`,[0.31,0.69,0.34],[0,-0.30,0],hip);
+    block(`upper-leg-${side}`,[0.36,0.69,0.38],[0,-0.30,0],hip);
     const knee = new TransformNode(`knee-${side}`,scene); knee.parent=hip; knee.position.y=-HERO_RIG.upperLeg;
     joint(`knee-joint-${side}`,HERO_RIG.kneeJointRadius,knee);
-    block(`lower-leg-${side}`,[0.30,0.67,0.32],[0,-0.30,0],knee);
+    block(`lower-leg-${side}`,[0.34,0.67,0.36],[0,-0.30,0],knee);
     const ankle = new TransformNode(`ankle-${side}`,scene); ankle.parent=knee; ankle.position.y=-HERO_RIG.lowerLeg;
-    block(`boot-${side}`,[0.33,0.26,0.47],[0,-0.01,0.055],ankle,red);
+    block(`boot-${side}`,[0.38,0.28,0.52],[0,-0.01,0.06],ankle,red);
     hips.push(hip); knees.push(knee); ankles.push(ankle);
-    const arm = new TransformNode(`shoulder-${side}`,scene); arm.parent=root; arm.position.set(side*0.56,2.47,0);
-    joint(`shoulder-joint-${side}`,0.18,arm,red);
-    block(`upper-arm-${side}`,[0.29,0.59,0.31],[0,-0.26,0],arm,red);
-    const elbow = new TransformNode(`elbow-${side}`,scene); elbow.parent=arm; elbow.position.y=-0.55;
-    joint(`elbow-joint-${side}`,0.145,elbow,red);
-    block(`forearm-${side}`,[0.27,0.55,0.29],[0,-0.24,0],elbow,red);
-    block(`hand-${side}`,[0.28,0.23,0.30],[0,-0.53,0],elbow,red);
+    const arm = new TransformNode(`shoulder-${side}`,scene); arm.parent=root; arm.position.set(side*0.70,2.52,0);
+    joint(`shoulder-joint-${side}`,0.22,arm,red);
+    block(`shoulder-pad-${side}`,[0.42,0.28,0.36],[side*0.06,-0.02,0],arm,red);
+    block(`upper-arm-${side}`,[0.40,0.62,0.40],[0,-0.30,0],arm,red);
+    const elbow = new TransformNode(`elbow-${side}`,scene); elbow.parent=arm; elbow.position.y=-0.58;
+    joint(`elbow-joint-${side}`,0.16,elbow,red);
+    block(`forearm-${side}`,[0.34,0.56,0.34],[0,-0.26,0],elbow,red);
+    block(`hand-${side}`,[0.32,0.24,0.34],[0,-0.56,0],elbow,red);
     arms.push(arm); elbows.push(elbow);
   }
   return {hips,knees,ankles,arms,elbows};

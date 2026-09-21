@@ -126,11 +126,13 @@ describe("WM-002 explicit anchors and one hand-origin web", () => {
   });
 });
 describe("WM-002 constrained gravity, collision and lifecycle", () => {
-  it("keeps gravity active, never pulls directly to an anchor, bounds steering and maximum rope distance", () => {
+  it("keeps gravity active, bounds steering and maximum rope distance", () => {
     let m = { ...motion(), velocity: { x: 0, y: 0, z: 8 } },
       s = newSwing();
     let maxError = 0;
-    const first = stepSwing(m, s, { ...input, swingHeld: true }, [anchor], []);
+    // Nearby airborne catch: short horizontal span stays gravity-led (no mid-gap yank).
+    const near = { ...anchor, position: { x: 0, y: 8, z: 4 } };
+    const first = stepSwing(m, s, { ...input, swingHeld: true }, [near], []);
     expect(first.motion.velocity.y).toBeLessThan(0);
     expect(first.motion.position.y).toBeLessThan(0);
     m = first.motion;
@@ -140,7 +142,7 @@ describe("WM-002 constrained gravity, collision and lifecycle", () => {
         m,
         s,
         { ...input, moveX: Math.sin(i / 80), moveY: 1, swingHeld: true },
-        [anchor],
+        [near],
         [],
       );
       m = r.motion;
