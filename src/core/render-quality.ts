@@ -22,6 +22,20 @@ export function sampleRenderQuality(state: RenderQuality, fps: number): RenderQu
       fast: 0,
     };
   }
-  if (fast >= 5) return { scale: Math.max(1, Math.round((state.scale - .1) * 100) / 100), slow: 0, fast: 0 };
+  // Recovery used to need five ≥55s bites of only −0.1 (~minute from floor).
+  // Sponsor ROG/Edge stayed soft after load spikes; climb back faster when
+  // heavily scaled, still hysteresis-gated so middling 45 FPS cannot recover.
+  if (fast > 0) {
+    const need = state.scale >= 1.5 ? 3 : 5;
+    if (fast >= need) {
+      const step =
+        state.scale >= 2 ? 0.45 : state.scale >= 1.5 ? 0.3 : 0.2;
+      return {
+        scale: Math.max(1, Math.round((state.scale - step) * 100) / 100),
+        slow: 0,
+        fast: 0,
+      };
+    }
+  }
   return { ...state, slow, fast };
 }

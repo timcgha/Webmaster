@@ -56,12 +56,20 @@ describe('adaptive clarity hysteresis',()=>{
     const q=newRenderQuality();expect(q.scale).toBe(1);
     expect(sampleRenderQuality(sampleRenderQuality(q,20),45)).toEqual(q);
   });
-  it('degrades after sustained low FPS and recovers only after five fast seconds',()=>{
+  it('degrades after sustained low FPS and recovers in larger steps once FPS is solid',()=>{
     let q=sampleRenderQuality(sampleRenderQuality(newRenderQuality(),20),20);expect(q.scale).toBe(1.55);
-    for(let i=0;i<4;i++)q=sampleRenderQuality(q,60);expect(q.scale).toBe(1.55);
-    q=sampleRenderQuality(q,60);expect(q.scale).toBe(1.45);
-    for(let i=0;i<50;i++)q=sampleRenderQuality(q,60);expect(q.scale).toBe(1);
+    for(let i=0;i<2;i++)q=sampleRenderQuality(q,60);expect(q.scale).toBe(1.55);
+    q=sampleRenderQuality(q,60);expect(q.scale).toBe(1.25);
+    for(let i=0;i<20;i++)q=sampleRenderQuality(q,60);expect(q.scale).toBe(1);
     for(let i=0;i<100;i++)q=sampleRenderQuality(q,10);expect(q.scale).toBe(2.25);
+  });
+  it('climbs back from the software floor far faster than the old −0.1 / five-second path',()=>{
+    let q={scale:2.25,slow:0,fast:0};
+    // Old path needed ~13×5 = 65 fast seconds. New path: 0.45 after each 3s while ≥2.
+    for(let i=0;i<12;i++)q=sampleRenderQuality(q,60);
+    expect(q.scale).toBeLessThanOrEqual(1.4);
+    for(let i=0;i<30;i++)q=sampleRenderQuality(q,60);
+    expect(q.scale).toBe(1);
   });
   it('uses the early gradual step for mild sub-30 dips that are not critically slow',()=>{
     let q=sampleRenderQuality(sampleRenderQuality(newRenderQuality(),25),25);expect(q.scale).toBe(1.4);

@@ -71,7 +71,7 @@ Historical implementation and remediation notes live under `evidence/wm-001/` â€
 
 - TypeScript, Vite, Babylon.js scoped ESM imports, and Babylon Havok.
 - Semantic input actions isolate game logic from keyboard/mouse and standard Gamepad mappings.
-- A capped accumulator drives fixed-step motion while rendering remains independent. Adaptive render scale can degrade under sustained low FPS and recover slowly after sustained high FPS; software-renderer CI exceptions are not a hardware performance claim.
+- A capped accumulator drives fixed-step motion while rendering remains independent. Adaptive render scale can degrade under sustained low FPS and recover in larger steps after sustained high FPS; software-renderer CI exceptions are not a hardware performance claim.
 - All visible art is original procedural geometry, color, text, and CSS authored in this repository. There are no copied character models, logos, textures, music, or sound.
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for dependency provenance.
