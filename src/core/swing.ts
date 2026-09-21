@@ -333,11 +333,14 @@ export function stepSwing(
     const accel = moving ? 24 : 30;
     m.velocity.x = approach(m.velocity.x, desire.x * speed, accel * dt);
     m.velocity.z = approach(m.velocity.z, desire.z * speed, accel * dt);
-    // A fresh standing attachment launches once. Airborne catches and a held
-    // web never add lift; swept collision still controls the complete motion.
-    if (attached && Math.hypot(motion.velocity.x, motion.velocity.z) < 1)
-      m.velocity.y = Math.max(m.velocity.y, 12);
-    else if (input.jumpPressed) m.velocity.y = 8.2;
+    // Fresh grounded attachment launches upward so the arc clears rooftops.
+    // Standing gets the strongest loft; running attaches still lift (second-roof
+    // approaches often have horizontal speed and used to skim building lips).
+    if (attached) {
+      const horizontal = Math.hypot(motion.velocity.x, motion.velocity.z);
+      const loft = horizontal < 1 ? 14.5 : horizontal < 5 ? 12.5 : 11;
+      m.velocity.y = Math.max(m.velocity.y, loft);
+    } else if (input.jumpPressed) m.velocity.y = 8.2;
   } else if (moving) {
     m.velocity.x += desire.x * 9 * dt;
     m.velocity.z += desire.z * 9 * dt;
@@ -354,14 +357,17 @@ export function stepSwing(
       m.velocity.x+=tangent.x*force;m.velocity.y+=tangent.y*force;m.velocity.z+=tangent.z*force;}
   }
   m.velocity.y -= GRAVITY * dt;
-  // Soft loft while deep under a held ring: cushion the pendulum trough so the
-  // hero rises toward the ring instead of dipping into rooftops. Rope length and
-  // radial constraint stay unchanged (no direct pull-to-anchor, no loop collapse).
-  if (s.web && !m.grounded && m.velocity.y < 0) {
+  // Soft loft only on early, long-gap swings (large horizontal span). Tight orbits
+  // for 360 pumps sit under the ring and must keep full pendulum energy.
+  if (s.web && !m.grounded && m.velocity.y < 0 && (s.web.age ?? 0) < 1.6) {
     const hand = handOrigin(m);
     const below = s.web.anchor.y - hand.y;
-    if (below > 3) {
-      const loft = Math.min(11, (below - 3) * 2.4) * dt;
+    const horizontal = Math.hypot(
+      hand.x - s.web.anchor.x,
+      hand.z - s.web.anchor.z,
+    );
+    if (below > 2 && horizontal > 7) {
+      const loft = Math.min(15, (below - 2) * 3) * dt;
       m.velocity.y = Math.min(0, m.velocity.y + loft);
     }
   }

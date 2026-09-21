@@ -15,13 +15,18 @@ describe('sponsor follow-up standing launch',()=>{
     for(let i=0;i<35;i++) {const vy=r.motion.velocity.y;r=stepSwing(r.motion,r.swing,input,[ring],[roof]);expect(r.motion.velocity.y).toBeLessThan(vy);apex=Math.max(apex,r.motion.position.y);}
     expect(apex).toBeGreaterThan(3);expect(r.swing.attachments).toBe(1);
   });
-  it('does not boost airborne catches or failed/paused attachment',()=>{
-    const running=stepSwing({...standing,velocity:{x:0,y:0,z:8}},newSwing(),{...input,jumpPressed:true},[ring],[roof]);
-    expect(running.motion.velocity.y).toBeCloseTo(8.2-22/60);
+  it('does not boost airborne catches or failed/paused attachment, but running roof attaches still loft',()=>{
+    const running=stepSwing({...standing,velocity:{x:0,y:0,z:8}},newSwing(),input,[ring],[roof]);
+    expect(running.attached).toBe(true);
+    expect(running.motion.velocity.y).toBeGreaterThan(8.2);
     const air=stepSwing({...standing,grounded:false,position:{x:0,y:3,z:0}},newSwing(),input,[ring],[roof]);
     expect(air.motion.velocity.y).toBeLessThan(0);
     expect(stepSwing(standing,newSwing(),input,[],[roof]).motion.position.y).toBe(0);
     expect(stepSwing(standing,newSwing(),{...input,paused:true},[ring],[roof]).motion).toEqual(standing);
+  });
+  it('launches a standing catch higher than an ordinary jump for roof clearance',()=>{
+    const r=stepSwing(standing,newSwing(),input,[ring],[roof]);
+    expect(r.motion.velocity.y).toBeGreaterThanOrEqual(14);
   });
   it('cushions the swing trough under a long rope so rooftops stay clear',()=>{
     const high: Anchor={id:'ring',position:{x:0,y:16,z:18},eligible:true,visible:true};
