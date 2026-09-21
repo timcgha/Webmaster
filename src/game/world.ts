@@ -1039,7 +1039,12 @@ export class GameWorld {
     if (actions.recenterPressed)
       this.camera.alpha = -Math.PI / 2 - this.motion.facingYaw;
     if (actions.jumpPressed) this.pendingJump = true;
-    if (!this.swing.web && !this.traversal.surfaceId && !this.traversal.pullId) {
+    if (
+      this.combat.active &&
+      !this.swing.web &&
+      !this.traversal.surfaceId &&
+      !this.traversal.pullId
+    ) {
       const stamp = performance.now();
       if (actions.punchPressed || actions.kickPressed || actions.webShotPressed || actions.dodgePressed) this.combatView.audio.unlock();
       if (actions.dodgePressed) pressDodge(this.combat,this.motion,actions.moveX,{x:-Math.cos(this.camera.alpha),y:0,z:-Math.sin(this.camera.alpha)});
