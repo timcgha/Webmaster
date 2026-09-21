@@ -427,6 +427,9 @@ test.describe("WM-001 rendered simulated Gamepad journey", () => {
     await tapPad(page, 13);
     await tapPad(page, 0);
     await tapPad(page, 13);
+    // WM006 adds a persisted sound choice after adaptive quality.
+    await tapPad(page, 0);
+    await tapPad(page, 13);
     await tapPad(page, 13);
     await tapPad(page, 0);
     await expect(page.getByRole("heading", { name: "WEBMASTER" })).toBeVisible();
@@ -434,6 +437,7 @@ test.describe("WM-001 rendered simulated Gamepad journey", () => {
       cameraSensitivity: 1.1,
       invertY: true,
       adaptiveQuality: false,
+      combatSound: false,
     });
 
     await tapPad(page, 0);

@@ -276,6 +276,12 @@ input {
 .hud-top-left > .hud-card {
   position: static;
 }
+.combat-card {
+  display: grid;
+  gap: 7px;
+  max-width: min(400px, 42vw);
+}
+.combat-card small { font-size: 12px; line-height: 1.4; }
 .objective-card {
   max-width: min(430px, 45vw);
 }
@@ -313,6 +319,9 @@ input {
 .run-card small {
   color: #aabce8;
 }
+[data-hud="combat-entry"] { max-width: 270px; margin-top: 8px; display: grid; gap: 5px; }
+[data-hud="combat-entry"].hidden { display: none; }
+[data-combat-menu] { pointer-events: auto; font: inherit; color: #e9ffff; background: #153f52; border: 1px solid #4de1cf; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
 [data-hud="course"] {
   max-width: 270px;
   margin-top: 6px;

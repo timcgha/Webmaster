@@ -1,6 +1,7 @@
 import { validSkylineSave } from "./skyline";
 import { validClimbSave } from "./traversal";
 import { validCourseSave } from "./course";
+import { validCombatSave } from "./combat";
 import type { RunSavePayload, SaveKind, SlotId } from "./types";
 
 export const SAVE_VERSION = 1 as const;
@@ -89,6 +90,7 @@ function isPayload(value: unknown): value is RunSavePayload {
     (item.skyline === undefined || validSkylineSave(item.skyline)) &&
     (item.climb === undefined || validClimbSave(item.climb)) &&
     (item.course === undefined || validCourseSave(item.course)) &&
+    (item.combat === undefined || validCombatSave(item.combat)) &&
     (item.slot === 1 || item.slot === 2 || item.slot === 3) &&
     (item.difficulty === "Easy" ||
       item.difficulty === "Normal" ||

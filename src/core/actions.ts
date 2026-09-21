@@ -33,6 +33,9 @@ export interface MappedGamepad {
   swing: boolean;
   climb: boolean;
   pull: boolean;
+  punch: boolean;
+  kick: boolean;
+  webShot: boolean;
   confirm: boolean;
   back: boolean;
   pause: boolean;
@@ -90,10 +93,12 @@ const EMPTY_ACTIONS: SemanticActions = {
   source: "keyboard-mouse",
 };
 
-const RELEVANT_BUTTONS = [0, 1, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15] as const;
+const RELEVANT_BUTTONS = [0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15] as const;
 const BUTTON_LABELS: Record<(typeof RELEVANT_BUTTONS)[number], string> = {
   0: "confirm/jump",
   1: "back",
+  2: "punch",
+  3: "kick",
   4: "pull web",
   5: "climb/stick",
   6: "swing web",
@@ -201,6 +206,9 @@ export function mapStandardGamepad(pad: GamepadLike): MappedGamepad {
     swing: buttonPressed(pad, 6),
     climb: buttonPressed(pad, 5),
     pull: buttonPressed(pad, 4),
+    punch: buttonPressed(pad, 2),
+    kick: buttonPressed(pad, 3),
+    webShot: buttonPressed(pad, 12),
     confirm: buttonPressed(pad, 0),
     back: buttonPressed(pad, 1),
     pause: buttonPressed(pad, 9),
@@ -510,6 +518,7 @@ export class InputManager {
   private readonly abort = new AbortController();
   private readonly tracker: ControllerTracker;
   private readonly getGamepads: (() => readonly (GamepadLike | null)[]) | null;
+  private readonly lifecyclePoll: ReturnType<typeof setInterval> | null;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -545,11 +554,21 @@ export class InputManager {
     canvas.addEventListener("contextmenu", (event) => event.preventDefault(), {
       signal,
     });
+    // Reconnect neutrality must not wait on a starved render/rAF loop. Poll the
+    // lifecycle only while gated; READY sampling stays on the frame loop so
+    // button edges are not double-consumed.
+    this.lifecyclePoll =
+      typeof setInterval === "function"
+        ? setInterval(() => {
+            if (this.tracker.status().lifecycle === "CONTROLLER_READY") return;
+            this.sampleController();
+          }, 16)
+        : null;
   }
 
   private onKeyDown = (event: KeyboardEvent): void => {
     if (event.repeat && !this.heldKeys.has(event.code)) return;
-    if (!event.repeat) this.pressedKeys.add(event.code);
+    if (!event.repeat && !this.heldKeys.has(event.code)) this.pressedKeys.add(event.code);
     this.heldKeys.add(event.code);
     if (
       [
@@ -623,6 +642,10 @@ export class InputManager {
     actions.pullHeld = key("KeyQ");
     actions.run = key("ShiftLeft") || key("ShiftRight");
     actions.jumpPressed = pressed("Space");
+    actions.punchPressed = pressed("KeyJ");
+    actions.kickPressed = pressed("KeyK");
+    actions.webShotPressed = pressed("KeyL");
+    actions.dodgePressed = pressed("KeyF");
     actions.confirmPressed = pressed("Enter") || pressed("Space");
     actions.backPressed = pressed("Escape") || pressed("Backspace");
     actions.pausePressed = pressed("Escape") || pressed("KeyP");
@@ -661,6 +684,10 @@ export class InputManager {
       actions.climbHeld ||= mapped.climb;
       actions.pullHeld ||= mapped.pull;
       actions.jumpPressed ||= edge(mapped.confirm, previous?.confirm);
+      actions.punchPressed ||= edge(mapped.punch, previous?.punch);
+      actions.kickPressed ||= edge(mapped.kick, previous?.kick);
+      actions.webShotPressed ||= edge(mapped.webShot, previous?.webShot);
+      actions.dodgePressed ||= edge(mapped.back, previous?.back);
       actions.confirmPressed ||= edge(mapped.confirm, previous?.confirm);
       actions.backPressed ||= edge(mapped.back, previous?.back);
       actions.pausePressed ||= edge(mapped.pause, previous?.pause);
@@ -710,6 +737,7 @@ export class InputManager {
   }
 
   dispose(): void {
+    if (this.lifecyclePoll !== null) clearInterval(this.lifecyclePoll);
     this.abort.abort();
   }
 }

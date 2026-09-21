@@ -4,6 +4,13 @@ import { DEFAULT_SETTINGS } from "../src/core/types";
 import { MemoryStorage } from "./helpers";
 
 describe("local settings", () => {
+  it("persists combat sound mute and rejects malformed sound values", () => {
+    const storage=new MemoryStorage(),store=new SettingsStore(storage);
+    expect(store.write({...DEFAULT_SETTINGS,combatSound:false})).toBe(true);
+    expect(store.read().combatSound).toBe(false);
+    storage.setItem('webmaster.settings.v1',JSON.stringify({...DEFAULT_SETTINGS,combatSound:'false'}));
+    expect(store.read()).toEqual(DEFAULT_SETTINGS);
+  });
   it("uses safe defaults for missing or invalid data", () => {
     const storage = new MemoryStorage();
     const store = new SettingsStore(storage);
