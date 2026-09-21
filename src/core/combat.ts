@@ -338,6 +338,7 @@ export function pressAttack(
   stampMs: number,
   solids: readonly Solid[] = [],
 ): boolean {
+  if (!s.active) return false;
   const step = comboPress(s, kind, stampMs);
   if (s.dodge) return false;
   if (s.attack) {
@@ -353,6 +354,7 @@ export function pressDodge(
   moveX: number,
   cameraForward: Vec3Data,
 ): boolean {
+  if (!s.active) return false;
   if (!m.grounded || s.dodgeCooldown > 0 || s.dodge) return false;
   const sign = Math.abs(moveX) > 0.2 ? Math.sign(moveX) : 0;
   const n = Math.hypot(cameraForward.x, cameraForward.z) || 1;
@@ -437,6 +439,7 @@ export function stepCombat(
   dt: number,
   solids: readonly Solid[],
 ): void {
+  if (!s.active) return;
   dt = Math.max(0, Math.min(0.05, dt));
   s.time += dt;
   s.dodgeCooldown = Math.max(0, s.dodgeCooldown - dt);

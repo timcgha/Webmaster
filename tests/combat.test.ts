@@ -51,7 +51,7 @@ describe("strict independent press combinations", () => {
     expect(comboPress(s, "kick", 100)).toBe(1);
   });
   it("one queued attack maximum and no autonomous hold-repeat", () => {
-    const s = newCombat(),
+    const s = beginCombat(),
       m = hero();
     pressAttack(s, m, "punch", 0);
     for (let i = 1; i < 30; i++) pressAttack(s, m, "punch", i * 2);
@@ -62,6 +62,35 @@ describe("strict independent press combinations", () => {
     expect(s.queued).toBeNull();
     tick(s, m, 200);
     expect(s.history.length).toBe(2);
+  });
+});
+describe("playground-only combat input", () => {
+  it("rejects punch, kick, web and dodge while combat is inactive", () => {
+    const s = newCombat(),
+      m = hero();
+    const grounded = { ...m, velocity: { ...m.velocity }, grounded: true };
+    expect(pressAttack(s, grounded, "punch", 0)).toBe(false);
+    expect(pressAttack(s, grounded, "kick", 1)).toBe(false);
+    expect(pressAttack(s, grounded, "web", 2)).toBe(false);
+    expect(pressDodge(s, grounded, 1, { x: 0, y: 0, z: 1 })).toBe(false);
+    expect(s.attack).toBeNull();
+    expect(s.dodge).toBeNull();
+    expect(s.history).toEqual([]);
+    expect(grounded.velocity.y).toBe(0);
+    expect(grounded.grounded).toBe(true);
+    tick(s, grounded, 30);
+    expect(grounded.position).toEqual(m.position);
+  });
+  it("first kick still hops only after the playground is active", () => {
+    const inactive = newCombat(),
+      m = hero();
+    expect(pressAttack(inactive, m, "kick", 0)).toBe(false);
+    expect(m.velocity.y).toBe(0);
+    expect(m.grounded).toBe(true);
+    const s = beginCombat();
+    expect(pressAttack(s, m, "kick", 0)).toBe(true);
+    expect(m.velocity.y).toBe(8);
+    expect(m.grounded).toBe(false);
   });
 });
 describe("damage, aim and course", () => {
@@ -205,7 +234,7 @@ describe("damage, aim and course", () => {
 describe("dodge protection, recovery and lifecycle", () => {
   it("left/right are camera lateral; neutral hops opposite facing", () => {
     for (const x of [-1, 0, 1]) {
-      const s = newCombat(),
+      const s = beginCombat(),
         m = hero();
       expect(pressDodge(s, m, x, { x: 0, y: 0, z: 1 })).toBe(true);
       expect(s.dodge!.direction.x).toBeCloseTo(x);
@@ -214,7 +243,7 @@ describe("dodge protection, recovery and lifecycle", () => {
     }
   });
   it("protection is brief with vulnerable recovery and no chaining", () => {
-    const s = newCombat(),
+    const s = beginCombat(),
       m = hero();
     pressDodge(s, m, 0, { x: 0, y: 0, z: 1 });
     expect(protectedByDodge(s)).toBe(false);
@@ -227,7 +256,7 @@ describe("dodge protection, recovery and lifecycle", () => {
     expect(pressDodge(s, m, 0, { x: 0, y: 0, z: 1 })).toBe(true);
   });
   it("dodge cannot move through a wall", () => {
-    const s = newCombat(),
+    const s = beginCombat(),
       m = hero();
     const wall = {
       id: "side",
