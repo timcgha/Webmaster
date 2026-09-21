@@ -48,7 +48,7 @@ The white web leaves the hero’s right wrist. Only authored rings within range,
 - Every record has two alternating generations plus a checksummed pending-intent fence. A returned failure leaves the target fenced off so only the prior committed generation can load.
 - With no pending intent, a missing or invalid pointer deterministically recovers the unique highest valid generation.
 - Continue chooses the newest valid manual save or checkpoint across all slots. Load exposes both kinds explicitly.
-- Rope, anchor, velocity, held-input, and in-progress combat station state are never saved. Loads restore a safe position; combat completion is retained when earned.
+- Rope, anchor, velocity, held-input, and unsafe combat transient state are never saved. Quiet mid-playground saves resume the same station; loads outside training keep only the completion badge.
 - Root and each preview use separate `webmaster…v1:` key namespaces. Saves are promised only for the same device, browser profile, and exact site origin. There are no accounts, cloud saves, or cross-browser guarantees.
 
 ## Develop and verify

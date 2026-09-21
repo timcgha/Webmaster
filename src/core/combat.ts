@@ -7,6 +7,10 @@ export type ComboStep = 1 | 2 | 3;
 export interface CombatSave {
   version: 1;
   completed: boolean;
+  /** Resume inside the playground at stage/finalPart. Omitted/false = traversal. */
+  active?: boolean;
+  stage?: number;
+  finalPart?: number;
 }
 export const COMBAT_START: Vec3Data = { x: -38, y: -18, z: -54 };
 export const COMBAT_NAMES = {
@@ -94,12 +98,34 @@ export interface CombatState {
   history: { kind: AttackKind; step: ComboStep; id: number }[];
 }
 export function validCombatSave(s: unknown): s is CombatSave {
-  return (
-    !!s &&
-    typeof s === "object" &&
-    (s as CombatSave).version === 1 &&
-    typeof (s as CombatSave).completed === "boolean"
-  );
+  if (!s || typeof s !== "object") return false;
+  const c = s as CombatSave;
+  if (c.version !== 1 || typeof c.completed !== "boolean") return false;
+  if (c.active !== undefined && typeof c.active !== "boolean") return false;
+  if (
+    c.stage !== undefined &&
+    !(Number.isInteger(c.stage) && c.stage >= 0 && c.stage <= 5)
+  )
+    return false;
+  if (
+    c.finalPart !== undefined &&
+    !(Number.isInteger(c.finalPart) && c.finalPart >= 0 && c.finalPart <= 3)
+  )
+    return false;
+  // Active playground resumes must carry a station; badge-only saves stay lean.
+  if (c.active === true && (c.stage === undefined || c.finalPart === undefined))
+    return false;
+  return true;
+}
+export function snapshotCombat(s: CombatState): CombatSave {
+  if (!s.active) return { version: 1, completed: s.completed };
+  return {
+    version: 1,
+    completed: s.completed,
+    active: true,
+    stage: Math.min(5, Math.max(0, s.stage)),
+    finalPart: Math.min(3, Math.max(0, s.finalPart)),
+  };
 }
 const target = (
   id: string,
@@ -122,7 +148,7 @@ const target = (
   active: false,
 });
 export function newCombat(save?: CombatSave): CombatState {
-  return {
+  const s: CombatState = {
     active: false,
     completed: save?.completed ?? false,
     stage: 0,
@@ -160,6 +186,17 @@ export function newCombat(save?: CombatSave): CombatState {
     bumps: 0,
     history: [],
   };
+  if (save?.active) {
+    s.active = true;
+    s.stage = Math.min(5, Math.max(0, save.stage ?? 0));
+    s.finalPart = Math.min(3, Math.max(0, save.finalPart ?? 0));
+    activateTargets(s);
+    s.message =
+      s.stage >= 5
+        ? "Welcome back — playground complete. Replay or return to traversal."
+        : `Welcome back — ${STATION_NAMES[Math.min(s.stage, 4)]}. Quiet save resumed.`;
+  }
+  return s;
 }
 export function beginCombat(completed = false): CombatState {
   const s = newCombat({ version: 1, completed });

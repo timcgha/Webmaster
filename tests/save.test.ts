@@ -11,6 +11,20 @@ describe("SaveStore two-generation commits", () => {
     expect(store.write(1,'manual',next).ok).toBe(true);
     expect(store.read(1,'manual').payload).toEqual(next);
   });
+  it("roundtrips an active mid-playground resume and rejects incomplete active records", () => {
+    const storage=new MemoryStorage(),store=new SaveStore(storage);
+    const mid={
+      ...payload(1,'Normal',42),
+      combat:{version:1 as const,completed:false,active:true,stage:3,finalPart:0},
+      progressLabel:'Dodge the training pad',
+    };
+    expect(store.write(1,'manual',mid).ok).toBe(true);
+    expect(store.read(1,'manual').payload).toEqual(mid);
+    expect(store.write(1,'checkpoint',{
+      ...mid,
+      combat:{version:1 as const,completed:true,active:true,stage:2},
+    } as any).ok).toBe(false);
+  });
   it("writes, validates, reads back, and advances alternating generations", () => {
     const storage = new MemoryStorage();
     const store = new SaveStore(storage);

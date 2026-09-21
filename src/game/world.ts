@@ -11,7 +11,7 @@ import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
 import { createRoundedBlock } from "./rounded-block";
 import { createBlockHero } from "./hero";
-import { newCombat, beginCombat, clearCombat, retryCombat, combatStationStart, combatSafe, combatLabel, pressAttack, pressDodge, stepCombat, type CombatState } from '../core/combat';
+import { newCombat, beginCombat, clearCombat, retryCombat, combatStationStart, combatSafe, combatLabel, pressAttack, pressDodge, stepCombat, snapshotCombat, type CombatState } from '../core/combat';
 import { CombatView } from './combat-view';
 import { COURSE_ANCHORS, COURSE_NODES, COURSE_ROOFS, COURSE_START, COURSE_FINISH, RECOVERY_WALLS, EXTERIOR_WALLS, STREET, CITY_SOLIDS, newCourse, advanceCourse, courseLabel, restoreSafePosition, cameraClearFraction, cameraSafeRadius, type CourseState } from "../core/course";
 import { CreateBox } from "@babylonjs/core/Meshes/Builders/boxBuilder.pure";
@@ -1298,8 +1298,16 @@ export class GameWorld {
         completed: payload.skyline.completed,
       };
     }
+    // Mid-playground resume wins over other activity flags in the same payload.
+    if (this.combat.active) {
+      this.course.active = false;
+      this.training.active = false;
+      this.skyline.active = false;
+    }
     this.checkpoint = copyVec3(
-      payload?.climb
+      this.combat.active
+        ? combatStationStart(this.combat)
+        : payload?.climb
         ? trainingCheckpoint(payload.climb.checkpoint)
         : payload?.skyline
           ? CHECKPOINTS[payload.skyline.checkpoint]!
@@ -1403,7 +1411,7 @@ export class GameWorld {
   ): RunSavePayload {
     return {
       schemaVersion: 1,
-      combat: {version:1,completed:this.combat.completed},
+      combat: snapshotCombat(this.combat),
       ...(this.course.active || this.course.next > 0 || this.course.completed ? { course: { version: 1 as const, next: this.course.completed ? 20 : this.course.next, completed: this.course.completed, active: this.course.active, ...(this.course.completed ? {lapNext:this.course.next}: {}) } } : {}),
       ...(this.training.active
         ? {
@@ -1430,7 +1438,9 @@ export class GameWorld {
       position: copyVec3(this.motion.position),
       checkpoint: copyVec3(this.checkpoint),
       progress: this.progress,
-      progressLabel: this.motion.position.y < -1 || this.course.active ? courseLabel(this.course,this.motion.position.y < -1) : this.training.active
+      progressLabel: this.combat.active
+        ? combatLabel(this.combat)
+        : this.motion.position.y < -1 || this.course.active ? courseLabel(this.course,this.motion.position.y < -1) : this.training.active
         ? TRAINING_LABELS[this.training.stage]!
         : this.skyline.active
           ? ROUTE_LABELS[this.skyline.stage]!
