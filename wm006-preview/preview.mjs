@@ -47,7 +47,7 @@ if (new URLSearchParams(location.search).get("diagnostics") === "1") {
 try {
   installIsolatedStorage(window);
   // Packaging substitutes the clean build's exact entry, without editing it.
-  await import("./assets/index-CKEnvhb1.js");
+  await import("./assets/index-BbKx93-p.js");
 } catch (error) {
   failure = true;
   document.getElementById("loading")?.classList.add("hidden");
