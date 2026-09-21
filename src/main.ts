@@ -162,7 +162,12 @@ class WebmasterApp {
       const selected = index === this.selectedIndex;
       button.classList.toggle("selected", selected);
       button.setAttribute("aria-current", selected ? "true" : "false");
-      if (selected) button.focus({ preventScroll: true });
+      if (selected) {
+        // Keep the focused item in view — pause lists exceed short laptop viewports,
+        // and preventScroll left Combat Playground unreachable with a pad.
+        button.focus({ preventScroll: true });
+        button.scrollIntoView({ block: "nearest", inline: "nearest" });
+      }
     });
   }
 
@@ -184,6 +189,7 @@ class WebmasterApp {
     shade.className = "menu-shade";
     const panel = document.createElement("section");
     panel.className = "menu-panel";
+    if (title === "Paused") panel.classList.add("menu-panel-pause");
     panel.setAttribute("aria-label", title);
     panel.innerHTML = `<p class="eyebrow">${eyebrow}</p><h1>${title}</h1><p class="menu-subtitle">${subtitle}</p>`;
     const controllerStatus = document.createElement("section");
@@ -457,6 +463,13 @@ class WebmasterApp {
           detail: "Return to practice",
           action: () => this.resume(),
         },
+        // Keep combat entry above the fold — long pause lists scrap the option on short screens.
+        {
+          label: this.latestFrame.combat.active || this.latestFrame.combat.completed ? "Replay Combat Playground" : "Combat Playground",
+          detail: "Opens punch / kick / web / dodge training now · not a place to walk to in the city",
+          action: () => { world.replayCombat(); this.resume(); },
+        },
+        ...(this.latestFrame.combat.active ? [{label:"Return to traversal",detail:"Keep earned traversal progress and combat completion",action:()=>{world.leaveCombat();this.resume();}}] : []),
         {
           label: "Save Game",
           detail: safeDetail,
@@ -513,12 +526,6 @@ class WebmasterApp {
           detail: "Start on the far practice roof; separate course progress restarts",
           action: () => { world.replayCourse(); this.resume(); },
         },
-        {
-          label: this.latestFrame.combat.active || this.latestFrame.combat.completed ? "Replay Combat Playground" : "Combat Playground",
-          detail: "Punch, kick, web and dodge training · no timer · progress in this activity restarts",
-          action: () => { world.replayCombat(); this.resume(); },
-        },
-        ...(this.latestFrame.combat.active ? [{label:"Return to traversal",detail:"Keep earned traversal progress and combat completion",action:()=>{world.leaveCombat();this.resume();}}] : []),
       ],
       `SLOT ${this.currentRun?.slot ?? "—"} • ${this.currentRun?.difficulty ?? "—"}`,
     );
@@ -760,8 +767,8 @@ class WebmasterApp {
         <small data-hud="course"></small>
         <div data-hud="combat-entry">
           <strong data-hud="combat-invite"></strong>
-          <small>Esc / Menu / Options → Combat Playground</small>
-          <button type="button" data-combat-menu>Open training menu</button>
+          <small>Pause menu → Combat Playground (second item). Training is not a walk-to spot.</small>
+          <button type="button" data-combat-menu>Open Combat Playground</button>
         </div>
       </section>
       <section class="hud-card controller-hud-card" data-controller-status-card role="status" aria-live="polite">
@@ -788,7 +795,7 @@ class WebmasterApp {
     }
     hudLayer.querySelector<HTMLElement>("[data-hud='combat-entry']")!.classList.toggle('hidden', frame.combat.active);
     hudLayer.querySelector<HTMLElement>("[data-hud='combat-invite']")!.textContent = frame.course.completed
-      ? 'Rings complete! Try combat training next.' : 'Try punching, kicking, webs & dodges';
+      ? 'Rings complete! Open Combat Playground from Pause.' : 'Combat training: open from Pause (not in the city)';
     hudLayer.querySelector<HTMLElement>("[data-hud='course']")!.textContent = courseLabel(frame.course, frame.position.y < -1);
     hudLayer.querySelector<HTMLElement>('.combat-card')!.classList.toggle('hidden',!frame.combat.active);
     hudLayer.querySelector<HTMLElement>("[data-hud='combat-message']")!.textContent=frame.combat.message;

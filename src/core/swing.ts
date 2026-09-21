@@ -354,6 +354,17 @@ export function stepSwing(
       m.velocity.x+=tangent.x*force;m.velocity.y+=tangent.y*force;m.velocity.z+=tangent.z*force;}
   }
   m.velocity.y -= GRAVITY * dt;
+  // Soft loft while deep under a held ring: cushion the pendulum trough so the
+  // hero rises toward the ring instead of dipping into rooftops. Rope length and
+  // radial constraint stay unchanged (no direct pull-to-anchor, no loop collapse).
+  if (s.web && !m.grounded && m.velocity.y < 0) {
+    const hand = handOrigin(m);
+    const below = s.web.anchor.y - hand.y;
+    if (below > 3) {
+      const loft = Math.min(11, (below - 3) * 2.4) * dt;
+      m.velocity.y = Math.min(0, m.velocity.y + loft);
+    }
+  }
   const speed = Math.hypot(m.velocity.x, m.velocity.y, m.velocity.z);
   const incomingLimit=Math.min(MAX_SWING_SPEED,Math.max(26,Math.hypot(motion.velocity.x,motion.velocity.y,motion.velocity.z)));
   const limit=s.web && (s.web.age??0)>3.5 ? MAX_SWING_SPEED : incomingLimit;
