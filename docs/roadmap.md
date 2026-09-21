@@ -4,7 +4,8 @@ Working backlog kept in-repo. Historical briefs lived in `timcgha/product-operat
 
 ## Current release
 
-- **Accepted root:** WM-006 follow-ups #1–#5 on `main` pending merge (gated combat, mid-training save resume, adaptive recovery, resilient inherited e2e prep, shared preview packaging catalog)
+- **Accepted root:** WM-006 follow-ups #1–#3 on `main` (gated combat input, mid-training save resume, faster adaptive recovery)
+- **This change:** follow-ups #4–#5 (resilient inherited e2e prep + shared preview packaging catalog)
 - **Previews:** `/wm003-preview/` … `/wm006-preview/` preserved; preview saves stay namespaced via `scripts/preview/catalog.mjs`
 
 ## Deferred product themes (post–WM-006 brief)
