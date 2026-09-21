@@ -38,18 +38,19 @@ describe('adaptive clarity hysteresis',()=>{
     expect(sampleRenderQuality(sampleRenderQuality(q,20),45)).toEqual(q);
   });
   it('degrades after sustained low FPS and recovers only after five fast seconds',()=>{
-    let q=sampleRenderQuality(sampleRenderQuality(newRenderQuality(),20),20);expect(q.scale).toBe(1.45);
-    for(let i=0;i<4;i++)q=sampleRenderQuality(q,60);expect(q.scale).toBe(1.45);
-    q=sampleRenderQuality(q,60);expect(q.scale).toBe(1.35);
+    let q=sampleRenderQuality(sampleRenderQuality(newRenderQuality(),20),20);expect(q.scale).toBe(1.55);
+    for(let i=0;i<4;i++)q=sampleRenderQuality(q,60);expect(q.scale).toBe(1.55);
+    q=sampleRenderQuality(q,60);expect(q.scale).toBe(1.45);
     for(let i=0;i<50;i++)q=sampleRenderQuality(q,60);expect(q.scale).toBe(1);
     for(let i=0;i<100;i++)q=sampleRenderQuality(q,10);expect(q.scale).toBe(2.25);
   });
-  it('uses the gradual step for mild sub-30 dips that are not critically slow',()=>{
-    let q=sampleRenderQuality(sampleRenderQuality(newRenderQuality(),25),25);expect(q.scale).toBe(1.2);
-    q=sampleRenderQuality(sampleRenderQuality(q,25),25);expect(q.scale).toBe(1.4);
+  it('uses the early gradual step for mild sub-30 dips that are not critically slow',()=>{
+    let q=sampleRenderQuality(sampleRenderQuality(newRenderQuality(),25),25);expect(q.scale).toBe(1.4);
+    q=sampleRenderQuality(sampleRenderQuality(q,25),25);expect(q.scale).toBe(1.8);
   });
-  it('keeps stepping past a mid-scale plateau under 42 FPS but leaves native 40 FPS alone',()=>{
+  it('finishes a near-floor plateau under 40 FPS but leaves native and light mid-scales alone',()=>{
     expect(sampleRenderQuality(sampleRenderQuality(newRenderQuality(),40),40)).toEqual(newRenderQuality());
+    expect(sampleRenderQuality(sampleRenderQuality({scale:1.2,slow:0,fast:0},35),35)).toEqual({scale:1.2,slow:0,fast:0});
     let q={scale:1.9,slow:0,fast:0};
     q=sampleRenderQuality(sampleRenderQuality(q,35),35);expect(q.scale).toBe(2.1);
     q=sampleRenderQuality(sampleRenderQuality(q,35),35);expect(q.scale).toBe(2.25);
