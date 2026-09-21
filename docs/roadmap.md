@@ -23,8 +23,13 @@ Do not start these without an authorized change brief.
 
 Highest signal first. These are authorized as backlog tracking; each still needs a bounded assignment before implementation unless noted.
 
+<<<<<<< HEAD
 1. **Gate combat input to the playground** — ~~`src/game/world.ts` fired punch/kick/web/dodge without `combat.active`.~~ **Done:** presses and `stepCombat` require an active playground; street/course kick hops no longer apply.
 2. **Combat save vs resume** — quiet moments are saveable (`combatSafe`), but snapshots only keep `{version, completed}` and load always starts inactive. Easy “I saved mid-training and came back wrong” on Continue.
+=======
+1. **Gate combat input to the playground** — `src/game/world.ts` fires punch/kick/web/dodge whenever the hero is not on a web/climb/pull, with no `combat.active` check. On street/course that can cause kick hops and fight traversal; SELF_REVIEW only covers the arena. *(In progress on PR #11.)*
+2. **Combat save vs resume** — ~~snapshots only kept `{version, completed}` and load always started inactive.~~ **Done:** quiet mid-playground saves store `active`/`stage`/`finalPart` and Continue resumes that station; badge-only saves stay unchanged.
+>>>>>>> origin/cursor/wm006-combat-save-resume-0335
 3. **Adaptive recovery vs degrade** — critically slow frames can jump scale up quickly, but recovery is only −0.1 after five ≥55 FPS seconds. Matches the ROG blur complaint more than SwiftShader CI will show.
 4. **Inherited e2e overlays are brittle** — `scripts/wm006-prepare-inherited.mjs` string-patches historical specs. Any copy/structure change in wm001–005 can break exact-source gates without a product bug.
 5. **Preview packaging duplication** — near-copy wm004/5/6 package/storage/integrity scripts. Next preview risks a wrong `webmaster.wm00N-preview.v1:` namespace (save isolation failure).
@@ -33,4 +38,8 @@ Highest signal first. These are authorized as backlog tracking; each still needs
 
 ## Next gate
 
+<<<<<<< HEAD
 Open an authorized WM-007 (or bounded follow-up) brief before coding deferred themes or picking follow-ups #2–#5 as a sprint.
+=======
+Open an authorized WM-007 (or bounded follow-up) brief before coding deferred themes or picking follow-ups #1 / #3–#5 as a sprint.
+>>>>>>> origin/cursor/wm006-combat-save-resume-0335

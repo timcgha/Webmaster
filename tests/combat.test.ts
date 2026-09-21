@@ -12,6 +12,7 @@ import {
   protectedByDodge,
   segmentBox,
   validCombatSave,
+  snapshotCombat,
   type CombatState,
 } from "../src/core/combat";
 import type { MotionState } from "../src/core/types";
@@ -332,12 +333,63 @@ describe("dodge protection, recovery and lifecycle", () => {
     expect(s.finalPart).toBe(0);
     expect(s.completed).toBe(true);
     expect(validCombatSave({ version: 1, completed: true })).toBe(true);
+    expect(
+      validCombatSave({
+        version: 1,
+        completed: false,
+        active: true,
+        stage: 2,
+        finalPart: 0,
+      }),
+    ).toBe(true);
     for (const bad of [
       null,
       {},
       { version: 2, completed: true },
       { version: 1, completed: "yes" },
+      { version: 1, completed: true, active: true },
+      { version: 1, completed: true, active: true, stage: 2 },
+      { version: 1, completed: true, active: true, stage: 9, finalPart: 0 },
+      { version: 1, completed: true, active: "yes", stage: 0, finalPart: 0 },
     ])
       expect(validCombatSave(bad)).toBe(false);
+  });
+});
+describe("combat playground save and resume", () => {
+  it("badge-only snapshots stay inactive; quiet mid-training resumes the station", () => {
+    expect(snapshotCombat(newCombat())).toEqual({
+      version: 1,
+      completed: false,
+    });
+    expect(snapshotCombat(beginCombat(true))).toEqual({
+      version: 1,
+      completed: true,
+      active: true,
+      stage: 0,
+      finalPart: 0,
+    });
+    const mid = beginCombat();
+    mid.stage = 2;
+    mid.finalPart = 0;
+    const snap = snapshotCombat(mid);
+    expect(snap).toEqual({
+      version: 1,
+      completed: false,
+      active: true,
+      stage: 2,
+      finalPart: 0,
+    });
+    const resumed = newCombat(snap);
+    expect(resumed.active).toBe(true);
+    expect(resumed.stage).toBe(2);
+    expect(resumed.finalPart).toBe(0);
+    expect(combatSafe(resumed)).toBe(true);
+    expect(resumed.targets.find((t) => t.id === "web-dummy")?.active).toBe(
+      true,
+    );
+    expect(resumed.targets.find((t) => t.id === "combo-box")?.active).toBe(
+      false,
+    );
+    expect(newCombat({ version: 1, completed: true }).active).toBe(false);
   });
 });
