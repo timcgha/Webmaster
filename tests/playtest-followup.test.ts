@@ -23,6 +23,25 @@ describe('sponsor follow-up standing launch',()=>{
     expect(stepSwing(standing,newSwing(),input,[],[roof]).motion.position.y).toBe(0);
     expect(stepSwing(standing,newSwing(),{...input,paused:true},[ring],[roof]).motion).toEqual(standing);
   });
+  it('cushions the swing trough under a long rope so rooftops stay clear',()=>{
+    const high: Anchor={id:'ring',position:{x:0,y:16,z:18},eligible:true,visible:true};
+    let r=stepSwing(standing,newSwing(),input,[high],[roof]);
+    expect(r.attached).toBe(true);
+    const attachLength=r.swing.web!.length;
+    let minY=r.motion.position.y;
+    let troughVy=0;
+    for(let i=0;i<90;i++){
+      r=stepSwing(r.motion,r.swing,{...input,moveY:1,jumpPressed:false},[high],[roof]);
+      minY=Math.min(minY,r.motion.position.y);
+      if(r.motion.position.y<2)troughVy=Math.min(troughVy,r.motion.velocity.y);
+    }
+    expect(r.swing.web).not.toBeNull();
+    // Rope length unchanged — loft is vertical cushioning, not reel-in.
+    expect(r.swing.web!.length).toBeCloseTo(attachLength,5);
+    expect(minY).toBeGreaterThan(-0.25);
+    expect(r.swing.collisions).toBe(0);
+    expect(troughVy).toBeGreaterThan(-18);
+  });
   it('cannot launch through a low ceiling or solid obstruction',()=>{
     const ceiling={...roof,id:'ceiling',minY:4,maxY:5,minZ:-2,maxZ:2};
     let r=stepSwing(standing,newSwing(),input,[ring],[roof,ceiling]);
