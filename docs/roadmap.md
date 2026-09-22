@@ -4,15 +4,14 @@ Working backlog kept in-repo. Historical briefs lived in `timcgha/product-operat
 
 ## Current release
 
-- **Accepted root:** WM-006 follow-ups #1–#7 on `main` (gated combat through shared packaging; CI vs Edge/ROG claim boundary)
-- **This change:** WM-007 Live AI slice 1 — ski-masked bank robber in Combat Playground ([brief](./wm007-brief.md))
-- **Previews:** `/wm003-preview/` … `/wm007-preview/` (wm007 ships with this change); saves stay namespaced via `scripts/preview/catalog.mjs`
+- **Accepted root:** WM-007 Live AI slice 1 on `main` — ski-masked bank robber as Combat Playground station 6 ([brief](./wm007-brief.md)); WM-006 follow-ups #1–#7 retained
+- **Previews:** `/wm003-preview/` … `/wm007-preview/`; saves stay namespaced via `scripts/preview/catalog.mjs`
 
 ## Deferred product themes (post–WM-006 / remaining WM-007)
 
 Authorized WM-007 lead is **Live AI**. Still deferred within or beyond this brief:
 
-1. ~~Live AI (autonomous opposing characters)~~ — **In progress (slice 1: bank robber)**
+1. ~~Live AI (autonomous opposing characters)~~ — **Done slice 1 (bank robber in Combat Playground)**; open-city spawns still deferred
 2. Enemy manipulation
 3. Upgrades
 4. Elaborate mixed-button combos
@@ -34,4 +33,4 @@ Highest signal first. These are authorized as backlog tracking; each still needs
 
 ## Next gate
 
-Finish WM-007 slice 1 (bank robber) acceptance, then either open-city live AI or the next deferred theme under an updated brief.
+Open-city live AI, or the next deferred theme (enemy manipulation / upgrades / combos), under an updated [wm007-brief.md](./wm007-brief.md).
