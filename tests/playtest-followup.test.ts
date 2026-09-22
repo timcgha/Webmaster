@@ -29,7 +29,7 @@ describe('sponsor follow-up standing launch',()=>{
   });
   it('launches a standing catch higher than an ordinary jump for roof clearance',()=>{
     const r=stepSwing(standing,newSwing(),input,[ring],[roof]);
-    expect(r.motion.velocity.y).toBeGreaterThanOrEqual(14);
+    expect(r.motion.velocity.y).toBeGreaterThanOrEqual(16);
   });
   it('mid-gap airborne reattach pulls up and toward the next ring',()=>{
     const next: Anchor={id:'ring-2',position:{x:0,y:21,z:64},eligible:true,visible:true};

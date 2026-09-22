@@ -48,16 +48,64 @@ function costume(scene: Scene, name: string, color: string, detail: "web" | "mas
   material.emissiveColor = new Color3(0.06,0.06,0.06);
   return material;
 }
+
+/** Sphere-friendly mask atlas: eyes sit on the front of the UV island. */
+function roundMask(scene: Scene) {
+  const size = 512,
+    texture = new DynamicTexture("hero-round-mask", { width: size, height: size }, scene, true);
+  const c = texture.getContext() as CanvasRenderingContext2D;
+  c.fillStyle = HERO_PRESENTATION.red;
+  c.fillRect(0, 0, size, size);
+  c.strokeStyle = HERO_PRESENTATION.web;
+  c.lineWidth = 4;
+  for (let x = -128; x <= size + 128; x += 64) {
+    c.beginPath();
+    c.moveTo(size / 2, size / 2);
+    c.lineTo(x, 0);
+    c.moveTo(size / 2, size / 2);
+    c.lineTo(x, size);
+    c.stroke();
+  }
+  for (let y = 40; y <= size - 40; y += 48) {
+    c.beginPath();
+    c.moveTo(0, y);
+    c.quadraticCurveTo(size / 2, y + 24, size, y);
+    c.stroke();
+  }
+  // Front-facing eyes (sphere UV center band).
+  for (const side of [-1, 1]) {
+    c.save();
+    c.translate(size / 2 + side * 70, size * 0.42);
+    c.rotate(-side * Math.PI / 5);
+    c.beginPath();
+    c.ellipse(0, 0, 52, 26, 0, 0, Math.PI * 2);
+    c.fillStyle = "#fffef5";
+    c.fill();
+    c.lineWidth = 6;
+    c.strokeStyle = "#482537";
+    c.stroke();
+    c.restore();
+  }
+  texture.update(false);
+  texture.anisotropicFilteringLevel = 4;
+  const material = new StandardMaterial("hero-round-mask-mat", scene);
+  material.diffuseTexture = texture;
+  material.specularColor = new Color3(0.08, 0.08, 0.08);
+  material.emissiveColor = new Color3(0.06, 0.06, 0.06);
+  return material;
+}
+
 export function createBlockHero(scene: Scene, root: TransformNode, shadows: ShadowGenerator) {
   const red = costume(scene,"hero-red-integrated",HERO_PRESENTATION.red);
   const blue = costume(scene,"hero-blue-integrated",HERO_PRESENTATION.blue);
-  const mask = costume(scene,"hero-mask-integrated",HERO_PRESENTATION.red,"mask");
   const chest = costume(scene,"hero-chest-integrated",HERO_PRESENTATION.red,"emblem");
+  const mid = costume(scene,"hero-mid-integrated",HERO_PRESENTATION.red);
+  const headMat = roundMask(scene);
   const shadowMaterial = new StandardMaterial("hero-opaque-shadow",scene);
   shadowMaterial.disableLighting=true;
   const faceUV = Array.from({length:6},(_,i)=>new Vector4((i*256+1)/1536,1/256,((i+1)*256-1)/1536,255/256));
-  function block(name: string, size: [number,number,number], pos: [number,number,number], parent: TransformNode, material = blue) {
-    const mesh = createRoundedBlock(name,{width:size[0],height:size[1],depth:size[2],faceUV},scene);
+  function block(name: string, size: [number,number,number], pos: [number,number,number], parent: TransformNode, material = blue, radius = 0.045) {
+    const mesh = createRoundedBlock(name,{width:size[0],height:size[1],depth:size[2],faceUV},scene,radius);
     mesh.parent=parent; mesh.position.set(...pos); mesh.material=material;
     mesh.metadata={originalProcedural:true,surfaceArtwork:true,visualOnly:true};
     mesh.isPickable=false; addBlockShadow(mesh,size,shadows,shadowMaterial); return mesh;
@@ -70,12 +118,23 @@ export function createBlockHero(scene: Scene, root: TransformNode, shadows: Shad
     mesh.metadata={originalProcedural:true,visualOnly:true,heroJoint:true};
     mesh.isPickable=false; addBlockShadow(mesh,[radius*2,radius*2,radius*2],shadows,shadowMaterial); return mesh;
   }
-  // Muscular block silhouette: broad chest/shoulders, tapered waist, thick arms.
+  // More human silhouette: broad chest, stepped taper through mid/waist into
+  // pelvis, and a rounded oval head (sphere, not a square mask block).
   // Physics capsule (HERO_RADIUS / HERO_HEIGHT) is unchanged — visuals only.
-  block("webmaster-pelvis",[0.62,0.42,0.44],[0,1.50,0],root);
-  block("webmaster-torso",[1.14,1.18,0.58],[0,2.12,0],root,chest);
-  block("webmaster-neck",[0.36,0.22,0.36],[0,2.72,0],root,red);
-  block("webmaster-mask",[0.76,0.80,0.70],[0,3.05,0],root,mask);
+  block("webmaster-pelvis",[0.68,0.38,0.44],[0,1.42,0],root);
+  block("webmaster-waist",[0.82,0.34,0.48],[0,1.68,0],root,mid,0.055);
+  block("webmaster-mid",[1.02,0.4,0.54],[0,1.98,0],root,mid,0.05);
+  block("webmaster-chest",[1.28,0.72,0.66],[0,2.38,0],root,chest,0.055);
+  block("webmaster-neck",[0.34,0.2,0.34],[0,2.82,0],root,red,0.06);
+  const head = CreateSphere("webmaster-head", { diameter: 0.82, segments: 10 }, scene);
+  head.parent = root;
+  head.position.set(0, 3.18, 0);
+  // Slightly taller than wide — less “cube head”, still readable at play distance.
+  head.scaling.set(0.92, 1.12, 0.96);
+  head.material = headMat;
+  head.metadata = { originalProcedural: true, surfaceArtwork: true, visualOnly: true, heroHead: true };
+  head.isPickable = false;
+  addBlockShadow(head, [0.78, 0.92, 0.8], shadows, shadowMaterial);
   const hips: TransformNode[]=[], knees: TransformNode[]=[], ankles: TransformNode[]=[], arms: TransformNode[]=[], elbows: TransformNode[]=[];
   for (const side of [-1,1]) {
     const hip = new TransformNode(`hip-${side}`,scene); hip.parent=root; hip.position.set(side*HERO_RIG.hipSeparation/2,HERO_RIG.hipHeight,0);
@@ -87,9 +146,9 @@ export function createBlockHero(scene: Scene, root: TransformNode, shadows: Shad
     const ankle = new TransformNode(`ankle-${side}`,scene); ankle.parent=knee; ankle.position.y=-HERO_RIG.lowerLeg;
     block(`boot-${side}`,[0.38,0.28,0.52],[0,-0.01,0.06],ankle,red);
     hips.push(hip); knees.push(knee); ankles.push(ankle);
-    const arm = new TransformNode(`shoulder-${side}`,scene); arm.parent=root; arm.position.set(side*0.70,2.52,0);
+    const arm = new TransformNode(`shoulder-${side}`,scene); arm.parent=root; arm.position.set(side*0.78,2.62,0);
     joint(`shoulder-joint-${side}`,0.22,arm,red);
-    block(`shoulder-pad-${side}`,[0.42,0.28,0.36],[side*0.06,-0.02,0],arm,red);
+    block(`shoulder-pad-${side}`,[0.44,0.3,0.38],[side*0.06,-0.02,0],arm,red);
     block(`upper-arm-${side}`,[0.40,0.62,0.40],[0,-0.30,0],arm,red);
     const elbow = new TransformNode(`elbow-${side}`,scene); elbow.parent=arm; elbow.position.y=-0.58;
     joint(`elbow-joint-${side}`,0.16,elbow,red);
