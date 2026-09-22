@@ -4,8 +4,7 @@ Working backlog kept in-repo. Historical briefs lived in `timcgha/product-operat
 
 ## Current release
 
-- **Accepted root:** WM-006 follow-ups #1–#5 on `main` (gated combat through shared packaging)
-- **This change:** follow-up #7 — CI PASS vs physical Edge/ROG claim boundary
+- **Accepted root:** WM-006 follow-ups #1–#7 on `main` (gated combat through shared packaging; CI vs Edge/ROG claim boundary)
 - **Previews:** `/wm003-preview/` … `/wm006-preview/` preserved; preview saves stay namespaced via `scripts/preview/catalog.mjs`
 
 ## Deferred product themes (post–WM-006 brief)
