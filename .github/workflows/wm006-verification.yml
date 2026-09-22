@@ -146,6 +146,8 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/wm006-performance.mjs 2>&1 | tee evidence/wm-006/performance.log
+          # PASS artifacts must carry the synthetic-ci / Edge-ROG exclusion boundary.
+          node --input-type=module -e "import fs from 'node:fs';import {assertPerformanceClaimBoundary} from './scripts/self-review-claims.mjs';assertPerformanceClaimBoundary(JSON.parse(fs.readFileSync('evidence/wm-006/performance.json','utf8')));"
       - name: Final performance source integrity
         if: always()
         run: |
