@@ -12,9 +12,10 @@ import type { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
 import type { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
 import type { CombatState } from "../core/combat";
 import type { createBlockHero } from "./hero";
-import type { TransformNode } from "@babylonjs/core/Meshes/transformNode";
+import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { createRoundedBlock } from "./rounded-block";
 import { CombatAudio } from "./combat-audio";
+import { createBlockRobber } from "./robber";
 
 export class CombatView {
   readonly audio = new CombatAudio();
@@ -39,6 +40,12 @@ export class CombatView {
   private warning: Mesh;
   private warningMaterial: StandardMaterial;
   private strikeMaterial: StandardMaterial;
+  private robberRoot: TransformNode;
+  private robberRig: ReturnType<typeof createBlockRobber>;
+  private robberBar: Mesh;
+  private robberLabel: Mesh;
+  private robberLabelTexture: DynamicTexture;
+  private robberLabelLast = "";
   private mat(scene: Scene, name: string, color: string) {
     const m = new StandardMaterial(name, scene);
     m.diffuseColor = Color3.FromHexString(color);
@@ -179,6 +186,32 @@ export class CombatView {
     );
     this.warning.material = gold;
     this.warningMaterial=gold;this.strikeMaterial=pink;
+    this.robberRoot = new TransformNode("bank-robber-root", scene);
+    this.robberRig = createBlockRobber(scene, this.robberRoot);
+    this.robberBar = CreateBox(
+      "robber-health",
+      { width: 1.8, height: 0.13, depth: 0.12 },
+      scene,
+    );
+    this.robberBar.material = gold;
+    this.robberLabel = CreatePlane(
+      "robber-label",
+      { width: 4.2, height: 0.9, sideOrientation: Mesh.DOUBLESIDE },
+      scene,
+    );
+    this.robberLabel.billboardMode = Mesh.BILLBOARDMODE_ALL;
+    this.robberLabelTexture = new DynamicTexture(
+      "robber-status",
+      { width: 512, height: 128 },
+      scene,
+      false,
+    );
+    const rlm = this.mat(scene, "robber-label-mat", "#ffffff");
+    rlm.diffuseTexture = this.robberLabelTexture;
+    this.robberLabel.material = rlm;
+    this.robberRoot.setEnabled(false);
+    this.robberBar.setEnabled(false);
+    this.robberLabel.setEnabled(false);
     for (const mesh of scene.meshes)
       if (!prior.has(mesh) && !mesh.metadata?.combatStatic)
         mesh.metadata = { ...mesh.metadata, combatDynamic: true };
@@ -260,6 +293,39 @@ export class CombatView {
     this.machineArm.rotation.y=Math.atan2(headX+38,headZ-z-3.4);
     this.warning.position.set(s.machine.aim.x, -17.94, s.machine.aim.z);
     this.warning.scaling.setAll(1 + Math.sin(s.machine.age * 12) * 0.08);
+    const o = s.opponent;
+    const showRobber = s.active && o.active && o.phase !== "down";
+    this.robberRoot.setEnabled(showRobber);
+    this.robberBar.setEnabled(showRobber);
+    this.robberLabel.setEnabled(showRobber);
+    if (showRobber) {
+      this.robberRoot.position.set(o.position.x, -18, o.position.z);
+      this.robberRoot.rotation.y = o.facingYaw;
+      const wind =
+        o.phase === "telegraph"
+          ? Math.sin(o.phaseAge * 14) * 0.35
+          : o.phase === "strike"
+            ? -1.4
+            : 0;
+      this.robberRig.arms[1]!.rotation.x = wind;
+      this.robberRig.arms[0]!.rotation.x = wind * 0.35;
+      this.robberRoot.rotation.z = Math.sin(o.flash * 50) * o.flash * 0.4;
+      this.robberBar.position.set(o.position.x, o.position.y + 1.7, o.position.z);
+      this.robberBar.scaling.x = Math.max(0.01, o.hp / o.maxHp);
+      this.robberLabel.position.set(o.position.x, o.position.y + 2.4, o.position.z);
+      const text = `BANK ROBBER  ${o.hp}/${o.maxHp}  ${o.phase.toUpperCase()}`;
+      if (this.robberLabelLast !== text) {
+        this.robberLabelLast = text;
+        const c = this.robberLabelTexture.getContext() as CanvasRenderingContext2D;
+        c.fillStyle = "#1a1020";
+        c.fillRect(0, 0, 512, 128);
+        c.font = "bold 24px sans-serif";
+        c.fillStyle = "#ffffff";
+        c.textAlign = "center";
+        c.fillText(text, 256, 75);
+        this.robberLabelTexture.update();
+      }
+    }
     for (const e of s.events) {
       if (e.id <= this.lastEvent) continue;
       this.lastEvent = e.id;

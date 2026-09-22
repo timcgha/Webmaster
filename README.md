@@ -1,10 +1,10 @@
 # Webmaster
 
-Webmaster is an original, child-friendly third-person 3D web game. The **accepted root** release is **WM-006 Combat Playground**: free city traversal (swing, climb, pull, twenty-ring course) plus an optional five-station combat training circuit. Live AI opponents, enemy manipulation, upgrades, and elaborate mixed-button combos remain deferred.
+Webmaster is an original, child-friendly third-person 3D web game. The **accepted root** release is **WM-006 Combat Playground**; **WM-007** adds Live AI starting with a ski-masked bank robber as the sixth Combat Playground station. Enemy manipulation, upgrades, elaborate mixed-button combos, and open-city AI remain deferred.
 
-Play at [timcgha.github.io/Webmaster/](https://timcgha.github.io/Webmaster/). Isolated previews under `/wm003-preview/` … `/wm006-preview/` stay available with separate save namespaces.
+Play at [timcgha.github.io/Webmaster/](https://timcgha.github.io/Webmaster/). Isolated previews under `/wm003-preview/` … `/wm007-preview/` stay available with separate save namespaces.
 
-Working backlog and engineering follow-ups: [docs/roadmap.md](docs/roadmap.md). Product change briefs historically lived in `timcgha/product-operating-model`; do not start WM-007 or deferred themes without an authorized brief.
+Working backlog and engineering follow-ups: [docs/roadmap.md](docs/roadmap.md). WM-007 brief: [docs/wm007-brief.md](docs/wm007-brief.md).
 
 ## Play
 

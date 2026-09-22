@@ -287,7 +287,7 @@ describe("dodge protection, recovery and lifecycle", () => {
     expect(s.machine.phase).toBe("idle");
     expect(s.bumps).toBe(0);
   });
-  it("timely dodge earns training progress; final dodge earns completion once", () => {
+  it("timely dodge earns training progress; final dodge unlocks the bank robber", () => {
     for (const stage of [3, 4]) {
       const s = beginCombat(),
         m = hero(stage === 3 ? -25 : -1);
@@ -298,7 +298,11 @@ describe("dodge protection, recovery and lifecycle", () => {
       tick(s, m, 30);
       expect(s.successfulDodges).toBe(1);
       expect(s.stage).toBe(stage + 1);
-      expect(s.completed).toBe(stage === 4);
+      expect(s.completed).toBe(false);
+      if (stage === 4) {
+        expect(s.opponent.active).toBe(true);
+        expect(s.opponent.kind).toBe("bank-robber");
+      }
       tick(s, m, 400);
       expect(s.successfulDodges).toBe(1);
     }
@@ -391,5 +395,85 @@ describe("combat playground save and resume", () => {
       false,
     );
     expect(newCombat({ version: 1, completed: true }).active).toBe(false);
+  });
+});
+
+describe("WM-007 live bank robber", () => {
+  it("approaches, telegraphs, and soft-bumps without a dodge", () => {
+    const s = beginCombat(),
+      m = hero(-2);
+    s.stage = 5;
+    tick(s, m, 1);
+    expect(s.opponent.active).toBe(true);
+    expect(s.opponent.kind).toBe("bank-robber");
+    // Close the gap so approach → telegraph → strike lands.
+    s.opponent.position = { x: -38, y: -16.3, z: 0 };
+    m.position = { x: -38, y: -18, z: -1.5 };
+    tick(s, m, 20);
+    expect(["approach", "telegraph", "strike", "recover", "idle"]).toContain(
+      s.opponent.phase,
+    );
+    tick(s, m, 200);
+    expect(s.bumps).toBeGreaterThan(0);
+    expect(s.completed).toBe(false);
+    expect(s.stage).toBe(5);
+  });
+  it("dodge during telegraph avoids the bump", () => {
+    const s = beginCombat(),
+      m = hero(-2);
+    s.stage = 5;
+    tick(s, m, 1);
+    s.opponent.position = { x: -38, y: -16.3, z: 0 };
+    m.position = { x: -38, y: -18, z: -1.5 };
+    s.opponent.phase = "telegraph";
+    s.opponent.phaseAge = 0.4;
+    s.opponent.strikeResolved = false;
+    pressDodge(s, m, 1, { x: 0, y: 0, z: 1 });
+    expect(s.opponent.phase).toBe("telegraph");
+    tick(s, m, 60);
+    expect(s.bumps).toBe(0);
+    expect(s.successfulDodges).toBeGreaterThan(0);
+  });
+  it("defeating the robber completes the playground", () => {
+    const s = beginCombat(),
+      m = hero(-2);
+    s.stage = 5;
+    tick(s, m, 1);
+    s.opponent.hp = 1;
+    s.opponent.position = { x: -38, y: -16.3, z: -1 };
+    m.facingYaw = 0;
+    pressAttack(s, m, "punch", 0);
+    tick(s, m, 40);
+    expect(s.opponent.hp).toBe(0);
+    expect(s.opponent.phase).toBe("down");
+    tick(s, m, 5);
+    expect(s.stage).toBe(6);
+    expect(s.completed).toBe(true);
+    expect(s.opponent.active).toBe(false);
+  });
+  it("inactive playground never runs robber AI or awards bumps", () => {
+    const s = newCombat(),
+      m = hero(-2);
+    s.opponent.active = true;
+    s.opponent.phase = "telegraph";
+    s.opponent.phaseAge = 1;
+    tick(s, m, 50);
+    expect(s.bumps).toBe(0);
+    expect(s.stage).toBe(0);
+    expect(s.opponent.phase).toBe("telegraph");
+  });
+  it("clearCombat cancels a robber wind-up without completing the course", () => {
+    const s = beginCombat(),
+      m = hero(-2);
+    s.stage = 5;
+    tick(s, m, 1);
+    s.opponent.phase = "telegraph";
+    s.opponent.phaseAge = 0.5;
+    expect(combatSafe(s)).toBe(false);
+    clearCombat(s);
+    expect(s.opponent.phase).toBe("idle");
+    expect(combatSafe(s)).toBe(true);
+    expect(s.completed).toBe(false);
+    expect(s.stage).toBe(5);
   });
 });

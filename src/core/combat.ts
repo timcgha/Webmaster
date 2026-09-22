@@ -24,8 +24,31 @@ export const STATION_NAMES = [
   "MOVING WEB DUMMY",
   "DODGE THE PAD",
   "FINAL COMBINATION",
+  "BANK ROBBER",
   "PLAYGROUND COMPLETE",
 ];
+export type OpponentPhase =
+  | "idle"
+  | "approach"
+  | "telegraph"
+  | "strike"
+  | "recover"
+  | "down";
+/** Live AI opponent (WM-007). Not a training prop. */
+export interface Opponent {
+  id: "bank-robber";
+  kind: "bank-robber";
+  position: Vec3Data;
+  home: Vec3Data;
+  hp: number;
+  maxHp: number;
+  phase: OpponentPhase;
+  phaseAge: number;
+  facingYaw: number;
+  flash: number;
+  active: boolean;
+  strikeResolved: boolean;
+}
 export interface Target {
   id: string;
   kind: "box" | "high" | "dummy";
@@ -85,6 +108,7 @@ export interface CombatState {
   dodgeCooldown: number;
   shots: Shot[];
   targets: Target[];
+  opponent: Opponent;
   machine: {
     phase: "idle" | "warning" | "strike" | "rest";
     age: number;
@@ -104,7 +128,7 @@ export function validCombatSave(s: unknown): s is CombatSave {
   if (c.active !== undefined && typeof c.active !== "boolean") return false;
   if (
     c.stage !== undefined &&
-    !(Number.isInteger(c.stage) && c.stage >= 0 && c.stage <= 5)
+    !(Number.isInteger(c.stage) && c.stage >= 0 && c.stage <= 6)
   )
     return false;
   if (
@@ -123,8 +147,25 @@ export function snapshotCombat(s: CombatState): CombatSave {
     version: 1,
     completed: s.completed,
     active: true,
-    stage: Math.min(5, Math.max(0, s.stage)),
+    stage: Math.min(6, Math.max(0, s.stage)),
     finalPart: Math.min(3, Math.max(0, s.finalPart)),
+  };
+}
+const ROBBER_HOME: Vec3Data = { x: -38, y: -16.3, z: 4 };
+function newOpponent(active = false): Opponent {
+  return {
+    id: "bank-robber",
+    kind: "bank-robber",
+    position: { ...ROBBER_HOME },
+    home: { ...ROBBER_HOME },
+    hp: 90,
+    maxHp: 90,
+    phase: "idle",
+    phaseAge: 0,
+    facingYaw: Math.PI,
+    flash: 0,
+    active,
+    strikeResolved: false,
   };
 }
 const target = (
@@ -173,6 +214,7 @@ export function newCombat(save?: CombatSave): CombatState {
       target("final-high", "high", -38, -9, 32),
       target("final-dummy", "dummy", -38, -4, 160),
     ],
+    opponent: newOpponent(false),
     machine: {
       phase: "idle",
       age: 0,
@@ -188,13 +230,13 @@ export function newCombat(save?: CombatSave): CombatState {
   };
   if (save?.active) {
     s.active = true;
-    s.stage = Math.min(5, Math.max(0, save.stage ?? 0));
+    s.stage = Math.min(6, Math.max(0, save.stage ?? 0));
     s.finalPart = Math.min(3, Math.max(0, save.finalPart ?? 0));
     activateTargets(s);
     s.message =
-      s.stage >= 5
+      s.stage >= 6
         ? "Welcome back — playground complete. Replay or return to traversal."
-        : `Welcome back — ${STATION_NAMES[Math.min(s.stage, 4)]}. Quiet save resumed.`;
+        : `Welcome back — ${STATION_NAMES[Math.min(s.stage, 5)]}. Quiet save resumed.`;
   }
   return s;
 }
@@ -220,6 +262,12 @@ export function clearCombat(s: CombatState): void {
     t.flash = 0;
     if (t.kind === "dummy" && t.hp === 0) t.hp = t.maxHp;
   }
+  const o = s.opponent;
+  if (o.phase === "telegraph" || o.phase === "strike" || o.phase === "recover") {
+    o.phase = o.hp <= 0 ? "down" : "idle";
+    o.phaseAge = 0;
+    o.strikeResolved = false;
+  }
   s.machine = {
     phase: "idle",
     age: 0,
@@ -234,17 +282,18 @@ export function retryCombat(s: CombatState): void {
     serial = s.serial;
   Object.assign(s, beginCombat(completed));
   s.serial = serial;
-  s.stage = Math.min(stage, 4);
+  s.stage = Math.min(stage, 5);
   activateTargets(s);
 }
 export function combatStationStart(s: CombatState): Vec3Data {
   return {
     x: -38,
     y: -18,
-    z: [-54, -46, -38, -28, -18][Math.min(s.stage, 4)]!,
+    z: [-54, -46, -38, -28, -18, -2][Math.min(s.stage, 5)]!,
   };
 }
 export function combatSafe(s: CombatState): boolean {
+  const o = s.opponent;
   return (
     !s.attack &&
     !s.queued &&
@@ -253,7 +302,9 @@ export function combatSafe(s: CombatState): boolean {
     s.dodgeCooldown === 0 &&
     !s.targets.some((t) => t.wrap > 0) &&
     s.machine.phase !== "warning" &&
-    s.machine.phase !== "strike"
+    s.machine.phase !== "strike" &&
+    o.phase !== "telegraph" &&
+    o.phase !== "strike"
   );
 }
 function emit(
@@ -303,30 +354,36 @@ function aim(
 ): Vec3Data {
   const f = direction(m),
     origin = { ...m.position, y: m.position.y + 2.1 };
-  let best: Target | undefined,
+  let bestPos: Vec3Data | undefined,
     score = Infinity;
-  for (const t of s.targets) {
-    if (!t.active || t.hp <= 0) continue;
-    const dx = t.position.x - origin.x,
-      dz = t.position.z - origin.z,
+  const consider = (pos: Vec3Data, range: number) => {
+    const dx = pos.x - origin.x,
+      dz = pos.z - origin.z,
       d = Math.hypot(dx, dz);
     if (
-      d > (kind === "web" ? 17 : 3.6) ||
+      d > range ||
       d < 0.01 ||
       (dx * f.x + dz * f.z) / d < Math.cos(Math.PI / 6) ||
-      !visible(origin, t.position, solids)
+      !visible(origin, pos, solids)
     )
-      continue;
+      return;
     if (d < score) {
-      best = t;
+      bestPos = pos;
       score = d;
     }
+  };
+  for (const t of s.targets) {
+    if (!t.active || t.hp <= 0) continue;
+    consider(t.position, kind === "web" ? 17 : 3.6);
   }
-  if (!best) return f;
+  const o = s.opponent;
+  if (o.active && o.hp > 0 && o.phase !== "down")
+    consider(o.position, kind === "web" ? 17 : 3.6);
+  if (!bestPos) return f;
   const delta = {
-      x: best.position.x - origin.x,
-      y: kind === "web" ? best.position.y - origin.y : 0,
-      z: best.position.z - origin.z,
+      x: bestPos.x - origin.x,
+      y: kind === "web" ? bestPos.y - origin.y : 0,
+      z: bestPos.z - origin.z,
     },
     n = Math.hypot(delta.x, delta.y, delta.z) || 1;
   return { x: delta.x / n, y: delta.y / n, z: delta.z / n };
@@ -446,6 +503,51 @@ function damage(
   }
   s.message = `${COMBAT_NAMES[a.kind][a.step - 1]} −${before - t.hp} · ${t.hp}/${t.maxHp}${floor === 1 && t.hp === 1 ? " · practice core ready" : ""}`;
 }
+function damageOpponent(
+  s: CombatState,
+  a: { kind: AttackKind; step: ComboStep },
+  position: Vec3Data,
+) {
+  const o = s.opponent;
+  if (!o.active || o.hp <= 0 || o.phase === "down") return;
+  const amount =
+    a.kind === "punch"
+      ? [16, 20, 36][a.step - 1]!
+      : a.kind === "kick"
+        ? [22, 28, 40][a.step - 1]!
+        : [14, 18, 28][a.step - 1]!;
+  const before = o.hp;
+  o.hp = Math.max(0, o.hp - amount);
+  o.flash = 0.25;
+  emit(s, o.hp === 0 ? "break" : "hit", position, a.step);
+  s.message = `Robber −${before - o.hp} · ${o.hp}/${o.maxHp}`;
+  if (o.hp === 0) {
+    o.phase = "down";
+    o.phaseAge = 0;
+    o.strikeResolved = false;
+  }
+}
+function hitOpponentMelee(
+  s: CombatState,
+  m: MotionState,
+  a: Attack,
+  origin: Vec3Data,
+  solids: readonly Solid[],
+) {
+  const o = s.opponent;
+  if (!o.active || o.hp <= 0 || o.phase === "down") return;
+  const dx = o.position.x - m.position.x,
+    dz = o.position.z - m.position.z,
+    d = Math.hypot(dx, dz),
+    height = Math.abs(o.position.y - (m.position.y + (a.kind === "kick" ? 1.7 : 2.1)));
+  if (
+    d <= 3.5 &&
+    (d < 0.1 || (dx * a.direction.x + dz * a.direction.z) / d > 0.55) &&
+    height < (a.kind === "kick" ? 1.65 : 1.1) &&
+    visible(origin, o.position, solids)
+  )
+    damageOpponent(s, a, o.position);
+}
 function activateTargets(s: CombatState) {
   for (const t of s.targets)
     t.active =
@@ -454,9 +556,31 @@ function activateTargets(s: CombatState) {
       (s.stage === 2 && t.id === "web-dummy") ||
       (s.stage === 4 &&
         t.id === ["final-box", "final-high", "final-dummy"][s.finalPart]);
+  const live = s.stage === 5;
+  if (live && !s.opponent.active) {
+    s.opponent = newOpponent(true);
+    s.message = "Live AI: ski-masked bank robber. Dodge his swings, then take him down.";
+  }
+  s.opponent.active = live;
+  if (!live && s.opponent.phase !== "down") {
+    s.opponent.phase = "idle";
+    s.opponent.phaseAge = 0;
+    s.opponent.strikeResolved = false;
+    s.opponent.position = { ...s.opponent.home };
+  }
 }
 function advance(s: CombatState) {
   if (s.attack || s.queued) return;
+  if (s.stage === 5) {
+    if (s.opponent.hp > 0 || s.opponent.phase !== "down") return;
+    s.stage = 6;
+    s.completed = true;
+    clearCombat(s);
+    activateTargets(s);
+    s.message = "Robber down! Playground complete.";
+    emit(s, "success", s.opponent.position);
+    return;
+  }
   const t = s.targets.find((x) => x.active);
   let done = false;
   if (t?.kind === "box") done = t.hp === 0 && t.hits.includes(3);
@@ -469,6 +593,75 @@ function advance(s: CombatState) {
   activateTargets(s);
   s.message = "Nice work! Follow the next colored mat.";
   emit(s, "success", t!.position);
+}
+function stepOpponent(s: CombatState, m: MotionState, dt: number) {
+  const o = s.opponent;
+  if (!o.active || o.phase === "down") return;
+  o.flash = Math.max(0, o.flash - dt);
+  o.phaseAge += dt;
+  const dx = m.position.x - o.position.x,
+    dz = m.position.z - o.position.z,
+    dist = Math.hypot(dx, dz) || 1;
+  o.facingYaw = Math.atan2(dx, dz);
+  if (o.phase === "idle") {
+    if (dist < 9) {
+      o.phase = "approach";
+      o.phaseAge = 0;
+      s.message = "Robber closing in — ready your dodge.";
+    }
+    return;
+  }
+  if (o.phase === "approach") {
+    const speed = 2.4 * dt;
+    o.position = {
+      x: o.position.x + (dx / dist) * speed,
+      y: o.home.y,
+      z: o.position.z + (dz / dist) * speed,
+    };
+    if (dist < 2.6 || o.phaseAge > 2.5) {
+      o.phase = "telegraph";
+      o.phaseAge = 0;
+      o.strikeResolved = false;
+      s.message = "Robber winds up — dodge!";
+    }
+    return;
+  }
+  if (o.phase === "telegraph") {
+    if (o.phaseAge >= 0.85) {
+      o.phase = "strike";
+      o.phaseAge = 0;
+      o.strikeResolved = false;
+    }
+    return;
+  }
+  if (o.phase === "strike") {
+    if (!o.strikeResolved) {
+      o.strikeResolved = true;
+      const reach = dist < 2.8;
+      const avoided = protectedByDodge(s) || (!reach && s.dodgeCooldown > 0);
+      if (avoided) {
+        s.successfulDodges++;
+        s.message = "Dodged the robber!";
+        emit(s, "dodge", m.position);
+      } else if (reach) {
+        s.bumps++;
+        emit(s, "bump", m.position);
+        s.message = "Robber connected — soft bump. Dodge the wind-up next time.";
+      } else {
+        s.message = "Robber swung wide.";
+      }
+    }
+    if (o.phaseAge >= 0.35) {
+      o.phase = "recover";
+      o.phaseAge = 0;
+    }
+    return;
+  }
+  if (o.phase === "recover" && o.phaseAge >= 0.9) {
+    o.phase = "idle";
+    o.phaseAge = 0;
+    o.strikeResolved = false;
+  }
 }
 export function stepCombat(
   s: CombatState,
@@ -548,6 +741,7 @@ export function stepCombat(
           )
             damage(s, t, a, t.position);
         }
+      if (a.kind !== "web") hitOpponentMelee(s, m, a, origin, solids);
     }
     if (a.age >= a.duration) s.attack = null;
   }
@@ -559,6 +753,7 @@ export function stepCombat(
     };
     let closest = 1,
       hit: Target | undefined;
+    let hitRobber = false;
     for (const b of solids) {
       const d = segmentBox(p.position, to, b);
       if (d !== null) closest = Math.min(closest, d);
@@ -579,11 +774,34 @@ export function stepCombat(
       if (d !== null && d < closest) {
         closest = d;
         hit = t;
+        hitRobber = false;
+      }
+    }
+    const o = s.opponent;
+    if (o.active && o.hp > 0 && o.phase !== "down" && !p.hit.includes(o.id)) {
+      const radius = 0.8,
+        b: Solid = {
+          id: o.id,
+          minX: o.position.x - radius,
+          maxX: o.position.x + radius,
+          minY: o.position.y - 1,
+          maxY: o.position.y + 1,
+          minZ: o.position.z - radius,
+          maxZ: o.position.z + radius,
+        },
+        d = segmentBox(p.position, to, b);
+      if (d !== null && d < closest) {
+        closest = d;
+        hit = undefined;
+        hitRobber = true;
       }
     }
     if (hit) {
       damage(s, hit, { kind: "web", step: p.step }, hit.position);
       p.hit.push(hit.id);
+    } else if (hitRobber) {
+      damageOpponent(s, { kind: "web", step: p.step }, o.position);
+      p.hit.push(o.id);
     }
     p.position = to;
     p.life -= dt;
@@ -595,8 +813,9 @@ export function stepCombat(
     s.queued = null;
     if (q.expires >= s.time) launch(s, m, q.kind, q.step, solids);
   }
-  if (s.active && s.stage < 5) {
+  if (s.active && s.stage < 6) {
     activateTargets(s);
+    if (s.stage === 5) stepOpponent(s, m, dt);
     advance(s);
     const machine = s.stage === 3 || (s.stage === 4 && s.finalPart === 3),
       z = s.stage === 3 ? -23 : 1;
@@ -627,8 +846,9 @@ export function stepCombat(
             s.message = "Great dodge!";
             if (s.stage === 3) s.stage = 4;
             else {
+              // Final training dodge unlocks the live bank-robber station.
               s.stage = 5;
-              s.completed = true;
+              s.completed = false;
             }
             clearCombat(s);
             activateTargets(s);
@@ -653,8 +873,10 @@ export function stepCombat(
   }
 }
 export function combatLabel(s: CombatState): string {
-  if (s.stage === 5)
+  if (s.stage === 6)
     return "Course complete! Save safely, replay, or return to traversal.";
+  if (s.stage === 5)
+    return "Live AI bank robber in a ski mask. Dodge his wind-up, then punch / kick / web him down.";
   if (s.stage === 0)
     return "Punch the orange box. Tap J / X / □ quickly for 1 → 2 → HAYMAKER.";
   if (s.stage === 1)
