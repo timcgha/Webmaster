@@ -862,7 +862,7 @@ class WebmasterApp {
       : "";
     fixtureBadge.classList.toggle("hidden", !this.fixtureLabel);
     if(frame.combat.active){
-      hudLayer.querySelector<HTMLElement>("[data-hud='practice']")!.textContent=`COMBAT ${Math.min(frame.combat.stage+1,5)} / 5`;
+      hudLayer.querySelector<HTMLElement>("[data-hud='practice']")!.textContent=`COMBAT ${Math.min(frame.combat.stage+1,6)} / 6`;
       hudLayer.querySelector<HTMLElement>("[data-hud='objective']")!.textContent=combatLabel(frame.combat);
       hudLayer.querySelector<HTMLElement>('.swing-card')!.classList.add('hidden');
       hudLayer.querySelector<HTMLElement>('.traversal-card')!.classList.add('hidden');

@@ -41,6 +41,19 @@ export const PREVIEWS = Object.freeze({
     priorRoot: "2b1a4bd0c94e7d226d6fc8388cafcb0ff0aff8f8",
     integrityBaseline: "6aff5802736b5c12380102a70a38794838397d7d",
   }),
+  wm007: Object.freeze({
+    id: "wm007",
+    change: "WM-007",
+    label: "WM-007",
+    base: "/Webmaster/wm007-preview/",
+    saveNamespace: "webmaster.wm007-preview.v1:",
+    pagesDir: ".wm007-pages",
+    payloadDir: ".wm007-payload",
+    evidenceDir: "evidence/wm-007",
+    previewAssetsDir: "preview/wm007",
+    priorRoot: "016c1f034307319549cc3b6b9f4c5ae8d9c0d49a",
+    integrityBaseline: "016c1f034307319549cc3b6b9f4c5ae8d9c0d49a",
+  }),
 });
 
 export function requirePreview(id) {
