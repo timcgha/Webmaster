@@ -5,7 +5,7 @@ export const MAX_FRAME_DELTA = 0.1;
 export const MAX_STEPS_PER_FRAME = 6;
 
 const GRAVITY = -22;
-const JUMP_SPEED = 8.2;
+const JUMP_SPEED = 9;
 const WALK_SPEED = 5;
 const RUN_SPEED = 8;
 const ACCELERATION = 24;

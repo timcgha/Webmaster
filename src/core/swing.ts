@@ -338,9 +338,9 @@ export function stepSwing(
     // approaches often have horizontal speed and used to skim building lips).
     if (attached) {
       const horizontal = Math.hypot(motion.velocity.x, motion.velocity.z);
-      const loft = horizontal < 1 ? 14.5 : horizontal < 5 ? 12.5 : 11;
+      const loft = horizontal < 1 ? 17 : horizontal < 5 ? 15 : 13.5;
       m.velocity.y = Math.max(m.velocity.y, loft);
-    } else if (input.jumpPressed) m.velocity.y = 8.2;
+    } else if (input.jumpPressed) m.velocity.y = 9;
   } else if (moving) {
     m.velocity.x += desire.x * 9 * dt;
     m.velocity.z += desire.z * 9 * dt;
@@ -363,9 +363,9 @@ export function stepSwing(
     if (below > 5 && horizontal > 12) {
       const to = normalized(subtract(s.web.anchor, hand));
       const fall = Math.max(0, -motion.velocity.y);
-      const up = Math.min(16, 8 + below * 0.45 + fall * 0.35);
+      const up = Math.min(18, 9 + below * 0.5 + fall * 0.4);
       m.velocity.y = Math.max(m.velocity.y, up);
-      const along = Math.min(10, 3.5 + horizontal * 0.22);
+      const along = Math.min(11, 4 + horizontal * 0.24);
       m.velocity.x += to.x * along;
       m.velocity.z += to.z * along;
     }
@@ -384,15 +384,15 @@ export function stepSwing(
   m.velocity.y -= GRAVITY * dt;
   // Soft loft only on early, long-gap swings (large horizontal span). Tight orbits
   // for 360 pumps sit under the ring and must keep full pendulum energy.
-  if (s.web && !m.grounded && m.velocity.y < 0 && (s.web.age ?? 0) < 1.6) {
+  if (s.web && !m.grounded && m.velocity.y < 0 && (s.web.age ?? 0) < 2.1) {
     const hand = handOrigin(m);
     const below = s.web.anchor.y - hand.y;
     const horizontal = Math.hypot(
       hand.x - s.web.anchor.x,
       hand.z - s.web.anchor.z,
     );
-    if (below > 2 && horizontal > 7) {
-      const loft = Math.min(15, (below - 2) * 3) * dt;
+    if (below > 1.5 && horizontal > 6) {
+      const loft = Math.min(22, (below - 1.5) * 3.8) * dt;
       m.velocity.y = Math.min(0, m.velocity.y + loft);
     }
   }
