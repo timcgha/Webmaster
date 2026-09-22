@@ -30,7 +30,7 @@ Controller menus do not require a mouse or typing. A disconnected controller rel
 
 Combat training is entered from pause (**Combat Playground**) or the HUD invite. Stations teach punch, kick, web, and dodge; tap again within one second for combo steps 1 → 2 → 3. Pause offers retry station, replay, or return to traversal. Quiet combat moments are saveable, but resumes always start outside the playground (completion badge is retained).
 
-Synthetic Chromium/SwiftShader FPS and Gamepad API simulation do **not** prove physical Edge/ROG play-feel. Sponsor device checks remain outside CI PASS claims.
+Synthetic Chromium/SwiftShader FPS and Gamepad API simulation do **not** prove physical Edge/ROG play-feel. Sponsor device checks remain outside CI PASS claims. Claim contract: [docs/self-review-pass-criteria.md](docs/self-review-pass-criteria.md).
 
 ## Traversal
 

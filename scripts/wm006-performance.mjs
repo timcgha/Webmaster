@@ -1,6 +1,7 @@
 import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';import {createServer} from 'vite';import {chromium} from '@playwright/test';
 import {installCourseControls} from '../e2e/routes/wm005-route.ts';
+import {assertPerformanceClaimBoundary, performanceClaimBoundary} from './self-review-claims.mjs';
 const roots={candidate:path.resolve('.'),baseline:path.resolve('../baseline')};
 const git=(root,...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
 assert.equal(git(roots.baseline,'rev-parse','HEAD'),'6aff5802736b5c12380102a70a38794838397d7d');
@@ -83,5 +84,13 @@ for(const width of[1280,1920])for(const phase of ['practice','swinging','climbin
   const pass=noMaterialRegression&&(candidateFloor||(software&&!baselineFloor));
   comparisons.push({width,phase,candidate,baseline,ratio:candidate/baseline,software,candidateFloor,baselineFloor,noMaterialRegression,pass});
 }
-const result={method:'Four alternating-order same-browser-version/runtime/machine repetitions at each resolution, with practice, attached forward-assisted swinging, active wall-climb and combat-street samples. Fresh browser process per baseline/candidate group to release old GPU contexts. All reached from ordinary New Game and actual keyboard/mouse input; paired combat heading/camera/location asserted. No recorder, fixture placement, source/time/progression writes or competing renderer; default adaptive quality. Each phase must have mean FPS >=30, or the narrow software-renderer baseline exception, and mean loss <=10%. Raw frame times, actual phase canvas and one-second gameplay states retained. Real-browser30FPS target remains; software exception only when exact accepted baseline also fails.',records,comparisons,status:comparisons.every(x=>x.pass)?'PASS':'NOT_PASS'};
+const result={
+  ...performanceClaimBoundary(),
+  method:'Four alternating-order same-browser-version/runtime/machine repetitions at each resolution, with practice, attached forward-assisted swinging, active wall-climb and combat-street samples. Fresh browser process per baseline/candidate group to release old GPU contexts. All reached from ordinary New Game and actual keyboard/mouse input; paired combat heading/camera/location asserted. No recorder, fixture placement, source/time/progression writes or competing renderer; default adaptive quality. Each phase must have mean FPS >=30, or the narrow software-renderer baseline exception, and mean loss <=10%. Raw frame times, actual phase canvas and one-second gameplay states retained. Real-browser30FPS target remains; software exception only when exact accepted baseline also fails. PASS is synthetic-ci only — not physical Edge/ROG play-feel.',
+  records,
+  comparisons,
+  status:comparisons.every(x=>x.pass)?'PASS':'NOT_PASS',
+};
+assertPerformanceClaimBoundary(result);
 fs.writeFileSync('evidence/wm-006/performance.json',JSON.stringify(result,null,2));console.log(JSON.stringify(comparisons));assert.equal(result.status,'PASS');
+assert.equal(result.claimScope,'synthetic-ci');
